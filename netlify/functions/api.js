@@ -8,15 +8,30 @@ exports.handler = async function(event) {
       headers: { 'User-Agent': 'Mozilla/5.0' }
     });
     const text = await res.text();
-    // Strip JSONP wrapper if present
-    const json = text.replace(/^[^(]+\(/, '').replace(/\);?\s*$/, '');
+    
+    // Strip JSONP wrapper if present (e.g. callback({...}) )
+    const stripped = text.trim().replace(/^[a-zA-Z_$][a-zA-Z0-9_$]*\s*\(/, '').replace(/\);?\s*$/, '');
+    
+    // Parse and verify it has ok:true — if not, wrap it
+    let data;
+    try {
+      data = JSON.parse(stripped);
+    } catch(e) {
+      data = { ok: false, error: "Parse error: " + stripped.slice(0, 100) };
+    }
+    
+    // If it's a raw array (items directly), wrap it
+    if (Array.isArray(data)) {
+      data = { ok: true, items: data };
+    }
+    
     return {
       statusCode: 200,
       headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*'
       },
-      body: json
+      body: JSON.stringify(data)
     };
   } catch(e) {
     return {
