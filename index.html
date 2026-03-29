@@ -1101,7 +1101,6 @@ function renderCatalogue() {
       photoHtml = '<img src="'+esc(photos[0])+'" style="width:100%;height:260px;object-fit:cover;display:block;">';
     } else {
       var imgs = photos.map(function(u){ return '<img src="'+esc(u)+'" style="width:100%;height:260px;object-fit:cover;flex-shrink:0;display:block;">'; }).join("");
-      var dots = photos.map(function(_,i){ return '<div class="slider-dot'+(i===0?' active':'')+'"></div>'; }).join("");
       photoHtml = '<div class="slider" id="sl-'+ci+'" ontouchstart="slS(event,'+ci+')" ontouchmove="slM(event,'+ci+')" ontouchend="slE(event,'+ci+')" onmousedown="slS(event,'+ci+')" onmousemove="slM(event,'+ci+')" onmouseup="slE(event,'+ci+')" onmouseleave="slE(event,'+ci+')">'
         +'<div class="slider-track" id="slt-'+ci+'">'+imgs+'</div>'
         +'<div class="slider-dots" id="sld-'+ci+'">'+dots+'</div>'
