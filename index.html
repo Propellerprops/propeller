@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -248,7 +249,7 @@ input,select,textarea{font-family:inherit}
 .slider-track{display:flex;transition:transform .3s ease;will-change:transform}
 .slider-track img{width:100%;height:260px;object-fit:cover;display:block;flex-shrink:0}
 .slider-dots{position:absolute;bottom:8px;left:0;right:0;display:flex;justify-content:center;gap:5px;pointer-events:none}
-.slider-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,0.3);transition:background .2s}
+.slider-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,0.3);transition:all .2s}
 .slider-dot.active{background:#C8F135;width:14px;border-radius:3px}
 .slider-count{position:absolute;top:8px;right:10px;background:rgba(0,0,0,0.65);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;letter-spacing:0.06em}
 </style>
@@ -509,6 +510,7 @@ var state = {
 // ══════════════════════════════════════════════════════════════════════════════
 window.onload = function() {
   var params = new URLSearchParams(window.location.search);
+  if (params.get("catalogue") === "true" || params.get("c") === "1") { state.staff = ""; loadCatalogue(null); return; }
 
   // Client catalogue direct access — no staff login needed
   if (params.get("catalogue") === "true" || params.get("c") === "1") {
@@ -571,10 +573,8 @@ function loadHome() {
   document.getElementById("home-username").textContent = state.staff;
 
   // Load items + activity in parallel
-  Promise.all([
-    apiCall("getItems").catch(function(){ return {ok:false}; }),
-    apiCall("getActivity").catch(function(){ return {ok:false,activity:[]}; })
-  ]).then(function(results) {
+  Promise.all([apiCall("getItems"), apiCall("getActivity")])
+    .then(function(results) {
       var itemsRes = results[0], actRes = results[1];
       if (itemsRes.ok) {
         state.items = itemsRes.items;
@@ -1056,18 +1056,11 @@ function loadCatalogue(fromPage) {
   showPageEl("page-catalogue");
   showLoading(false);
   if (!state.items.length) {
-    // Show loading state inside the grid, not a full-screen spinner
-    document.getElementById("cat-grid").innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#444;font-size:12px;letter-spacing:0.1em;text-transform:uppercase">Loading catalogue...</div>';
+    document.getElementById("cat-grid").innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#444;font-size:12px;letter-spacing:0.1em;text-transform:uppercase">Loading...</div>';
     apiCall("getItems").then(function(res) {
-      if (res.ok && res.items) {
-        state.items = res.items;
-        renderCatalogue();
-      } else {
-        document.getElementById("cat-grid").innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#C8F135;font-size:12px;letter-spacing:0.08em">API error — please refresh</div>';
-      }
-    }).catch(function(err) {
-      document.getElementById("cat-grid").innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#C8F135;font-size:12px;letter-spacing:0.08em">Connection error — please refresh</div>';
-    });
+      if (res.ok) state.items = res.items;
+      renderCatalogue();
+    }).catch(function() { renderCatalogue(); });
   } else {
     renderCatalogue();
   }
@@ -1098,30 +1091,36 @@ function renderCatalogue() {
     if (!photos.length) {
       photoHtml = '<div class="cat-card-no-img">No photo</div>';
     } else if (photos.length === 1) {
-      photoHtml = '<img src="'+esc(photos[0])+'" style="width:100%;height:260px;object-fit:cover;display:block;">';
+      photoHtml = '<img src="' + esc(photos[0]) + '" style="width:100%;height:260px;object-fit:cover;display:block;">';
     } else {
-      var imgs = photos.map(function(u){ return '<img src="'+esc(u)+'" style="width:100%;height:260px;object-fit:cover;flex-shrink:0;display:block;">'; }).join("");
-      photoHtml = '<div class="slider" id="sl-'+ci+'" ontouchstart="slS(event,'+ci+')" ontouchmove="slM(event,'+ci+')" ontouchend="slE(event,'+ci+')" onmousedown="slS(event,'+ci+')" onmousemove="slM(event,'+ci+')" onmouseup="slE(event,'+ci+')" onmouseleave="slE(event,'+ci+')">'
-        +'<div class="slider-track" id="slt-'+ci+'">'+imgs+'</div>'
-        +'<div class="slider-dots" id="sld-'+ci+'">'+dots+'</div>'
-        +'<div class="slider-count">1/'+photos.length+'</div>'
-        +'</div>';
+      var imgs = photos.map(function(u){ return '<img src="' + esc(u) + '" style="width:100%;height:260px;object-fit:cover;flex-shrink:0;display:block;">'; }).join("");
+      var dots = photos.map(function(x,di){ return '<div class="slider-dot' + (di===0?' active':'') + '"></div>'; }).join("");
+      photoHtml = '<div class="slider" id="sl-' + ci + '"'
+        + ' ontouchstart="slS(event,' + ci + ')" ontouchmove="slM(event,' + ci + ')" ontouchend="slE(event,' + ci + ')"'
+        + ' onmousedown="slS(event,' + ci + ')" onmousemove="slM(event,' + ci + ')" onmouseup="slE(event,' + ci + ')" onmouseleave="slE(event,' + ci + ')">'
+        + '<div class="slider-track" id="slt-' + ci + '">' + imgs + '</div>'
+        + '<div class="slider-dots" id="sld-' + ci + '">' + dots + '</div>'
+        + '<div class="slider-count">1/' + photos.length + '</div>'
+        + '</div>';
     }
     var inWl = state.wishlist.find(function(w){ return w.id === it.id; });
-    return '<div class="cat-card">'
-      +'<div class="cat-card-img">'+photoHtml
-      +'<div class="cat-card-tag-strip"><span class="cat-card-cat-badge">'+esc(it.category)+'</span></div>'
-      +'</div>'
-      +'<div class="cat-card-body">'
-      +'<div class="cat-name">'+esc(it.name)+'</div>'
-      +((it.era||it.color)?'<div class="cat-tags">'+(it.era?'<span class="cat-tag">'+esc(it.era)+'</span>':'')+(it.color?'<span class="cat-tag">'+esc(it.color)+'</span>':'')+'</div>':'')
-      +(it.dims?'<div class="cat-dim">'+esc(it.dims)+'</div>':'')
-      +'<div class="cat-footer">'
-      +'<div class="cat-rate">&#8382;'+(it.dayRate||'—')+'<span> / day</span></div>'
-      +'<button class="add-to-wl'+(inWl?' added':'')+'" onclick="addToWishlist(''+escAttr(it.id)+'',''+escAttr(it.name)+'')">'
-      +(inWl?'✓ Added':'+ Wishlist')+'</button>'
-      +'</div>'
-      +'</div></div>';
+    var card = '<div class="cat-card">';
+    card += '<div class="cat-card-img">' + photoHtml;
+    card += '<div class="cat-card-tag-strip"><span class="cat-card-cat-badge">' + esc(it.category) + '</span></div>';
+    card += '</div><div class="cat-card-body">';
+    card += '<div class="cat-name">' + esc(it.name) + '</div>';
+    if (it.era || it.color) {
+      card += '<div class="cat-tags">';
+      if (it.era) card += '<span class="cat-tag">' + esc(it.era) + '</span>';
+      if (it.color) card += '<span class="cat-tag">' + esc(it.color) + '</span>';
+      card += '</div>';
+    }
+    if (it.dims) card += '<div class="cat-dim">' + esc(it.dims) + '</div>';
+    card += '<div class="cat-footer">';
+    card += '<div class="cat-rate">&#8382;' + (it.dayRate || '—') + '<span> / day</span></div>';
+    card += '<button class="add-to-wl' + (inWl ? ' added' : '') + '" data-id="' + esc(it.id) + '" data-name="' + esc(it.name) + '" onclick="wlClick(this)">' + (inWl ? '✓ Added' : '+ Wishlist') + '</button>';
+    card += '</div></div></div>';
+    return card;
   }).join("");
 }
 
@@ -1195,19 +1194,16 @@ function submitWishlist() {
 //  API HELPER
 // ══════════════════════════════════════════════════════════════════════════════
 function apiCall(action, params) {
-  var target = API + "?action=" + action;
+  var url = "/.netlify/functions/api?action=" + action;
   if (params) {
     Object.keys(params).forEach(function(k) {
-      target += "&" + k + "=" + encodeURIComponent(String(params[k]||""));
+      url += "&" + k + "=" + encodeURIComponent(String(params[k]||""));
     });
   }
-  // Route through corsproxy.io to bypass CORS
-  var url = "https://corsproxy.io/?" + encodeURIComponent(target);
   return fetch(url)
     .then(function(r) { return r.json(); })
     .catch(function(e) { return { ok: false, error: e.message }; });
 }
-
 // ══════════════════════════════════════════════════════════════════════════════
 //  UTILS
 // ══════════════════════════════════════════════════════════════════════════════
@@ -1240,8 +1236,12 @@ function formatDate(d) {
   return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 }
 
-// ── Slider ────────────────────────────────────────────────────────────────────
-var _sl={};
+function wlClick(btn) {
+  addToWishlist(btn.getAttribute('data-id'), btn.getAttribute('data-name'));
+}
+
+// ── Slider ───────────────────────────────────────────────────────────────────
+var _sl = {};
 function slS(e,id){var t=e.touches?e.touches[0]:e;_sl[id]={x:t.clientX,drag:true,moved:false,cur:(_sl[id]||{}).cur||0};e.stopPropagation();}
 function slM(e,id){if(!_sl[id]||!_sl[id].drag)return;var t=e.touches?e.touches[0]:e;if(Math.abs(t.clientX-_sl[id].x)>8){_sl[id].moved=true;e.preventDefault();}e.stopPropagation();}
 function slE(e,id){
