@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Propeller — Warehouse</title>
+<style>
+/* ── Reset & base ── */
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#F7F4F0;color:#1A1A2E;min-height:100vh}
+a{text-decoration:none;color:inherit}
+button{font-family:inherit;cursor:pointer}
+input,select,textarea{font-family:inherit}
+
+/* ── Pages ── */
+.page{display:none;min-height:100vh;flex-direction:column}
+.page.active{display:flex}
+
+/* ── Header ── */
+.header{background:#1A1A2E;color:#fff;padding:16px 18px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;position:sticky;top:0;z-index:100}
+.header-left{display:flex;align-items:center;gap:12px}
+.back-btn{color:#888;font-size:22px;line-height:1;background:none;border:none;padding:0}
+.header-title{font-size:17px;font-weight:800;color:#fff}
+.header-sub{font-size:11px;color:#888;margin-top:1px}
+.header-right{display:flex;align-items:center;gap:8px}
+
+/* ── Scrollable body ── */
+.page-body{flex:1;overflow-y:auto;padding-bottom:40px}
+
+/* ── Cards ── */
+.card{background:#fff;border-radius:14px;padding:16px;margin:12px;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+
+/* ── Form fields ── */
+.field{margin-bottom:10px}
+.field-label{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:5px;display:block}
+.field input,.field select,.field textarea{width:100%;padding:11px 13px;border:1.5px solid #E8E8E8;border-radius:10px;font-size:15px;background:#FAFAFA;color:#1A1A2E;outline:none}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:#1A1A2E;background:#fff}
+.field input[readonly]{background:#F0F0F0;color:#888}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.sec-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#AAA;margin-bottom:12px}
+
+/* ── Buttons ── */
+.btn{display:block;width:100%;padding:15px;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;text-align:center}
+.btn-red{background:#E94560;color:#fff}
+.btn-green{background:#27AE60;color:#fff}
+.btn-dark{background:#1A1A2E;color:#fff}
+.btn-light{background:#F0EDE8;color:#1A1A2E}
+.btn:disabled{background:#CCC;cursor:not-allowed}
+.btn-sm{padding:8px 14px;font-size:13px;border-radius:8px;width:auto;display:inline-block}
+
+/* ── Toast ── */
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1A1A2E;color:#fff;padding:12px 20px;border-radius:12px;font-size:14px;font-weight:500;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;max-width:320px;text-align:center}
+#toast.show{opacity:1}
+
+/* ── Loading ── */
+#loading{position:fixed;inset:0;background:#F7F4F0;display:flex;align-items:center;justify-content:center;z-index:9998;flex-direction:column;gap:12px}
+#loading.hidden{display:none}
+.spinner{width:32px;height:32px;border:3px solid #E8E8E8;border-top-color:#E94560;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ══ NAME PAGE ══ */
+#page-name{background:var(--black);align-items:center;justify-content:center;padding:24px}
+.name-box{background:#0A0A0A;border:1px solid #1A1A1A;border-top:3px solid var(--acid);border-radius:0;padding:36px 28px;max-width:360px;width:100%;text-align:center}
+.name-logo{display:block;height:60px;width:auto;margin:0 auto 8px}
+.name-sub{font-size:10px;color:#444;margin-bottom:28px;letter-spacing:0.12em;text-transform:uppercase}
+.name-box h2{font-size:15px;font-weight:700;margin-bottom:16px;color:#fff;letter-spacing:0.06em;text-transform:uppercase}
+.name-box input{width:100%;padding:13px 16px;border:1.5px solid #222;border-radius:0;font-size:16px;margin-bottom:12px;text-align:center;outline:none;background:#111;color:#fff}
+.name-box input:focus{border-color:var(--acid)}
+.name-note{font-size:11px;color:#333;margin-top:14px;line-height:1.5;letter-spacing:0.04em}
+
+/* ══ HOME PAGE ══ */
+/* ══ HOME — Propeller branded ══ */
+#page-home{background:var(--black)}
+.home-header{background:var(--black);padding:0;flex-shrink:0;border-bottom:3px solid var(--acid)}
+.home-hero{padding:20px 20px 24px;background:var(--black)}
+.home-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px}
+.home-logo-img{height:48px;width:auto;display:block;cursor:default}
+.user-pill{background:#111;border:1px solid #222;border-radius:0;padding:6px 12px;display:flex;align-items:center;gap:8px}
+.user-avatar{width:26px;height:26px;border-radius:0;background:var(--acid);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:var(--black);flex-shrink:0}
+.user-name{font-size:11px;color:#888;font-weight:600;letter-spacing:0.06em;text-transform:uppercase}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+.stat{background:#111;padding:14px 10px;text-align:center;border:1px solid #1A1A1A}
+.stat-num{font-size:26px;font-weight:800;color:#fff;letter-spacing:-0.02em}
+.stat-label{font-size:9px;color:#444;text-transform:uppercase;letter-spacing:0.1em;margin-top:4px}
+.stat-avail .stat-num{color:var(--acid)}
+.stat-hire .stat-num{color:#FF6B35}
+.section-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:#333;padding:20px 20px 10px;background:var(--black)}
+.menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;padding:0 0 2px}
+.menu-card{background:#111;padding:20px 18px;display:block;cursor:pointer;border:none;text-align:left;width:100%;border:1px solid #1A1A1A;transition:background .15s}
+.menu-card:hover,.menu-card:active{background:#1A1A1A;border-color:#333}
+.menu-card.wide{grid-column:1/-1;display:flex;align-items:center;gap:16px;padding:16px 18px}
+.menu-icon{width:36px;height:36px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;font-size:18px;flex-shrink:0;background:var(--acid);color:var(--black);font-weight:800}
+.menu-icon.wide{margin-bottom:0}
+.icon-red{background:var(--acid);color:var(--black)}
+.icon-dark{background:#222;color:#888}
+.icon-green{background:var(--acid);color:var(--black)}
+.icon-blue{background:#1A2A1A;color:var(--acid)}
+.menu-title{font-size:14px;font-weight:800;color:#fff;margin-bottom:4px;letter-spacing:0.01em}
+.menu-sub{font-size:11px;color:#555;line-height:1.4}
+.activity-card{background:#0A0A0A;border:1px solid #1A1A1A;margin:2px 0 0;padding:16px 20px}
+.activity-row{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid #111}
+.activity-row:last-child{border-bottom:none}
+.activity-dot{width:6px;height:6px;background:var(--acid);margin-top:5px;flex-shrink:0}
+.activity-body{flex:1;min-width:0}
+.activity-action{font-size:12px;font-weight:700;color:#fff;letter-spacing:0.02em}
+.activity-detail{font-size:11px;color:#444;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.activity-meta{font-size:10px;color:#333;text-align:right;flex-shrink:0;line-height:1.6;text-transform:uppercase;letter-spacing:0.04em}
+.no-activity{text-align:center;padding:20px;color:#333;font-size:11px;letter-spacing:0.1em;text-transform:uppercase}
+
+/* ══ JOBS LIST ══ */
+.new-btn{background:#E94560;color:#fff;border:none;border-radius:10px;padding:9px 14px;font-size:13px;font-weight:600;cursor:pointer}
+.job-card{background:#fff;border-radius:14px;margin:0 12px 10px;box-shadow:0 1px 4px rgba(0,0,0,0.06);overflow:hidden}
+.job-body{padding:16px 16px 10px;cursor:pointer}
+.job-body:active{background:#FFF8F9}
+.job-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px}
+.job-name{font-size:15px;font-weight:700;flex:1;margin-right:10px}
+.job-total{font-size:16px;font-weight:800;color:#E94560;white-space:nowrap}
+.job-client{font-size:13px;color:#888;margin-bottom:4px}
+.job-meta{font-size:11px;color:#AAA}
+.job-footer{display:flex;border-top:1px solid #F0F0F0}
+.job-action{flex:1;padding:11px 8px;font-size:13px;font-weight:600;text-align:center;background:none;border:none;cursor:pointer}
+.job-action.edit{color:#1A1A2E;background:#F7F4F0}
+.job-action.edit:active{background:#EAE7E3}
+.job-action.del{color:#922B21;background:#FDF0EF}
+.job-action.del:active{background:#F5D5D3}
+.empty-jobs{text-align:center;padding:48px 20px;color:#BBB;font-size:15px}
+
+/* ══ JOB FORM ══ */
+.days-badge{background:#FFF0F3;color:#E94560;border-radius:8px;padding:11px 13px;font-size:15px;font-weight:700;text-align:center}
+.search-row{display:flex;gap:8px;margin-bottom:8px}
+.search-input{flex:1;padding:11px 13px;border:1.5px solid #E8E8E8;border-radius:10px;font-size:15px;background:#FAFAFA;color:#1A1A2E;outline:none}
+.search-input:focus{border-color:#1A1A2E;background:#fff}
+.scan-btn{background:#1A1A2E;color:#fff;border:none;border-radius:10px;padding:11px 14px;font-size:13px;font-weight:600;white-space:nowrap}
+.results{background:#fff;border-radius:10px;overflow:hidden;display:none;border:1.5px solid #E0E0E0;margin-bottom:10px}
+.result-item{padding:13px 14px;border-bottom:1px solid #F0F0F0;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.result-item:last-child{border-bottom:none}
+.result-item:active{background:#FFF0F3}
+.result-name{font-size:14px;font-weight:600}
+.result-id{font-size:11px;color:#AAA;margin-top:2px}
+.result-rate{font-size:13px;font-weight:700;color:#E94560;white-space:nowrap;margin-left:10px;flex-shrink:0}
+.hired-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #F5F5F5}
+.hired-item:last-child{border-bottom:none}
+.hired-thumb{width:40px;height:40px;border-radius:8px;object-fit:cover;background:#F0EDE8;flex-shrink:0}
+.hired-info{flex:1;min-width:0}
+.hired-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hired-id{font-size:11px;color:#AAA}
+.hired-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
+.rate-wrap{display:flex;align-items:center;gap:3px}
+.rate-sym{font-size:13px;color:#AAA}
+.rate-input{width:80px;padding:5px 8px;border:1.5px solid #E8E8E8;border-radius:8px;font-size:14px;font-weight:700;color:#1A1A2E;text-align:right;background:#FAFAFA}
+.rate-input:focus{border-color:#E94560;background:#fff;outline:none}
+.hired-sub{font-size:10px;color:#AAA}
+.remove-btn{background:none;border:none;color:#DDD;font-size:22px;cursor:pointer;padding:0 2px;line-height:1;flex-shrink:0}
+.remove-btn:active{color:#E94560}
+.empty-items{text-align:center;padding:24px 16px;color:#BBB;font-size:14px;line-height:1.7}
+.total-section{background:#1A1A2E;border-radius:14px;padding:16px;margin:12px}
+.total-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.grand-label{font-size:13px;color:#888}
+.grand-total{font-size:26px;font-weight:800;color:#fff}
+.sub-label{font-size:13px;color:#888}
+.sub-val{font-size:13px;color:#fff;font-weight:500}
+.confirm-btn{width:100%;padding:16px;background:#E94560;color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:800;cursor:pointer;margin-top:14px}
+.confirm-btn:disabled{background:#444;cursor:not-allowed}
+.item-count-badge{background:#E94560;color:#fff;border-radius:12px;padding:4px 10px;font-size:12px;font-weight:700}
+
+/* ══ ITEM SCANNER ══ */
+.item-id-label{font-size:13px;font-weight:600;color:#888;margin-bottom:4px}
+.item-name-label{font-size:22px;font-weight:700;margin-bottom:10px;line-height:1.2}
+.status-badge{display:inline-block;padding:5px 14px;border-radius:20px;font-size:12px;font-weight:600;color:#fff;margin-bottom:16px}
+.detail-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #F0F0F0;font-size:14px}
+.detail-row:last-child{border-bottom:none}
+.detail-label{color:#888;font-weight:500}
+.detail-val{color:#1A1A2E;text-align:right;max-width:60%}
+.item-photo{width:100%;max-height:260px;object-fit:cover;border-radius:12px;margin-bottom:16px}
+
+/* ══ SCAN INPUT ══ */
+#page-scan .scan-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px}
+#page-scan .scan-icon{font-size:56px;margin-bottom:20px}
+#page-scan h2{font-size:18px;font-weight:700;margin-bottom:8px}
+#page-scan p{font-size:14px;color:#888;margin-bottom:24px;text-align:center;line-height:1.5}
+#page-scan input{width:100%;max-width:320px;padding:14px 16px;border:1.5px solid #E8E8E8;border-radius:12px;font-size:18px;text-align:center;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:12px;outline:none}
+#page-scan input:focus{border-color:#1A1A2E}
+
+/* ══ CATALOGUE — Propeller branded ══ */
+:root{--acid:#C8F135;--black:#0A0A0A;--white:#FAFAF5}
+#page-catalogue{background:var(--black)}
+.cat-header{background:var(--black);padding:0;flex-shrink:0;border-bottom:3px solid var(--acid)}
+.cat-hero{padding:24px 20px 20px;display:flex;justify-content:space-between;align-items:flex-start}
+.cat-logo-img{height:56px;width:auto;display:block}
+.cat-back-area{display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+.wl-btn{background:var(--acid);color:var(--black);border:none;padding:9px 16px;border-radius:0;font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px;letter-spacing:0.06em;text-transform:uppercase}
+.wl-count{background:var(--black);color:var(--acid);border-radius:0;padding:1px 7px;font-size:11px;font-weight:800}
+.cat-tagline{font-size:10px;color:#666;letter-spacing:0.15em;text-transform:uppercase;margin-top:6px}
+.filter-bar{background:var(--black);padding:0 20px 16px;display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0}
+.filter-btn{padding:6px 16px;border-radius:0;font-size:11px;font-weight:700;color:#666;background:transparent;border:1.5px solid #333;cursor:pointer;white-space:nowrap;letter-spacing:0.06em;text-transform:uppercase;transition:all .15s}
+.filter-btn.active{background:var(--acid);color:var(--black);border-color:var(--acid)}
+.filter-btn:hover{border-color:var(--acid);color:var(--acid)}
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:2px;padding:2px;background:#111}
+.cat-card{background:var(--white);overflow:hidden;position:relative;cursor:pointer;transition:transform .2s}
+.cat-card:hover{transform:scale(0.99)}
+.cat-card-img{overflow:hidden;position:relative}
+.cat-card-img img{width:100%;height:260px;object-fit:cover;display:block;transition:transform .3s}
+.cat-card:hover .cat-card-img img{transform:scale(1.03)}
+.cat-card-no-img{width:100%;height:260px;background:#111;display:flex;align-items:center;justify-content:center;color:#333;font-size:13px;letter-spacing:0.1em;text-transform:uppercase}
+.cat-card-tag-strip{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:8px 10px}
+.cat-card-cat-badge{background:var(--acid);color:var(--black);font-size:9px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;padding:3px 8px}
+.cat-card-body{padding:14px 16px 16px}
+.cat-name{font-size:16px;font-weight:800;color:var(--black);margin-bottom:6px;line-height:1.2;letter-spacing:-0.01em}
+.cat-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px}
+.cat-tag{background:#EAEAD5;color:#555;font-size:10px;font-weight:600;padding:2px 8px;letter-spacing:0.04em;text-transform:uppercase}
+.cat-dim{font-size:11px;color:#999;margin-bottom:8px;letter-spacing:0.04em}
+.cat-footer{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:10px;border-top:1.5px solid #EAEAD5}
+.cat-rate{font-size:18px;font-weight:800;color:var(--black);letter-spacing:-0.02em}
+.cat-rate span{font-size:11px;font-weight:500;color:#999;letter-spacing:0.04em}
+.add-to-wl{padding:8px 14px;background:var(--black);color:var(--white);border:none;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:all .15s}
+.add-to-wl:hover{background:var(--acid);color:var(--black)}
+.add-to-wl.added{background:var(--acid);color:var(--black)}
+
+/* Wishlist drawer */
+.drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:200;display:none}
+.drawer-overlay.show{display:block}
+.drawer{position:fixed;bottom:0;left:0;right:0;background:#0F0F0F;border-top:3px solid #C8F135;transform:translateY(100%);transition:transform .3s;z-index:201;max-height:85vh;overflow-y:auto;display:flex;flex-direction:column}
+.drawer.open{transform:translateY(0)}
+.drawer-header{padding:20px 20px 12px;border-bottom:1px solid #222;display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.drawer-title{font-size:15px;font-weight:800;color:#C8F135;letter-spacing:0.08em;text-transform:uppercase}
+.drawer-close{font-size:22px;background:none;border:none;cursor:pointer;color:#666;line-height:1}
+.drawer-body{padding:16px 20px;overflow-y:auto}
+.wl-item{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #1A1A1A}
+.wl-item-name{font-size:14px;font-weight:600;color:#FAFAF5}
+.wl-item-id{font-size:11px;color:#555;letter-spacing:0.04em;text-transform:uppercase;margin-top:2px}
+.wl-remove{background:none;border:none;color:#444;font-size:18px;cursor:pointer}
+.wl-remove:hover{color:#C8F135}
+.empty-wl{text-align:center;padding:30px 20px;color:#444;font-size:13px;letter-spacing:0.06em;text-transform:uppercase}
+.wl-form{margin-top:16px;border-top:1px solid #222;padding-top:16px;display:none}
+.wl-form-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#666;margin-bottom:6px;display:block;margin-top:14px}
+.wl-form input,.wl-form textarea{width:100%;padding:11px 14px;border:1.5px solid #222;border-radius:0;font-size:15px;background:#111;color:#FAFAF5;outline:none}
+.wl-form input:focus,.wl-form textarea:focus{border-color:#C8F135}
+
+/* ══ DELETE CONFIRM ══ */
+#page-delete-confirm{align-items:center;justify-content:center;padding:24px}
+.confirm-box{background:#fff;border-radius:20px;padding:32px 24px;max-width:380px;width:100%;text-align:center}
+.confirm-icon{font-size:40px;margin-bottom:14px}
+.confirm-box h2{font-size:20px;font-weight:800;margin-bottom:8px}
+.confirm-box p{font-size:14px;color:#666;line-height:1.6;margin-bottom:24px}
+
+/* ══ PHOTO SLIDER ══ */
+.slider{position:relative;overflow:hidden;background:#0A0A0A;touch-action:pan-y;user-select:none}
+.slider-track{display:flex;transition:transform .3s ease;will-change:transform}
+.slider-track img{width:100%;height:260px;object-fit:cover;display:block;flex-shrink:0}
+.slider-dots{position:absolute;bottom:8px;left:0;right:0;display:flex;justify-content:center;gap:5px;pointer-events:none}
+.slider-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,0.3);transition:background .2s}
+.slider-dot.active{background:#C8F135;width:14px;border-radius:3px}
+.slider-count{position:absolute;top:8px;right:10px;background:rgba(0,0,0,0.65);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;letter-spacing:0.06em}
+</style>
+</head>
+<body>
+
+<!-- Loading overlay -->
+<div id="loading" class="hidden"><div class="spinner"></div><div style="font-size:13px;color:#888">Loading...</div></div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<!-- ══════════ PAGE: NAME ENTRY ══════════ -->
+<div class="page" id="page-name">
+  <div class="name-box">
+    <div class="name-logo">PROP<span>ELLER</span></div>
+    <div class="name-sub">Props & Costume Warehouse</div>
+    <h2>Who are you?</h2>
+    <input id="name-input" type="text" placeholder="Your first name" autocomplete="given-name">
+    <button style="width:100%;padding:14px;background:var(--acid);color:var(--black);border:none;font-size:13px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer" onclick="saveName()">Enter Warehouse →</button>
+    <div class="name-note">You only do this once.<br>Bookmark the page that opens.</div>
+  </div>
+</div>
+
+<!-- ══════════ PAGE: HOME ══════════ -->
+<div class="page" id="page-home">
+  <div class="home-header">
+    <div class="home-hero">
+      <div class="home-top">
+        <img src="logo.png" class="home-logo-img" alt="Propeller">
+        <div class="user-pill">
+          <div class="user-avatar" id="home-avatar">?</div>
+          <div class="user-name" id="home-username">...</div>
+        </div>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="stat-num" id="stat-total">—</div><div class="stat-label">Total items</div></div>
+        <div class="stat stat-avail"><div class="stat-num" id="stat-avail">—</div><div class="stat-label">Available</div></div>
+        <div class="stat stat-hire"><div class="stat-num" id="stat-hire">—</div><div class="stat-label">On hire</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="section-label">Warehouse</div>
+    <div class="menu-grid">
+      <button class="menu-card" onclick="showPage('page-job-form', true)">
+        <div class="menu-icon icon-red">+</div>
+        <div class="menu-title">New Job</div>
+        <div class="menu-sub">Create a hire job</div>
+      </button>
+      <button class="menu-card" onclick="showPage('page-jobs')">
+        <div class="menu-icon icon-dark">✎</div>
+        <div class="menu-title">Active Jobs</div>
+        <div class="menu-sub">Edit or remove items</div>
+      </button>
+    </div>
+    <div class="section-label">Quick scan</div>
+    <div class="menu-grid">
+      <button class="menu-card wide" onclick="showPage('page-scan')">
+        <div class="menu-icon icon-green wide">⊙</div>
+        <div><div class="menu-title">Scan Item QR</div><div class="menu-sub">Open an item by ID</div></div>
+      </button>
+    </div>
+    <div class="section-label">Client</div>
+    <div class="menu-grid">
+      <button class="menu-card wide" onclick="loadCatalogue('page-home')">
+        <div class="menu-icon icon-blue wide">◫</div>
+        <div><div class="menu-title">Client Catalogue</div><div class="menu-sub">Browse & share with clients</div></div>
+      </button>
+    </div>
+    <div class="section-label">Recent activity</div>
+    <div class="activity-card" id="home-activity"><div class="no-activity">No activity yet</div></div>
+  </div>
+</div>
+
+<!-- ══════════ PAGE: JOBS LIST ══════════ -->
+<div class="page" id="page-jobs">
+  <div class="header">
+    <div class="header-left">
+      <button class="back-btn" onclick="showPage('page-home')">←</button>
+      <div><div class="header-title">Active Jobs</div><div class="header-sub">Propeller Warehouse</div></div>
+    </div>
+    <button class="new-btn" onclick="showPage('page-job-form', true)">+ New</button>
+  </div>
+  <div class="page-body" id="jobs-list-body">
+    <div class="section-label" id="jobs-count-label">Loading...</div>
+  </div>
+</div>
+
+<!-- ══════════ PAGE: JOB FORM (create + edit) ══════════ -->
+<div class="page" id="page-job-form">
+  <div class="header">
+    <div class="header-left">
+      <button class="back-btn" id="job-form-back" onclick="showPage('page-jobs')">←</button>
+      <div><div class="header-title" id="job-form-title">New Job</div><div class="header-sub">Propeller Warehouse</div></div>
+    </div>
+    <div class="item-count-badge" id="job-item-count">0 items</div>
+  </div>
+  <div class="page-body">
+    <div class="card">
+      <div class="sec-title">Job details</div>
+      <div class="field"><label class="field-label">Job name *</label><input id="f-job" type="text" placeholder="e.g. Rustavi Film — Drama Series"></div>
+      <div class="field"><label class="field-label">Client / Production *</label><input id="f-client" type="text" placeholder="Company name"></div>
+      <div class="field"><label class="field-label">Contact person & phone</label><input id="f-contact" type="text" placeholder="Name · +995 ..."></div>
+      <div class="row2">
+        <div class="field"><label class="field-label">Out date *</label><input id="f-out" type="date" oninput="calcDays()"></div>
+        <div class="field"><label class="field-label">Return date *</label><input id="f-ret" type="date" oninput="calcDays()"></div>
+      </div>
+      <div class="field"><label class="field-label">Duration</label><div class="days-badge" id="days-badge">Set dates above</div></div>
+    </div>
+    <div class="card">
+      <div class="sec-title">Items on hire</div>
+      <div class="search-row">
+        <input class="search-input" id="item-search" type="text" placeholder="Type item name or ID..." oninput="searchItems(this.value)" autocomplete="off">
+        <button class="scan-btn" onclick="showPage('page-scan-job')">Scan QR</button>
+      </div>
+      <div class="results" id="search-results"></div>
+      <div id="hired-list"><div class="empty-items">No items added yet.<br>Search above or scan a QR label.</div></div>
+    </div>
+    <div class="total-section">
+      <div class="total-row"><span class="grand-label">Total</span><span class="grand-total" id="grand-total">₾0</span></div>
+      <div class="total-row" id="sub-row" style="display:none"><span class="sub-label" id="sub-label"></span><span class="sub-val" id="sub-val"></span></div>
+      <button class="confirm-btn" id="confirm-job-btn" onclick="submitJob()" disabled>Confirm Job — Mark All On Hire</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ PAGE: SCAN (standalone) ══════════ -->
+<div class="page" id="page-scan">
+  <div class="header">
+    <div class="header-left">
+      <button class="back-btn" onclick="showPage('page-home')">←</button>
+      <div><div class="header-title">Scan Item</div></div>
+    </div>
+  </div>
+  <div class="scan-body">
+    <div class="scan-icon">⊙</div>
+    <h2>Enter Item ID</h2>
+    <p>Type the ID from the QR label<br>(e.g. FURN-0001)</p>
+    <input id="scan-input" type="text" placeholder="FURN-0001" autocomplete="off"
+           oninput="this.value=this.value.toUpperCase()"
+           onkeydown="if(event.key==='Enter')openScannedItem()">
+    <button class="btn btn-dark" style="max-width:320px;width:100%" onclick="openScannedItem()">Open item</button>
+  </div>
+</div>
+
+<!-- ══════════ PAGE: SCAN for job ══════════ -->
+<div class="page" id="page-scan-job">
+  <div class="header">
+    <div class="header-left">
+      <button class="back-btn" onclick="showPage('page-job-form')">←</button>
+      <div><div class="header-title">Scan to add</div></div>
+    </div>
+  </div>
+  <div class="scan-body">
+    <div class="scan-icon">⊙</div>
+    <h2>Enter Item ID</h2>
+    <p>Type the ID from the QR label to add it to the job</p>
+    <input id="scan-job-input" type="text" placeholder="FURN-0001" autocomplete="off"
+           oninput="this.value=this.value.toUpperCase()"
+           onkeydown="if(event.key==='Enter')addScannedToJob()">
+    <button class="btn btn-red" style="max-width:320px;width:100%" onclick="addScannedToJob()">Add to job</button>
+  </div>
+</div>
+
+<!-- ══════════ PAGE: ITEM DETAIL ══════════ -->
+<div class="page" id="page-item">
+  <div class="header">
+    <div class="header-left">
+      <button class="back-btn" id="item-back-btn" onclick="showPage('page-home')">←</button>
+      <div><div class="header-title">Item Detail</div><div class="header-sub">Propeller Warehouse</div></div>
+    </div>
+  </div>
+  <div class="page-body" id="item-detail-body"></div>
+</div>
+
+<!-- ══════════ PAGE: DELETE CONFIRM ══════════ -->
+<div class="page" id="page-delete-confirm">
+  <div class="confirm-box">
+    <div class="confirm-icon">⚠️</div>
+    <h2>Delete this job?</h2>
+    <p id="delete-confirm-msg">All items will be marked Available.</p>
+    <button class="btn btn-red" style="margin-bottom:10px" onclick="confirmDeleteJob()">Yes, delete job</button>
+    <button class="btn btn-light" onclick="showPage('page-jobs')">Cancel</button>
+  </div>
+</div>
+
+<!-- ══════════ PAGE: CATALOGUE ══════════ -->
+<div class="page" id="page-catalogue">
+  <div class="cat-header">
+    <div class="cat-hero">
+      <div style="display:flex;align-items:center;gap:12px">
+        <button id="cat-back-btn" onclick="showPage('page-home')" style="background:none;border:none;color:#C8F135;font-size:24px;cursor:pointer;line-height:1;padding:0;display:none;font-weight:300">←</button>
+        <div>
+          <img src="logo.png" class="cat-logo-img" id="cat-logo" style="cursor:pointer" onclick="catLogoClick()" alt="Propeller">
+          <div class="cat-tagline">Props & Costumes — Tbilisi</div>
+        </div>
+      </div>
+      <div class="cat-back-area">
+        <button class="wl-btn" onclick="openDrawer()">Wishlist <span class="wl-count" id="wl-count">0</span></button>
+      </div>
+    </div>
+  </div>
+  <div class="filter-bar" id="cat-filters"></div>
+  <div class="page-body">
+    <div class="cat-grid" id="cat-grid"></div>
+  </div>
+  <!-- Wishlist drawer -->
+  <div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
+  <div class="drawer" id="wishlist-drawer">
+    <div class="drawer-header">
+      <span class="drawer-title">Your Wishlist</span>
+      <button class="drawer-close" onclick="closeDrawer()">×</button>
+    </div>
+    <div class="drawer-body">
+      <div id="wl-items-list"><div class="empty-wl">No items added yet.</div></div>
+      <div class="wl-form" id="wl-form">
+        <label class="wl-form-label">Your name *</label>
+        <input id="wl-name" type="text" placeholder="Full name">
+        <label class="wl-form-label">Production / Company *</label>
+        <input id="wl-company" type="text" placeholder="Film title or company">
+        <label class="wl-form-label">Phone / WhatsApp *</label>
+        <input id="wl-phone" type="text" placeholder="+995 ...">
+        <label class="wl-form-label">Shoot dates</label>
+        <input id="wl-dates" type="text" placeholder="e.g. 15 Apr – 20 Apr 2026">
+        <label class="wl-form-label">Notes</label>
+        <textarea id="wl-notes" rows="2" placeholder="Any special requirements..."></textarea>
+        <button style="width:100%;margin-top:16px;padding:14px;background:#C8F135;color:#0A0A0A;border:none;font-size:12px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer" onclick="submitWishlist()">Send Wishlist Request</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════════════════
+//  CONFIG — paste your Apps Script API URL here after deploying
+// ══════════════════════════════════════════════════════════════════════════════
+var API = "https://script.google.com/macros/s/AKfycbwJb7TxxSZq7z87R_JdM_pyJgHwBa_Dv7k01u_ubFd68z5uFdVU6AS73DWHbUJnDDSK/exec";
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════════════════════════════════
+var state = {
+  staff       : "",
+  items       : [],        // all inventory items
+  hired       : [],        // items in current job form
+  days        : 0,
+  isEditJob   : false,
+  editJobName : "",
+  catFilter   : "All",
+  wishlist    : [],
+  jobToDelete : "",
+  itemBackPage: "page-home"
+};
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════════════════════════════════
+window.onload = function() {
+  var params = new URLSearchParams(window.location.search);
+
+  // Client catalogue direct access — no staff login needed
+  if (params.get("catalogue") === "true" || params.get("c") === "1") {
+    state.staff = "";
+    loadCatalogue(null);
+    return;
+  }
+
+  // Staff access
+  var urlStaff = params.get("staff");
+  var savedStaff = localStorage.getItem("propeller_staff");
+  state.staff = urlStaff || savedStaff || "";
+
+  if (!state.staff) {
+    showPageEl("page-name");
+    return;
+  }
+  localStorage.setItem("propeller_staff", state.staff);
+  loadHome();
+};
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════════════════════════════════════════════
+function showPage(id, skipLoad, noHistory) {
+  document.querySelectorAll(".page").forEach(function(p){ p.classList.remove("active"); });
+  document.getElementById(id).classList.add("active");
+  window.scrollTo(0, 0);
+
+  if (id === "page-home")      loadHome();
+  if (id === "page-jobs")      loadJobs();
+  if (id === "page-catalogue") loadCatalogue();
+  if (id === "page-scan")      { setTimeout(function(){ document.getElementById("scan-input").focus(); }, 100); }
+  if (id === "page-scan-job")  { setTimeout(function(){ document.getElementById("scan-job-input").focus(); }, 100); }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  NAME ENTRY
+// ══════════════════════════════════════════════════════════════════════════════
+function saveName() {
+  var n = document.getElementById("name-input").value.trim();
+  if (!n) { toast("Please enter your name"); return; }
+  state.staff = n;
+  localStorage.setItem("propeller_staff", n);
+  // Update URL with staff name so it's bookmarkable
+  var url = window.location.pathname + "?staff=" + encodeURIComponent(n);
+  window.history.replaceState({}, "", url);
+  loadHome();
+}
+document.getElementById("name-input").addEventListener("keydown", function(e){ if(e.key==="Enter") saveName(); });
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  HOME
+// ══════════════════════════════════════════════════════════════════════════════
+function loadHome() {
+  showPageEl("page-home");
+  showLoading(false);
+  // Avatar
+  document.getElementById("home-avatar").textContent = state.staff.charAt(0).toUpperCase();
+  document.getElementById("home-username").textContent = state.staff;
+
+  // Load items + activity in parallel
+  Promise.all([
+    apiCall("getItems").catch(function(){ return {ok:false}; }),
+    apiCall("getActivity").catch(function(){ return {ok:false,activity:[]}; })
+  ]).then(function(results) {
+      var itemsRes = results[0], actRes = results[1];
+      if (itemsRes.ok) {
+        state.items = itemsRes.items;
+        var avail = state.items.filter(function(i){ return i.status === "Available"; }).length;
+        var hire  = state.items.filter(function(i){ return i.status === "On Hire"; }).length;
+        document.getElementById("stat-total").textContent = state.items.length;
+        document.getElementById("stat-avail").textContent = avail;
+        document.getElementById("stat-hire").textContent  = hire;
+      }
+      if (actRes.ok) {
+        var el = document.getElementById("home-activity");
+        if (!actRes.activity.length) {
+          el.innerHTML = '<div class="no-activity">No activity yet</div>';
+        } else {
+          el.innerHTML = actRes.activity.map(function(a) {
+            return '<div class="activity-row">'
+              +'<div class="activity-dot"></div>'
+              +'<div class="activity-body"><div class="activity-action">'+esc(a.action)+'</div>'
+              +'<div class="activity-detail">'+esc(a.detail)+'</div></div>'
+              +'<div class="activity-meta">'+esc(a.staff)+'<br><span>'+esc(a.date)+'</span></div>'
+              +'</div>';
+          }).join("");
+        }
+      }
+    })
+    .then(function(){ showLoading(false); }).catch(function(){ showLoading(false); });
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  JOBS LIST
+// ══════════════════════════════════════════════════════════════════════════════
+function loadJobs() {
+  showPageEl("page-jobs");
+  var body = document.getElementById("jobs-list-body");
+  document.getElementById("jobs-count-label").textContent = "Loading...";
+  // Clear existing job cards immediately so deleted jobs vanish right away
+  var oldCards = body.querySelectorAll(".job-card");
+  oldCards.forEach(function(c){ c.remove(); });
+  showLoading(true);
+  apiCall("getJobs").then(function(res) {
+    showLoading(false);
+    if (!res.ok) { toast("Error loading jobs"); return; }
+    var jobs = res.jobs;
+    document.getElementById("jobs-count-label").textContent =
+      jobs.length + " active job" + (jobs.length !== 1 ? "s" : "");
+
+    // Clear old job cards (keep the label)
+    var label = body.querySelector(".section-label");
+    body.innerHTML = "";
+    body.appendChild(label);
+
+    if (!jobs.length) {
+      var empty = document.createElement("div");
+      empty.className = "empty-jobs";
+      empty.innerHTML = "No active jobs.<br><span style='color:#E94560;font-weight:600;cursor:pointer' onclick='showPage(\"page-job-form\",true)'>Create a new job →</span>";
+      body.appendChild(empty);
+      return;
+    }
+
+    jobs.forEach(function(j) {
+      var card = document.createElement("div");
+      card.className = "job-card";
+      var outStr = j.outDate || "—";
+      var retStr = j.retDate || "—";
+      card.innerHTML =
+        '<div class="job-body" onclick="openEditJob(\''+escAttr(j.job)+'\')">'
+        +'<div class="job-top"><div class="job-name">'+esc(j.job)+'</div>'
+        +'<div class="job-total">₾'+Math.round(j.total).toLocaleString()+'</div></div>'
+        +'<div class="job-client">'+esc(j.client)+'</div>'
+        +'<div class="job-meta">'+outStr+' → '+retStr+' · '+j.items.length+' item'+(j.items.length!==1?'s':'')+'</div>'
+        +'</div>'
+        +'<div class="job-footer">'
+        +'<button class="job-action edit" onclick="openEditJob(\''+escAttr(j.job)+'\')">Edit</button>'
+        +'<button class="job-action del" onclick="askDeleteJob(\''+escAttr(j.job)+'\')">Delete</button>'
+        +'</div>';
+      body.appendChild(card);
+    });
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  JOB FORM
+// ══════════════════════════════════════════════════════════════════════════════
+function openNewJob() {
+  state.isEditJob   = false;
+  state.editJobName = "";
+  state.hired       = [];
+  state.days        = 0;
+  document.getElementById("job-form-title").textContent = "New Job";
+  document.getElementById("job-form-back").onclick = function(){ showPage("page-home"); };
+  document.getElementById("confirm-job-btn").textContent = "Confirm Job — Mark All On Hire";
+  document.getElementById("f-job").value = "";
+  document.getElementById("f-job").removeAttribute("readonly");
+  document.getElementById("f-client").value = "";
+  document.getElementById("f-contact").value = "";
+  document.getElementById("f-out").value = formatDate(new Date());
+  document.getElementById("f-ret").value = "";
+  calcDays();
+  renderHired();
+  updateTotal();
+  showPageEl("page-job-form");
+}
+
+function openEditJob(jobName) {
+  state.isEditJob   = true;
+  state.editJobName = jobName;
+  state.hired       = [];
+  state.days        = 0;
+  document.getElementById("job-form-title").textContent = "Edit Job";
+  document.getElementById("job-form-back").onclick = function(){ showPage("page-jobs"); };
+  document.getElementById("confirm-job-btn").textContent = "Save Changes";
+  document.getElementById("f-job").value = jobName;
+  document.getElementById("f-job").setAttribute("readonly", true);
+
+  showLoading(true);
+  apiCall("getJobs").then(function(res) {
+    showLoading(false);
+    if (!res.ok) { toast("Error loading job"); return; }
+    var job = res.jobs.find(function(j){ return j.job === jobName; });
+    if (!job) { toast("Job not found"); return; }
+    document.getElementById("f-client").value  = job.client || "";
+    document.getElementById("f-out").value     = job.outDate || formatDate(new Date());
+    document.getElementById("f-ret").value     = job.retDate || "";
+
+    // Pre-populate hired items
+    job.items.forEach(function(it) {
+      var inv = state.items.find(function(x){ return x.id === it.id; });
+      state.hired.push({
+        id        : it.id,
+        name      : it.name,
+        dayRate   : it.rate,
+        customRate: it.rate,
+        photoUrl  : inv ? inv.photoUrl : ""
+      });
+    });
+    calcDays();
+    renderHired();
+    updateTotal();
+    showPageEl("page-job-form");
+  });
+}
+
+// Override showPage for job form
+var _origShowPage = showPage;
+showPage = function(id, isNew, noHistory) {
+  if (id === "page-job-form") {
+    if (isNew) { openNewJob(); return; }
+  }
+  _origShowPage(id, isNew, noHistory);
+};
+
+function searchItems(q) {
+  var res = document.getElementById("search-results");
+  if (!q || q.length < 1) { res.style.display = "none"; return; }
+  var ql = q.toLowerCase();
+  var found = state.items.filter(function(it) {
+    return (it.status === "Available" || state.isEditJob) &&
+      (it.id.toLowerCase().indexOf(ql) > -1 ||
+       it.name.toLowerCase().indexOf(ql) > -1 ||
+       it.category.toLowerCase().indexOf(ql) > -1);
+  }).slice(0, 8);
+
+  if (!found.length) {
+    res.innerHTML = '<div class="result-item"><div class="result-name" style="color:#AAA">No items found</div></div>';
+    res.style.display = "block"; return;
+  }
+  res.innerHTML = found.map(function(it, i) {
+    var rate = it.dayRate > 0 ? "₾"+it.dayRate+"/day" : "—";
+    return '<div class="result-item" onclick="addItemToJob('+i+')">'
+      +'<div><div class="result-name">'+esc(it.name)+'</div><div class="result-id">'+esc(it.id)+'</div></div>'
+      +'<div class="result-rate">'+rate+'</div></div>';
+  }).join("");
+  res.style.display = "block";
+  res._found = found;
+}
+
+function addItemToJob(i) {
+  var found = document.getElementById("search-results")._found;
+  if (!found || !found[i]) return;
+  var it = found[i];
+  addHiredItem({ id:it.id, name:it.name, dayRate:it.dayRate, customRate:it.dayRate, photoUrl:it.photoUrl||"" });
+  document.getElementById("search-results").style.display = "none";
+  document.getElementById("item-search").value = "";
+}
+
+function addScannedToJob() {
+  var id = document.getElementById("scan-job-input").value.trim().toUpperCase();
+  if (!id) { toast("Please enter an Item ID"); return; }
+  var it = state.items.find(function(x){ return x.id === id; });
+  if (!it) { toast("Item "+id+" not found"); return; }
+  addHiredItem({ id:it.id, name:it.name, dayRate:it.dayRate, customRate:it.dayRate, photoUrl:it.photoUrl||"" });
+  document.getElementById("scan-job-input").value = "";
+  toast(it.name+" added to job");
+  showPage("page-job-form");
+}
+
+function addHiredItem(it) {
+  if (state.hired.find(function(x){ return x.id === it.id; })) {
+    toast(it.name+" is already in this job"); return;
+  }
+  state.hired.push(it);
+  renderHired(); updateTotal(); updateJobCount();
+}
+
+function removeHiredItem(id) {
+  state.hired = state.hired.filter(function(x){ return x.id !== id; });
+  renderHired(); updateTotal(); updateJobCount();
+}
+
+function onRateChange(id, val) {
+  var it = state.hired.find(function(x){ return x.id === id; });
+  if (it) { it.customRate = parseFloat(val) || 0; updateTotal(); }
+}
+
+function calcDays() {
+  var o = document.getElementById("f-out").value;
+  var r = document.getElementById("f-ret").value;
+  if (!o || !r) {
+    state.days = 0;
+    document.getElementById("days-badge").textContent = "Set dates above";
+    document.getElementById("sub-row").style.display = "none";
+    updateTotal(); return;
+  }
+  var d = Math.round((new Date(r) - new Date(o)) / (1000*60*60*24));
+  if (d <= 0) {
+    state.days = 0;
+    document.getElementById("days-badge").textContent = "Return must be after out date";
+    updateTotal(); return;
+  }
+  state.days = d;
+  document.getElementById("days-badge").textContent = d+" day"+(d!==1?"s":"");
+  document.getElementById("sub-row").style.display = "flex";
+  updateTotal();
+}
+
+function renderHired() {
+  var el = document.getElementById("hired-list");
+  if (!state.hired.length) {
+    el.innerHTML = '<div class="empty-items">No items added yet.<br>Search above or scan a QR label.</div>';
+    return;
+  }
+  el.innerHTML = state.hired.map(function(it) {
+    var sub = state.days > 0 ? "₾"+Math.round(it.customRate*state.days)+" total" : "per day";
+    var photo = it.photoUrl
+      ? '<img class="hired-thumb" src="'+esc(it.photoUrl)+'" onerror="this.style.opacity=0">'
+      : '<div class="hired-thumb"></div>';
+    return '<div class="hired-item">'+photo
+      +'<div class="hired-info"><div class="hired-name">'+esc(it.name)+'</div><div class="hired-id">'+esc(it.id)+'</div></div>'
+      +'<div class="hired-right"><div class="rate-wrap"><span class="rate-sym">₾</span>'
+      +'<input class="rate-input" type="number" value="'+it.customRate+'" data-id="'+esc(it.id)+'" oninput="onRateChange(\''+escAttr(it.id)+'\',this.value)"></div>'
+      +'<div class="hired-sub">'+sub+'</div></div>'
+      +'<button class="remove-btn" onclick="removeHiredItem(\''+escAttr(it.id)+'\')">×</button>'
+      +'</div>';
+  }).join("");
+}
+
+function updateTotal() {
+  var t = state.hired.reduce(function(s,it){ return s + it.customRate*(state.days||1); }, 0);
+  document.getElementById("grand-total").textContent = "₾"+Math.round(t).toLocaleString();
+  document.getElementById("sub-label").textContent = state.days+" day"+(state.days!==1?"s":"")+" · "+state.hired.length+" item"+(state.hired.length!==1?"s":"");
+  document.getElementById("sub-val").textContent = "₾"+Math.round(t).toLocaleString();
+  document.getElementById("confirm-job-btn").disabled = state.hired.length === 0;
+  renderHired();
+}
+
+function updateJobCount() {
+  document.getElementById("job-item-count").textContent = state.hired.length+" item"+(state.hired.length!==1?"s":"");
+}
+
+function submitJob() {
+  var job     = document.getElementById("f-job").value.trim();
+  var client  = document.getElementById("f-client").value.trim();
+  var contact = document.getElementById("f-contact").value.trim();
+  var outDate = document.getElementById("f-out").value;
+  var retDate = document.getElementById("f-ret").value;
+  if (!job)    { toast("Please enter a job name"); return; }
+  if (!client) { toast("Please enter a client name"); return; }
+  if (!outDate || !retDate) { toast("Please set out and return dates"); return; }
+  if (!state.hired.length)  { toast("Please add at least one item"); return; }
+
+  var btn = document.getElementById("confirm-job-btn");
+  btn.textContent = "Saving..."; btn.disabled = true;
+
+  var itemsData = state.hired.map(function(it){ return it.id+"|"+it.name+"|"+it.customRate; }).join(",");
+  var action    = state.isEditJob ? "updateJob" : "confirmJob";
+
+  apiCall(action, {
+    job:job, client:client, contact:contact,
+    outDate:outDate, retDate:retDate, days:state.days,
+    items:itemsData, staff:state.staff
+  }).then(function(res) {
+    if (res.ok) {
+      toast(state.isEditJob ? "Job updated!" : "Job confirmed — all items marked On Hire");
+      state.items = []; // force refresh
+      setTimeout(function(){ showPage("page-jobs"); }, 800);
+    } else {
+      toast("Error: "+(res.error||"unknown"));
+    }
+    btn.textContent = state.isEditJob ? "Save Changes" : "Confirm Job — Mark All On Hire";
+    btn.disabled = false;
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  DELETE JOB
+// ══════════════════════════════════════════════════════════════════════════════
+function askDeleteJob(jobName) {
+  state.jobToDelete = jobName;
+  document.getElementById("delete-confirm-msg").textContent =
+    '"'+jobName+'" — all items will be marked Available. This cannot be undone.';
+  showPageEl("page-delete-confirm");
+}
+
+function confirmDeleteJob() {
+  if (!state.jobToDelete) return;
+  showLoading(true);
+  apiCall("deleteJob", { job:state.jobToDelete, staff:state.staff }).then(function(res) {
+    if (res.ok) {
+      var freed = res.freed || 0;
+      state.jobToDelete = "";
+      state.items = [];
+      // Wait 1.5s for Apps Script to finish writing before reloading the list
+      setTimeout(function() {
+        showLoading(false);
+        toast("Job deleted — "+freed+" item"+(freed!==1?"s":"")+" freed");
+        loadJobs();
+      }, 1500);
+    } else {
+      showLoading(false);
+      toast("Error: "+(res.error||"unknown"));
+      showPage("page-jobs");
+    }
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  ITEM SCANNER
+// ══════════════════════════════════════════════════════════════════════════════
+function openScannedItem() {
+  var id = document.getElementById("scan-input").value.trim().toUpperCase();
+  if (!id) { toast("Please enter an Item ID"); return; }
+  openItem(id, "page-scan");
+}
+
+function openItem(id, backPage) {
+  state.itemBackPage = backPage || "page-home";
+  document.getElementById("item-back-btn").onclick = function(){ showPage(state.itemBackPage); };
+  var it = state.items.find(function(x){ return x.id === id; });
+  if (!it) {
+    // Try fetching fresh
+    showLoading(true);
+    apiCall("getItems").then(function(res) {
+      showLoading(false);
+      if (res.ok) {
+        state.items = res.items;
+        it = state.items.find(function(x){ return x.id === id; });
+      }
+      renderItemDetail(it, id);
+      showPageEl("page-item");
+    });
+  } else {
+    renderItemDetail(it, id);
+    showPageEl("page-item");
+  }
+}
+
+function renderItemDetail(it, id) {
+  var body = document.getElementById("item-detail-body");
+  if (!it) {
+    body.innerHTML = '<div class="card"><p style="color:#888;font-size:14px">Item <strong>'+esc(id)+'</strong> not found.</p></div>';
+    return;
+  }
+  var statusColor = it.status==="On Hire" ? "#E67E22" : (it.status==="Available" ? "#27AE60" : "#7F8C8D");
+  var photo = it.photoUrl
+    ? '<img class="item-photo" src="'+esc(it.photoUrl)+'" onerror="this.style.display=\'none\'">'
+    : '<div style="width:100%;height:160px;background:#F0EDE8;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;color:#AAAAAA;font-size:14px;">No photo yet</div>';
+
+  var hireForm = it.status === "Available" ? renderHireForm(it) : "";
+  var retForm  = it.status === "On Hire"   ? renderReturnForm(it) : "";
+
+  body.innerHTML =
+    '<div class="card">'+photo
+    +'<div class="item-id-label">'+esc(it.id)+'</div>'
+    +'<div class="item-name-label">'+esc(it.name)+'</div>'
+    +'<span class="status-badge" style="background:'+statusColor+'">'+esc(it.status)+'</span>'
+    +(it.booking?'<div style="font-size:13px;color:#E67E22;margin-bottom:12px">With: '+esc(it.booking)+'</div>':'')
+    +'<div class="detail-row"><span class="detail-label">Category</span><span class="detail-val">'+esc(it.category)+(it.subcategory?' · '+it.subcategory:'')+'</span></div>'
+    +(it.era?'<div class="detail-row"><span class="detail-label">Era</span><span class="detail-val">'+esc(it.era)+'</span></div>':'')
+    +(it.color?'<div class="detail-row"><span class="detail-label">Color</span><span class="detail-val">'+esc(it.color)+'</span></div>':'')
+    +(it.dims?'<div class="detail-row"><span class="detail-label">Dimensions</span><span class="detail-val">'+esc(it.dims)+'</span></div>':'')
+    +'<div class="detail-row"><span class="detail-label">Condition</span><span class="detail-val">'+esc(it.condition)+'</span></div>'
+    +'<div class="detail-row"><span class="detail-label">Location</span><span class="detail-val">'+esc(it.location)+'</span></div>'
+    +'</div>'
+    +'<div class="card"><div class="sec-title">Rental rates</div>'
+    +'<div class="detail-row"><span class="detail-label">Day rate</span><span class="detail-val">'+(it.dayRate?"₾"+it.dayRate:"—")+'</span></div>'
+    +'<div class="detail-row"><span class="detail-label">Week rate</span><span class="detail-val">'+(it.weekRate?"₾"+it.weekRate:"—")+'</span></div>'
+    +'<div class="detail-row"><span class="detail-label">Replacement value</span><span class="detail-val">'+(it.replValue?"₾"+it.replValue:"—")+'</span></div>'
+    +'</div>'
+    +(it.notes?'<div class="card"><div class="sec-title">Notes</div><div style="font-size:14px;color:#555;line-height:1.6">'+esc(it.notes)+'</div></div>':'')
+    + hireForm + retForm;
+}
+
+function renderHireForm(it) {
+  var today = formatDate(new Date());
+  return '<div class="card"><div class="sec-title">Mark as On Hire</div>'
+    +'<div class="field"><input id="hire-job" type="text" placeholder="Job name *"></div>'
+    +'<div class="field"><input id="hire-client" type="text" placeholder="Client / Production"></div>'
+    +'<div class="field"><input id="hire-contact" type="text" placeholder="Contact person"></div>'
+    +'<div class="field"><input id="hire-out" type="date" value="'+today+'"></div>'
+    +'<div class="field"><input id="hire-ret" type="date"></div>'
+    +'<button class="btn btn-red" onclick="doMarkHire(\''+escAttr(it.id)+'\')">Mark as On Hire</button>'
+    +'</div>';
+}
+
+function renderReturnForm(it) {
+  return '<div class="card"><div class="sec-title">Return item</div>'
+    +'<p style="font-size:14px;color:#555;margin-bottom:12px">With: <strong>'+esc(it.booking)+'</strong></p>'
+    +'<div class="field"><select id="ret-cond"><option value="">Condition on return...</option>'
+    +'<option>Excellent</option><option>Good</option><option>Fair</option><option>Poor</option></select></div>'
+    +'<div class="field"><textarea id="ret-notes" rows="2" placeholder="Return notes..."></textarea></div>'
+    +'<button class="btn btn-green" onclick="doMarkReturn(\''+escAttr(it.id)+'\')">Mark as Returned</button>'
+    +'</div>';
+}
+
+function doMarkHire(id) {
+  var job = document.getElementById("hire-job").value.trim();
+  if (!job) { toast("Please enter a job name"); return; }
+  showLoading(true);
+  apiCall("markHire", {
+    id:id, job:job,
+    client  : document.getElementById("hire-client").value,
+    contact : document.getElementById("hire-contact").value,
+    outDate : document.getElementById("hire-out").value,
+    retDate : document.getElementById("hire-ret").value,
+    staff   : state.staff
+  }).then(function(res) {
+    showLoading(false);
+    if (res.ok) {
+      toast(id+" marked as On Hire");
+      state.items = [];
+      setTimeout(function(){ showPage(state.itemBackPage); }, 800);
+    } else { toast("Error: "+(res.error||"")); }
+  });
+}
+
+function doMarkReturn(id) {
+  showLoading(true);
+  apiCall("markReturn", {
+    id         : id,
+    condition  : document.getElementById("ret-cond").value,
+    returnNotes: document.getElementById("ret-notes").value,
+    staff      : state.staff
+  }).then(function(res) {
+    showLoading(false);
+    if (res.ok) {
+      toast(id+" marked as Available");
+      state.items = [];
+      setTimeout(function(){ showPage(state.itemBackPage); }, 800);
+    } else { toast("Error: "+(res.error||"")); }
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  CATALOGUE
+// ══════════════════════════════════════════════════════════════════════════════
+function catLogoClick() {
+  if (state.staff) showPage("page-home");
+}
+
+function loadCatalogue(fromPage) {
+  // Show back button only if coming from inside the app (staff)
+  var backBtn = document.getElementById("cat-back-btn");
+  if (state.staff && fromPage) {
+    backBtn.style.display = "block";
+    backBtn.onclick = function(){ showPage(fromPage); };
+  } else {
+    backBtn.style.display = "none";
+  }
+  showPageEl("page-catalogue");
+  showLoading(false);
+  if (!state.items.length) {
+    // Show loading state inside the grid, not a full-screen spinner
+    document.getElementById("cat-grid").innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#444;font-size:12px;letter-spacing:0.1em;text-transform:uppercase">Loading catalogue...</div>';
+    apiCall("getItems").then(function(res) {
+      if (res.ok && res.items) {
+        state.items = res.items;
+        renderCatalogue();
+      } else {
+        document.getElementById("cat-grid").innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#C8F135;font-size:12px;letter-spacing:0.08em">API error — please refresh</div>';
+      }
+    }).catch(function(err) {
+      document.getElementById("cat-grid").innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#C8F135;font-size:12px;letter-spacing:0.08em">Connection error — please refresh</div>';
+    });
+  } else {
+    renderCatalogue();
+  }
+}
+
+function renderCatalogue() {
+  var items = state.items.filter(function(it){ return it.status === "Available"; });
+
+  // Build category filters
+  var cats = ["All"];
+  items.forEach(function(it){ if (it.category && cats.indexOf(it.category)===-1) cats.push(it.category); });
+  var filterBar = document.getElementById("cat-filters");
+  filterBar.innerHTML = cats.map(function(c) {
+    return '<button class="filter-btn'+(c===state.catFilter?" active":"")+'" onclick="setCatFilter(\''+escAttr(c)+'\')">'+esc(c)+'</button>';
+  }).join("");
+
+  // Filter items
+  var filtered = state.catFilter === "All" ? items : items.filter(function(it){ return it.category === state.catFilter; });
+
+  var grid = document.getElementById("cat-grid");
+  if (!filtered.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#888;font-size:15px">No available items in this category.</div>';
+    return;
+  }
+  grid.innerHTML = filtered.map(function(it, ci) {
+    var photos = it.photoUrl ? it.photoUrl.split(",").map(function(u){ return u.trim(); }).filter(Boolean) : [];
+    var photoHtml;
+    if (!photos.length) {
+      photoHtml = '<div class="cat-card-no-img">No photo</div>';
+    } else if (photos.length === 1) {
+      photoHtml = '<img src="'+esc(photos[0])+'" style="width:100%;height:260px;object-fit:cover;display:block;">';
+    } else {
+      var imgs = photos.map(function(u){ return '<img src="'+esc(u)+'" style="width:100%;height:260px;object-fit:cover;flex-shrink:0;display:block;">'; }).join("");
+      var dots = photos.map(function(_,i){ return '<div class="slider-dot'+(i===0?' active':'')+'"></div>'; }).join("");
+      photoHtml = '<div class="slider" id="sl-'+ci+'" ontouchstart="slS(event,'+ci+')" ontouchmove="slM(event,'+ci+')" ontouchend="slE(event,'+ci+')" onmousedown="slS(event,'+ci+')" onmousemove="slM(event,'+ci+')" onmouseup="slE(event,'+ci+')" onmouseleave="slE(event,'+ci+')">'
+        +'<div class="slider-track" id="slt-'+ci+'">'+imgs+'</div>'
+        +'<div class="slider-dots" id="sld-'+ci+'">'+dots+'</div>'
+        +'<div class="slider-count">1/'+photos.length+'</div>'
+        +'</div>';
+    }
+    var inWl = state.wishlist.find(function(w){ return w.id === it.id; });
+    return '<div class="cat-card">'
+      +'<div class="cat-card-img">'+photoHtml
+      +'<div class="cat-card-tag-strip"><span class="cat-card-cat-badge">'+esc(it.category)+'</span></div>'
+      +'</div>'
+      +'<div class="cat-card-body">'
+      +'<div class="cat-name">'+esc(it.name)+'</div>'
+      +((it.era||it.color)?'<div class="cat-tags">'+(it.era?'<span class="cat-tag">'+esc(it.era)+'</span>':'')+(it.color?'<span class="cat-tag">'+esc(it.color)+'</span>':'')+'</div>':'')
+      +(it.dims?'<div class="cat-dim">'+esc(it.dims)+'</div>':'')
+      +'<div class="cat-footer">'
+      +'<div class="cat-rate">&#8382;'+(it.dayRate||'—')+'<span> / day</span></div>'
+      +'<button class="add-to-wl'+(inWl?' added':'')+'" onclick="addToWishlist(''+escAttr(it.id)+'',''+escAttr(it.name)+'')">'
+      +(inWl?'✓ Added':'+ Wishlist')+'</button>'
+      +'</div>'
+      +'</div></div>';
+  }).join("");
+}
+
+function setCatFilter(cat) {
+  state.catFilter = cat;
+  renderCatalogue();
+}
+
+function addToWishlist(id, name) {
+  if (state.wishlist.find(function(w){ return w.id===id; })) { toast(name+" already in wishlist"); return; }
+  state.wishlist.push({ id:id, name:name });
+  updateWlCount();
+  renderCatalogue();
+  openDrawer();
+}
+
+function removeFromWishlist(id) {
+  state.wishlist = state.wishlist.filter(function(w){ return w.id!==id; });
+  updateWlCount();
+  renderWlItems();
+  renderCatalogue();
+}
+
+function updateWlCount() {
+  document.getElementById("wl-count").textContent = state.wishlist.length;
+  renderWlItems();
+}
+
+function renderWlItems() {
+  var el   = document.getElementById("wl-items-list");
+  var form = document.getElementById("wl-form");
+  if (!state.wishlist.length) {
+    el.innerHTML = '<div class="empty-wl">No items added yet.</div>';
+    form.style.display = "none"; return;
+  }
+  el.innerHTML = state.wishlist.map(function(w) {
+    return '<div class="wl-item"><div><div class="wl-item-name">'+esc(w.name)+'</div>'
+      +'<div class="wl-item-id">'+esc(w.id)+'</div></div>'
+      +'<button class="wl-remove" onclick="removeFromWishlist(\''+escAttr(w.id)+'\')">×</button></div>';
+  }).join("");
+  form.style.display = "block";
+}
+
+function openDrawer()  { document.getElementById("wishlist-drawer").classList.add("open"); document.getElementById("drawer-overlay").classList.add("show"); }
+function closeDrawer() { document.getElementById("wishlist-drawer").classList.remove("open"); document.getElementById("drawer-overlay").classList.remove("show"); }
+
+function submitWishlist() {
+  var name    = document.getElementById("wl-name").value.trim();
+  var company = document.getElementById("wl-company").value.trim();
+  var phone   = document.getElementById("wl-phone").value.trim();
+  if (!name||!company||!phone) { toast("Please fill in name, production and phone"); return; }
+  if (!state.wishlist.length)  { toast("Wishlist is empty"); return; }
+  var items = state.wishlist.map(function(w){ return w.id+" — "+w.name; }).join(", ");
+  showLoading(true);
+  apiCall("submitRequest", {
+    name:name, company:company, phone:phone,
+    dates: document.getElementById("wl-dates").value,
+    notes: document.getElementById("wl-notes").value,
+    items: items
+  }).then(function(res) {
+    showLoading(false);
+    closeDrawer();
+    toast("Wishlist request sent! We'll be in touch shortly.");
+    state.wishlist = [];
+    updateWlCount();
+    renderCatalogue();
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  API HELPER
+// ══════════════════════════════════════════════════════════════════════════════
+function apiCall(action, params) {
+  var url = "/.netlify/functions/api?action=" + action;
+  if (params) {
+    Object.keys(params).forEach(function(k) {
+      url += "&" + k + "=" + encodeURIComponent(String(params[k]||""));
+    });
+  }
+  return fetch(url)
+    .then(function(r) { return r.json(); })
+    .catch(function(e) { return { ok: false, error: e.message }; });
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+//  UTILS
+// ══════════════════════════════════════════════════════════════════════════════
+function showPageEl(id) {
+  document.querySelectorAll(".page").forEach(function(p){ p.classList.remove("active"); });
+  document.getElementById(id).classList.add("active");
+  window.scrollTo(0,0);
+}
+
+function showLoading(show) {
+  document.getElementById("loading").classList.toggle("hidden", !show);
+}
+
+var _toastTimer;
+function toast(msg) {
+  var el = document.getElementById("toast");
+  el.textContent = msg;
+  el.classList.add("show");
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(function(){ el.classList.remove("show"); }, 3000);
+}
+
+function esc(s) {
+  return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+}
+function escAttr(s) {
+  return String(s||"").replace(/'/g,"&apos;").replace(/"/g,"&quot;");
+}
+function formatDate(d) {
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+
+// ── Slider ────────────────────────────────────────────────────────────────────
+var _sl={};
+function slS(e,id){var t=e.touches?e.touches[0]:e;_sl[id]={x:t.clientX,drag:true,moved:false,cur:(_sl[id]||{}).cur||0};e.stopPropagation();}
+function slM(e,id){if(!_sl[id]||!_sl[id].drag)return;var t=e.touches?e.touches[0]:e;if(Math.abs(t.clientX-_sl[id].x)>8){_sl[id].moved=true;e.preventDefault();}e.stopPropagation();}
+function slE(e,id){
+  if(!_sl[id]||!_sl[id].drag)return;_sl[id].drag=false;
+  if(!_sl[id].moved)return;
+  var t=e.changedTouches?e.changedTouches[0]:e;
+  var dx=t.clientX-_sl[id].x;
+  var tr=document.getElementById("slt-"+id);if(!tr)return;
+  var n=tr.children.length,cur=_sl[id].cur||0;
+  if(dx<-40&&cur<n-1)cur++;else if(dx>40&&cur>0)cur--;
+  _sl[id].cur=cur;
+  tr.style.transform="translateX(-"+cur*100+"%)";
+  document.querySelectorAll("#sld-"+id+" .slider-dot").forEach(function(d,i){d.classList.toggle("active",i===cur);});
+  var cnt=document.querySelector("#sl-"+id+" .slider-count");
+  if(cnt)cnt.textContent=(cur+1)+"/"+n;
+  e.stopPropagation();
+}
+</script>
+</body>
+</html>
