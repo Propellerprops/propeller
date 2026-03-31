@@ -904,6 +904,22 @@ function submitJob() {
   var itemsData = state.hired.map(function(it){ return it.id+"|"+it.name+"|"+it.customRate; }).join(",");
   var action    = state.isEditJob ? "updateJob" : "confirmJob";
 
+  // Show invoice immediately — don't wait for slow API response
+  // The API call runs in background; job is saved even if response is slow
+  var invoiceData = {
+    job: job, client: client, contact: contact,
+    outDate: outDate, retDate: retDate, days: state.days,
+    items: state.hired.slice()
+  };
+
+  if (!state.isEditJob) {
+    // Fire and forget — show invoice right away
+    setTimeout(function() {
+      state.items = [];
+      showInvoice(invoiceData);
+    }, 2000); // 2 second delay so sheet write starts
+  }
+
   apiCall(action, {
     job:job, client:client, contact:contact,
     outDate:outDate, retDate:retDate, days:state.days,
@@ -911,20 +927,19 @@ function submitJob() {
   }).then(function(res) {
     if (res.ok) {
       state.items = [];
-      if (!state.isEditJob) {
-        // Show invoice page after new job confirmation
-        showInvoice({
-          job: job, client: client, contact: contact,
-          outDate: outDate, retDate: retDate, days: state.days,
-          items: state.hired.slice()
-        });
-      } else {
+      if (state.isEditJob) {
         toast("Job updated!");
         setTimeout(function(){ showPage("page-jobs"); }, 800);
       }
+      // For new jobs invoice already shown above
     } else {
-      toast("Error: "+(res.error||"unknown"));
+      if (state.isEditJob) {
+        toast("Error: "+(res.error||"unknown"));
+      }
     }
+    btn.textContent = state.isEditJob ? "Save Changes" : "Confirm Job — Mark All On Hire";
+    btn.disabled = false;
+  }).catch(function(){
     btn.textContent = state.isEditJob ? "Save Changes" : "Confirm Job — Mark All On Hire";
     btn.disabled = false;
   });
