@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -252,6 +251,49 @@ input,select,textarea{font-family:inherit}
 .slider-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,0.3);transition:all .2s}
 .slider-dot.active{background:#C8F135;width:14px;border-radius:3px}
 .slider-count{position:absolute;top:8px;right:10px;background:rgba(0,0,0,0.65);color:#fff;font-size:10px;font-weight:700;padding:3px 8px;letter-spacing:0.06em}
+
+/* ══ INVOICE PAGE ══ */
+#page-invoice{background:#F7F4F0}
+.inv-wrap{max-width:600px;margin:0 auto;padding:20px 16px 40px}
+.inv-doc{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);margin-bottom:16px}
+.inv-header{background:#0A0A0A;padding:24px 28px;display:flex;justify-content:space-between;align-items:flex-start}
+.inv-logo{height:44px;width:auto}
+.inv-header-right{text-align:right}
+.inv-label{font-size:10px;color:#666;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:4px}
+.inv-number{font-size:18px;font-weight:800;color:#C8F135;letter-spacing:0.04em}
+.inv-date{font-size:11px;color:#888;margin-top:2px}
+.inv-parties{display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid #F0F0F0}
+.inv-party{padding:20px 28px}
+.inv-party:first-child{border-right:1px solid #F0F0F0}
+.inv-party-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:#AAA;margin-bottom:8px}
+.inv-party-name{font-size:14px;font-weight:700;color:#0A0A0A;margin-bottom:4px}
+.inv-party-detail{font-size:12px;color:#888;line-height:1.6}
+.inv-dates{display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:1px solid #F0F0F0}
+.inv-date-cell{padding:14px 28px;border-right:1px solid #F0F0F0}
+.inv-date-cell:last-child{border-right:none}
+.inv-date-cell-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#AAA;margin-bottom:4px}
+.inv-date-cell-val{font-size:13px;font-weight:600;color:#0A0A0A}
+.inv-items-header{display:grid;grid-template-columns:1fr 80px 80px 90px;padding:10px 28px;background:#F7F4F0;border-bottom:1px solid #EBEBEB}
+.inv-items-header span{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#AAA}
+.inv-items-header span:not(:first-child){text-align:right}
+.inv-item-row{display:grid;grid-template-columns:1fr 80px 80px 90px;padding:12px 28px;border-bottom:1px solid #F5F5F5;align-items:center}
+.inv-item-row:last-child{border-bottom:none}
+.inv-item-name{font-size:13px;font-weight:500;color:#0A0A0A}
+.inv-item-id{font-size:10px;color:#AAA;margin-top:2px;text-transform:uppercase;letter-spacing:0.04em}
+.inv-item-num{font-size:13px;color:#555;text-align:right}
+.inv-item-total{font-size:13px;font-weight:600;color:#0A0A0A;text-align:right}
+.inv-total-section{padding:16px 28px;background:#0A0A0A;display:flex;justify-content:space-between;align-items:center}
+.inv-total-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:#666}
+.inv-total-amount{font-size:28px;font-weight:800;color:#C8F135;letter-spacing:-0.02em}
+.inv-footer{padding:16px 28px;border-top:1px solid #F0F0F0}
+.inv-footer-text{font-size:11px;color:#AAA;line-height:1.7}
+.inv-actions{display:flex;gap:10px;margin-top:4px}
+.inv-btn{flex:1;padding:14px;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;text-align:center}
+.inv-btn-download{background:#0A0A0A;color:#C8F135}
+.inv-btn-email{background:#C8F135;color:#0A0A0A}
+.inv-btn-skip{background:#F0EDE8;color:#1A1A2E;font-size:13px}
+.inv-email-form{background:#fff;border-radius:14px;padding:16px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,0.06);display:none}
+.inv-email-form.show{display:block}
 </style>
 </head>
 <body>
@@ -867,9 +909,18 @@ function submitJob() {
     items:itemsData, staff:state.staff
   }).then(function(res) {
     if (res.ok) {
-      toast(state.isEditJob ? "Job updated!" : "Job confirmed — all items marked On Hire");
-      state.items = []; // force refresh
-      setTimeout(function(){ showPage("page-jobs"); }, 800);
+      state.items = [];
+      if (!state.isEditJob) {
+        // Show invoice page after new job confirmation
+        showInvoice({
+          job: job, client: client, contact: contact,
+          outDate: outDate, retDate: retDate, days: state.days,
+          items: state.hired.slice()
+        });
+      } else {
+        toast("Job updated!");
+        setTimeout(function(){ showPage("page-jobs"); }, 800);
+      }
     } else {
       toast("Error: "+(res.error||"unknown"));
     }
@@ -1260,5 +1311,85 @@ function slE(e,id){
   e.stopPropagation();
 }
 </script>
+
+<!-- ══════════ PAGE: INVOICE ══════════ -->
+<div class="page" id="page-invoice">
+  <div class="header">
+    <div class="header-left">
+      <button class="back-btn" onclick="showPage('page-jobs')">←</button>
+      <div><div class="header-title">Invoice</div><div class="header-sub">Propeller Warehouse</div></div>
+    </div>
+  </div>
+  <div class="page-body">
+    <div class="inv-wrap">
+      <div class="inv-doc" id="inv-doc">
+        <div class="inv-header">
+          <img src="logo.png" class="inv-logo" alt="Propeller">
+          <div class="inv-header-right">
+            <div class="inv-label">Invoice</div>
+            <div class="inv-number" id="inv-number">INV-0001</div>
+            <div class="inv-date" id="inv-issued">Issued: —</div>
+          </div>
+        </div>
+        <div class="inv-parties">
+          <div class="inv-party">
+            <div class="inv-party-label">From</div>
+            <div class="inv-party-name">Propeller</div>
+            <div class="inv-party-detail">Levan Devdariani str.<br>Tbilisi, Georgia<br>+995 595 511915<br>hey@propeller.ge</div>
+          </div>
+          <div class="inv-party">
+            <div class="inv-party-label">Bill to</div>
+            <div class="inv-party-name" id="inv-client">—</div>
+            <div class="inv-party-detail" id="inv-contact-detail">—</div>
+          </div>
+        </div>
+        <div class="inv-dates">
+          <div class="inv-date-cell">
+            <div class="inv-date-cell-label">Job</div>
+            <div class="inv-date-cell-val" id="inv-job-name">—</div>
+          </div>
+          <div class="inv-date-cell">
+            <div class="inv-date-cell-label">Out date</div>
+            <div class="inv-date-cell-val" id="inv-out-date">—</div>
+          </div>
+          <div class="inv-date-cell">
+            <div class="inv-date-cell-label">Return date</div>
+            <div class="inv-date-cell-val" id="inv-ret-date">—</div>
+          </div>
+        </div>
+        <div class="inv-items-header">
+          <span>Item</span>
+          <span>Days</span>
+          <span>Rate/day</span>
+          <span>Total</span>
+        </div>
+        <div id="inv-items-list"></div>
+        <div class="inv-total-section">
+          <div class="inv-total-label">Total</div>
+          <div class="inv-total-amount" id="inv-total">₾0</div>
+        </div>
+        <div class="inv-footer">
+          <div class="inv-footer-text">Payment due within 7 days of invoice date.<br>Thank you for working with Propeller.</div>
+        </div>
+      </div>
+
+      <!-- Email form -->
+      <div class="inv-email-form" id="inv-email-form">
+        <div class="sec-title" style="margin-bottom:12px">Send invoice by email</div>
+        <div class="field"><label class="field-label">Client email *</label><input id="inv-email-to" type="email" placeholder="client@production.com"></div>
+        <div class="field"><label class="field-label">Message (optional)</label><textarea id="inv-email-msg" rows="2" style="width:100%;padding:11px 13px;border:1.5px solid #E8E8E8;border-radius:10px;font-size:14px;background:#FAFAFA;outline:none" placeholder="e.g. Please find attached the invoice for your upcoming shoot."></textarea></div>
+        <button class="btn btn-dark" style="margin-top:4px" onclick="sendInvoiceEmail()">Send email</button>
+        <button class="btn btn-light" style="margin-top:8px" onclick="document.getElementById('inv-email-form').classList.remove('show')">Cancel</button>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="inv-actions">
+        <button class="inv-btn inv-btn-download" onclick="downloadInvoice()">↓ Download PDF</button>
+        <button class="inv-btn inv-btn-email" onclick="document.getElementById('inv-email-form').classList.toggle('show')">✉ Email</button>
+      </div>
+      <button class="btn btn-light" style="margin-top:10px" onclick="showPage('page-jobs')">← Back to jobs</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
