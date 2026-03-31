@@ -1336,6 +1336,54 @@ function slE(e,id){
   if(cnt)cnt.textContent=(cur+1)+"/"+n;
   e.stopPropagation();
 }
+
+// ── Invoice ───────────────────────────────────────────────────────────────────
+var _inv={};
+function showInvoice(data){
+  _inv=data;
+  var num="INV-"+new Date().getFullYear().toString().slice(2)+String(Math.floor(Math.random()*9000)+1000);
+  var today=new Date(),mo=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  var todayStr=today.getDate()+" "+mo[today.getMonth()]+" "+today.getFullYear();
+  document.getElementById("inv-number").textContent=num;
+  document.getElementById("inv-issued").textContent="Issued: "+todayStr;
+  document.getElementById("inv-client").textContent=data.client||"—";
+  document.getElementById("inv-contact-detail").textContent=data.contact||"";
+  document.getElementById("inv-job-name").textContent=data.job||"—";
+  document.getElementById("inv-out-date").textContent=fmtInvDate(data.outDate);
+  document.getElementById("inv-ret-date").textContent=fmtInvDate(data.retDate);
+  var total=0;
+  document.getElementById("inv-items-list").innerHTML=(data.items||[]).map(function(it){
+    var lt=Math.round((it.customRate||it.dayRate||0)*(data.days||0));total+=lt;
+    return '<div class="inv-item-row"><div><div class="inv-item-name">'+esc(it.name)+'</div><div class="inv-item-id">'+esc(it.id)+'</div></div><div class="inv-item-num">'+(data.days||0)+'</div><div class="inv-item-num">₾'+(it.customRate||it.dayRate||0)+'</div><div class="inv-item-total">₾'+lt.toLocaleString()+'</div></div>';
+  }).join("");
+  document.getElementById("inv-total").textContent="₾"+total.toLocaleString();
+  _inv.total=total;_inv.number=num;_inv.date=todayStr;
+  document.getElementById("inv-email-form").classList.remove("show");
+  showPageEl("page-invoice");
+}
+function fmtInvDate(d){
+  if(!d)return"—";var p=d.split("-");if(p.length!==3)return d;
+  var mo=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  return parseInt(p[2])+" "+mo[parseInt(p[1])-1]+" "+p[0];
+}
+function downloadInvoice(){
+  var win=window.open("","_blank");
+  var doc=document.getElementById("inv-doc").innerHTML;
+  win.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Invoice</title><style>*{box-sizing:border-box;margin:0;padding:0;-webkit-print-color-adjust:exact;print-color-adjust:exact}body{font-family:-apple-system,sans-serif}.inv-header{background:#0A0A0A!important;padding:24px 28px;display:flex;justify-content:space-between}.inv-logo{height:44px}.inv-header-right{text-align:right}.inv-label{font-size:10px;color:#666;text-transform:uppercase;margin-bottom:4px}.inv-number{font-size:18px;font-weight:800;color:#C8F135!important}.inv-date{font-size:11px;color:#888}.inv-parties{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid #F0F0F0}.inv-party{padding:20px 28px}.inv-party:first-child{border-right:1px solid #F0F0F0}.inv-party-label{font-size:9px;font-weight:700;text-transform:uppercase;color:#AAA;margin-bottom:8px}.inv-party-name{font-size:14px;font-weight:700;margin-bottom:4px}.inv-party-detail{font-size:12px;color:#888;line-height:1.6}.inv-dates{display:grid;grid-template-columns:1fr 1fr 1fr;border-bottom:1px solid #F0F0F0}.inv-date-cell{padding:14px 28px;border-right:1px solid #F0F0F0}.inv-date-cell:last-child{border-right:none}.inv-date-cell-label{font-size:9px;font-weight:700;text-transform:uppercase;color:#AAA;margin-bottom:4px}.inv-date-cell-val{font-size:13px;font-weight:600}.inv-items-header{display:grid;grid-template-columns:1fr 80px 80px 90px;padding:10px 28px;background:#F7F4F0!important;border-bottom:1px solid #EBEBEB}.inv-items-header span{font-size:9px;font-weight:700;text-transform:uppercase;color:#AAA}.inv-items-header span:not(:first-child){text-align:right}.inv-item-row{display:grid;grid-template-columns:1fr 80px 80px 90px;padding:12px 28px;border-bottom:1px solid #F5F5F5;align-items:center}.inv-item-name{font-size:13px;font-weight:500}.inv-item-id{font-size:10px;color:#AAA;margin-top:2px;text-transform:uppercase}.inv-item-num{font-size:13px;color:#555;text-align:right}.inv-item-total{font-size:13px;font-weight:600;text-align:right}.inv-total-section{padding:16px 28px;background:#0A0A0A!important;display:flex;justify-content:space-between;align-items:center}.inv-total-label{font-size:11px;font-weight:700;text-transform:uppercase;color:#666}.inv-total-amount{font-size:28px;font-weight:800;color:#C8F135!important}.inv-footer{padding:16px 28px;border-top:1px solid #F0F0F0}.inv-footer-text{font-size:11px;color:#AAA;line-height:1.7}</style></head><body><div style="max-width:700px;margin:0 auto;border:1px solid #EBEBEB">');
+  win.document.write(doc+'</div></body></html>');
+  win.document.close();setTimeout(function(){win.print();},500);
+}
+function sendInvoiceEmail(){
+  var to=document.getElementById("inv-email-to").value.trim();
+  if(!to){toast("Please enter client email");return;}
+  var subj=encodeURIComponent("Invoice "+(_inv.number||"")+"—"+(_inv.job||""));
+  var msg=document.getElementById("inv-email-msg").value.trim()||"Please find below the invoice for your upcoming shoot.";
+  var body="Dear "+(_inv.client||"")+",\n\n"+msg+"\n\nINVOICE "+(_inv.number||"")+"\nJob: "+(_inv.job||"")+"\nPeriod: "+fmtInvDate(_inv.outDate)+" → "+fmtInvDate(_inv.retDate)+" ("+(_inv.days||0)+" days)\n\nITEMS:\n";
+  (_inv.items||[]).forEach(function(it){var lt=Math.round((it.customRate||it.dayRate||0)*(_inv.days||0));body+="• "+it.name+" ("+it.id+") — ₾"+(it.customRate||it.dayRate||0)+"/day x"+(_inv.days||0)+" = ₾"+lt+"\n";});
+  body+="\nTOTAL: ₾"+(_inv.total||0).toLocaleString()+"\n\nPropeller\nLevan Devdariani str., Tbilisi\n+995 595 511915 | hey@propeller.ge";
+  window.location.href="mailto:"+to+"?subject="+subj+"&body="+encodeURIComponent(body);
+  toast("Opening email client...");
+}
 </script>
 
 <!-- ══════════ PAGE: INVOICE ══════════ -->
