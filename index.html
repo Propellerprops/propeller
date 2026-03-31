@@ -899,7 +899,7 @@ function submitJob() {
   if (!state.hired.length)  { toast("Please add at least one item"); return; }
 
   var btn = document.getElementById("confirm-job-btn");
-  btn.textContent = "Saving..."; btn.disabled = true;
+  btn.textContent = "Saving... (up to 20 sec)"; btn.disabled = true;
 
   var itemsData = state.hired.map(function(it){ return it.id+"|"+it.name+"|"+it.customRate; }).join(",");
   var action    = state.isEditJob ? "updateJob" : "confirmJob";
@@ -1252,9 +1252,19 @@ function apiCall(action, params) {
       url += "&" + k + "=" + encodeURIComponent(String(params[k]||""));
     });
   }
-  return fetch(url)
-    .then(function(r) { return r.json(); })
-    .catch(function(e) { return { ok: false, error: e.message }; });
+  // 30 second timeout
+  var controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+  var timer = controller ? setTimeout(function(){ controller.abort(); }, 60000) : null;
+  var opts = controller ? { signal: controller.signal } : {};
+  return fetch(url, opts)
+    .then(function(r) {
+      if (timer) clearTimeout(timer);
+      return r.json();
+    })
+    .catch(function(e) {
+      if (timer) clearTimeout(timer);
+      return { ok: false, error: e.name === "AbortError" ? "Request timed out — please try again" : e.message };
+    });
 }
 // ══════════════════════════════════════════════════════════════════════════════
 //  UTILS
