@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -196,6 +195,12 @@ input,select,textarea{font-family:inherit}
 .filter-btn{padding:6px 16px;border-radius:0;font-size:11px;font-weight:700;color:#666;background:transparent;border:1.5px solid #333;cursor:pointer;white-space:nowrap;letter-spacing:0.06em;text-transform:uppercase;transition:all .15s}
 .filter-btn.active{background:var(--acid);color:var(--black);border-color:var(--acid)}
 .filter-btn:hover{border-color:var(--acid);color:var(--acid)}
+/* Sub-filter bar (second level) */
+.subfilter-bar{background:var(--black);padding:0 20px 14px;display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0;border-bottom:1px solid #1A1A1A}
+.subfilter-bar:empty{display:none;padding:0}
+.subfilter-btn{padding:5px 13px;border-radius:0;font-size:10px;font-weight:700;color:#888;background:#141414;border:1px solid #2A2A2A;cursor:pointer;white-space:nowrap;letter-spacing:0.05em;text-transform:uppercase;transition:all .15s}
+.subfilter-btn.active{background:#2A3A0A;color:var(--acid);border-color:var(--acid)}
+.subfilter-btn:hover{border-color:var(--acid);color:var(--acid)}
 .cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:2px;padding:2px;background:#111}
 .cat-card{background:var(--white);overflow:hidden;position:relative;cursor:pointer;transition:transform .2s}
 .cat-card:hover{transform:scale(0.99)}
@@ -497,6 +502,7 @@ input,select,textarea{font-family:inherit}
     </div>
   </div>
   <div class="filter-bar" id="cat-filters"></div>
+  <div class="subfilter-bar" id="cat-subfilters"></div>
   <div class="page-body">
     <div class="cat-grid" id="cat-grid"></div>
   </div>
@@ -543,6 +549,7 @@ var state = {
   isEditJob   : false,
   editJobName : "",
   catFilter   : "All",
+  subFilter   : "All",     // second-level subcategory filter
   wishlist    : [],
   jobToDelete : "",
   itemBackPage: "page-home"
@@ -1136,7 +1143,7 @@ function loadCatalogue(fromPage) {
 function renderCatalogue() {
   var items = state.items.filter(function(it){ return it.status === "Available"; });
 
-  // Build category filters
+  // ── Build top-level category filters ──
   var cats = ["All"];
   items.forEach(function(it){ if (it.category && cats.indexOf(it.category)===-1) cats.push(it.category); });
   var filterBar = document.getElementById("cat-filters");
@@ -1144,8 +1151,36 @@ function renderCatalogue() {
     return '<button class="filter-btn'+(c===state.catFilter?" active":"")+'" onclick="setCatFilter(\''+escAttr(c)+'\')">'+esc(c)+'</button>';
   }).join("");
 
-  // Filter items
-  var filtered = state.catFilter === "All" ? items : items.filter(function(it){ return it.category === state.catFilter; });
+  // ── Build second-level subcategory filters (only when a category is selected) ──
+  var subBar = document.getElementById("cat-subfilters");
+  if (state.catFilter !== "All") {
+    // Collect unique subcategories within the selected category
+    var subs = ["All"];
+    items.forEach(function(it){
+      if (it.category === state.catFilter && it.subcategory && it.subcategory.trim() && subs.indexOf(it.subcategory)===-1) {
+        subs.push(it.subcategory);
+      }
+    });
+    // Only show the sub-bar if there's more than just "All" (i.e. real subcategories exist)
+    if (subs.length > 1) {
+      subBar.innerHTML = subs.map(function(s) {
+        return '<button class="subfilter-btn'+(s===state.subFilter?" active":"")+'" onclick="setSubFilter(\''+escAttr(s)+'\')">'+esc(s)+'</button>';
+      }).join("");
+    } else {
+      subBar.innerHTML = "";
+    }
+  } else {
+    subBar.innerHTML = "";
+  }
+
+  // ── Filter items by category, then subcategory ──
+  var filtered = items;
+  if (state.catFilter !== "All") {
+    filtered = filtered.filter(function(it){ return it.category === state.catFilter; });
+    if (state.subFilter !== "All") {
+      filtered = filtered.filter(function(it){ return it.subcategory === state.subFilter; });
+    }
+  }
 
   var grid = document.getElementById("cat-grid");
   if (!filtered.length) {
@@ -1193,6 +1228,12 @@ function renderCatalogue() {
 
 function setCatFilter(cat) {
   state.catFilter = cat;
+  state.subFilter = "All";   // reset subcategory when main category changes
+  renderCatalogue();
+}
+
+function setSubFilter(sub) {
+  state.subFilter = sub;
   renderCatalogue();
 }
 
