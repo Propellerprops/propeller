@@ -222,6 +222,46 @@ input,select,textarea{font-family:inherit}
 .add-to-wl:hover{background:var(--acid);color:var(--black)}
 .add-to-wl.added{background:var(--acid);color:var(--black)}
 
+/* ══ CLIENT ITEM DETAIL ══ */
+#page-cat-item{background:var(--black)}
+.ci-wrap{max-width:1000px;margin:0 auto;padding:24px 20px 60px;display:grid;grid-template-columns:1fr 1fr;gap:32px}
+@media(max-width:760px){.ci-wrap{grid-template-columns:1fr;gap:20px}}
+.ci-gallery{display:flex;flex-direction:column;gap:10px}
+.ci-main-photo{width:100%;background:#111;border:1px solid #1A1A1A;aspect-ratio:3/2;overflow:hidden;display:flex;align-items:center;justify-content:center;cursor:zoom-in}
+.ci-main-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.ci-main-noimg{color:#333;font-size:13px;letter-spacing:0.1em;text-transform:uppercase}
+.ci-thumbs{display:flex;gap:8px;flex-wrap:wrap}
+.ci-thumb{width:72px;height:72px;object-fit:cover;border:2px solid #222;cursor:pointer;background:#111;transition:border-color .15s}
+.ci-thumb.active{border-color:var(--acid)}
+.ci-thumb:hover{border-color:var(--acid)}
+.ci-info{color:var(--white)}
+.ci-cat-badge{display:inline-block;background:var(--acid);color:var(--black);font-size:10px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;padding:4px 10px;margin-bottom:14px}
+.ci-name{font-size:30px;font-weight:800;line-height:1.1;letter-spacing:-0.01em;margin-bottom:8px;color:var(--white)}
+.ci-id{font-size:12px;color:#555;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:24px}
+.ci-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:24px}
+.ci-tag{background:#1A1A1A;color:#999;font-size:11px;font-weight:600;padding:5px 12px;letter-spacing:0.04em;text-transform:uppercase;border:1px solid #2A2A2A}
+.ci-specs{border-top:1px solid #1A1A1A;margin-bottom:24px}
+.ci-spec-row{display:flex;justify-content:space-between;padding:13px 0;border-bottom:1px solid #1A1A1A;font-size:14px}
+.ci-spec-label{color:#666;text-transform:uppercase;letter-spacing:0.06em;font-size:11px;font-weight:700}
+.ci-spec-val{color:var(--white);text-align:right;max-width:60%}
+.ci-rate-block{display:flex;align-items:baseline;gap:8px;margin-bottom:24px}
+.ci-rate{font-size:32px;font-weight:800;color:var(--acid);letter-spacing:-0.02em}
+.ci-rate-unit{font-size:13px;color:#666;letter-spacing:0.04em}
+.ci-wl-btn{width:100%;padding:16px;background:var(--acid);color:var(--black);border:none;font-size:13px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;transition:opacity .15s}
+.ci-wl-btn:hover{opacity:0.9}
+.ci-wl-btn.added{background:#1A2A0A;color:var(--acid);border:1px solid var(--acid)}
+.ci-notes{margin-top:20px;font-size:13px;color:#888;line-height:1.7;border-top:1px solid #1A1A1A;padding-top:20px}
+
+/* Fullscreen lightbox */
+.lb-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:300;display:none;align-items:center;justify-content:center;flex-direction:column}
+.lb-overlay.show{display:flex}
+.lb-img{max-width:92vw;max-height:82vh;object-fit:contain}
+.lb-close{position:absolute;top:20px;right:24px;background:none;border:none;color:#fff;font-size:34px;cursor:pointer;line-height:1}
+.lb-arrow{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.08);border:1px solid #333;color:#fff;width:52px;height:52px;font-size:26px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.lb-arrow:hover{background:var(--acid);color:#000;border-color:var(--acid)}
+.lb-prev{left:20px}.lb-next{right:20px}
+.lb-counter{position:absolute;bottom:24px;left:0;right:0;text-align:center;color:#888;font-size:12px;letter-spacing:0.1em}
+
 /* Wishlist drawer */
 .drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:200;display:none}
 .drawer-overlay.show{display:block}
@@ -530,6 +570,34 @@ input,select,textarea{font-family:inherit}
       </div>
     </div>
   </div>
+</div>
+
+<!-- ══════════ PAGE: CLIENT ITEM DETAIL ══════════ -->
+<div class="page" id="page-cat-item">
+  <div class="cat-header">
+    <div class="cat-hero">
+      <div style="display:flex;align-items:center;gap:12px">
+        <button onclick="showPage('page-catalogue')" style="background:none;border:none;color:#C8F135;font-size:24px;cursor:pointer;line-height:1;padding:0;font-weight:300">←</button>
+        <div>
+          <img src="logo.png" class="cat-logo-img" alt="Propeller">
+          <div class="cat-tagline">Props & Costumes — Tbilisi</div>
+        </div>
+      </div>
+      <div class="cat-back-area">
+        <button class="wl-btn" onclick="openDrawer()">Wishlist <span class="wl-count" id="wl-count-2">0</span></button>
+      </div>
+    </div>
+  </div>
+  <div class="page-body" id="cat-item-body"></div>
+</div>
+
+<!-- Fullscreen photo lightbox (shared) -->
+<div class="lb-overlay" id="lb-overlay" onclick="lbClose(event)">
+  <button class="lb-close" onclick="lbClose()">×</button>
+  <button class="lb-arrow lb-prev" onclick="lbNav(event,-1)">‹</button>
+  <img class="lb-img" id="lb-img" src="" alt="">
+  <button class="lb-arrow lb-next" onclick="lbNav(event,1)">›</button>
+  <div class="lb-counter" id="lb-counter"></div>
 </div>
 
 <script>
@@ -1152,13 +1220,17 @@ function renderCatalogue() {
   }).join("");
 
   // ── Build second-level subcategory filters (only when a category is selected) ──
+  // Subcategory cells can hold several comma-separated values, e.g. "Coffee Table, Side Table".
+  // Each value becomes its own filter button, and an item shows under every one it lists.
   var subBar = document.getElementById("cat-subfilters");
   if (state.catFilter !== "All") {
     // Collect unique subcategories within the selected category
     var subs = ["All"];
     items.forEach(function(it){
-      if (it.category === state.catFilter && it.subcategory && it.subcategory.trim() && subs.indexOf(it.subcategory)===-1) {
-        subs.push(it.subcategory);
+      if (it.category === state.catFilter) {
+        splitSubcats(it.subcategory).forEach(function(s){
+          if (subs.indexOf(s) === -1) subs.push(s);
+        });
       }
     });
     // Only show the sub-bar if there's more than just "All" (i.e. real subcategories exist)
@@ -1178,7 +1250,7 @@ function renderCatalogue() {
   if (state.catFilter !== "All") {
     filtered = filtered.filter(function(it){ return it.category === state.catFilter; });
     if (state.subFilter !== "All") {
-      filtered = filtered.filter(function(it){ return it.subcategory === state.subFilter; });
+      filtered = filtered.filter(function(it){ return splitSubcats(it.subcategory).indexOf(state.subFilter) > -1; });
     }
   }
 
@@ -1206,7 +1278,7 @@ function renderCatalogue() {
         + '</div>';
     }
     var inWl = state.wishlist.find(function(w){ return w.id === it.id; });
-    var card = '<div class="cat-card">';
+    var card = '<div class="cat-card" onclick="openCatItem(\''+escAttr(it.id)+'\')">';
     card += '<div class="cat-card-img">' + photoHtml;
     card += '<div class="cat-card-tag-strip"><span class="cat-card-cat-badge">' + esc(it.category) + '</span></div>';
     card += '</div><div class="cat-card-body">';
@@ -1220,10 +1292,15 @@ function renderCatalogue() {
     if (it.dims) card += '<div class="cat-dim">' + esc(it.dims) + '</div>';
     card += '<div class="cat-footer">';
     card += '<div class="cat-rate">&#8382;' + (it.dayRate || '—') + '<span> / day</span></div>';
-    card += '<button class="add-to-wl' + (inWl ? ' added' : '') + '" data-id="' + esc(it.id) + '" data-name="' + esc(it.name) + '" onclick="wlClick(this)">' + (inWl ? '✓ Added' : '+ Wishlist') + '</button>';
+    card += '<button class="add-to-wl' + (inWl ? ' added' : '') + '" data-id="' + esc(it.id) + '" data-name="' + esc(it.name) + '" onclick="event.stopPropagation();wlClick(this)">' + (inWl ? '✓ Added' : '+ Wishlist') + '</button>';
     card += '</div></div></div>';
     return card;
   }).join("");
+}
+
+function splitSubcats(raw) {
+  // "Coffee Table, Side Table" -> ["Coffee Table","Side Table"]; trims blanks
+  return String(raw||"").split(",").map(function(s){ return s.trim(); }).filter(Boolean);
 }
 
 function setCatFilter(cat) {
@@ -1236,6 +1313,134 @@ function setSubFilter(sub) {
   state.subFilter = sub;
   renderCatalogue();
 }
+
+// ── Client item detail page ──
+var _ciPhotos = [];   // photos of the currently open item
+var _ciCur = 0;       // current main photo index
+
+function openCatItem(id) {
+  var it = state.items.find(function(x){ return x.id === id; });
+  if (!it) { toast("Item not found"); return; }
+
+  _ciPhotos = it.photoUrl ? it.photoUrl.split(",").map(function(u){ return u.trim(); }).filter(Boolean) : [];
+  _ciCur = 0;
+
+  var inWl = state.wishlist.find(function(w){ return w.id === it.id; });
+
+  // Gallery
+  var mainPhoto = _ciPhotos.length
+    ? '<div class="ci-main-photo" onclick="lbOpen(_ciCur)"><img id="ci-main-img" src="'+esc(_ciPhotos[0])+'"></div>'
+    : '<div class="ci-main-photo"><div class="ci-main-noimg">No photo</div></div>';
+  var thumbs = "";
+  if (_ciPhotos.length > 1) {
+    thumbs = '<div class="ci-thumbs">' + _ciPhotos.map(function(u,i){
+      return '<img class="ci-thumb'+(i===0?' active':'')+'" id="ci-thumb-'+i+'" src="'+esc(u)+'" onclick="ciSetPhoto('+i+')">';
+    }).join("") + '</div>';
+  }
+
+  // Tags
+  var tags = "";
+  var tagVals = [];
+  if (it.era) tagVals.push(it.era);
+  if (it.color) tagVals.push(it.color);
+  if (it.condition) tagVals.push(it.condition);
+  if (tagVals.length) {
+    tags = '<div class="ci-tags">' + tagVals.map(function(t){ return '<span class="ci-tag">'+esc(t)+'</span>'; }).join("") + '</div>';
+  }
+
+  // Specs
+  var specs = '<div class="ci-specs">';
+  if (it.subcategory) specs += ciSpec("Type", splitSubcats(it.subcategory).join(" · "));
+  if (it.dims)        specs += ciSpec("Dimensions", it.dims);
+  if (it.color)       specs += ciSpec("Colour / Finish", it.color);
+  if (it.era)         specs += ciSpec("Era / Style", it.era);
+  if (it.condition)   specs += ciSpec("Condition", it.condition);
+  if (it.details)     specs += ciSpec("Details", it.details);
+  specs += '</div>';
+
+  var rateBlock = '<div class="ci-rate-block"><div class="ci-rate">&#8382;'+(it.dayRate||'—')+'</div><div class="ci-rate-unit">/ day</div></div>';
+
+  var wlBtn = '<button class="ci-wl-btn'+(inWl?' added':'')+'" data-id="'+esc(it.id)+'" data-name="'+esc(it.name)+'" onclick="ciWlClick(this)">'
+    + (inWl ? '✓ Added to wishlist' : '+ Add to wishlist') + '</button>';
+
+  var notes = it.notes ? '<div class="ci-notes">'+esc(it.notes)+'</div>' : '';
+
+  document.getElementById("cat-item-body").innerHTML =
+    '<div class="ci-wrap">'
+    + '<div class="ci-gallery">' + mainPhoto + thumbs + '</div>'
+    + '<div class="ci-info">'
+    +   '<div class="ci-cat-badge">' + esc(it.category) + '</div>'
+    +   '<div class="ci-name">' + esc(it.name) + '</div>'
+    +   '<div class="ci-id">' + esc(it.id) + '</div>'
+    +   tags + specs + rateBlock + wlBtn + notes
+    + '</div>'
+    + '</div>';
+
+  document.getElementById("wl-count-2").textContent = state.wishlist.length;
+  showPageEl("page-cat-item");
+}
+
+function ciSpec(label, val) {
+  return '<div class="ci-spec-row"><span class="ci-spec-label">'+esc(label)+'</span><span class="ci-spec-val">'+esc(val)+'</span></div>';
+}
+
+function ciSetPhoto(i) {
+  _ciCur = i;
+  var img = document.getElementById("ci-main-img");
+  if (img) img.src = _ciPhotos[i];
+  _ciPhotos.forEach(function(u, idx){
+    var t = document.getElementById("ci-thumb-"+idx);
+    if (t) t.classList.toggle("active", idx===i);
+  });
+}
+
+function ciWlClick(btn) {
+  var id = btn.getAttribute("data-id"), name = btn.getAttribute("data-name");
+  if (state.wishlist.find(function(w){ return w.id===id; })) {
+    // already added — remove (toggle)
+    removeFromWishlist(id);
+    btn.classList.remove("added");
+    btn.textContent = "+ Add to wishlist";
+  } else {
+    state.wishlist.push({ id:id, name:name });
+    updateWlCount();
+    btn.classList.add("added");
+    btn.textContent = "✓ Added to wishlist";
+  }
+  document.getElementById("wl-count-2").textContent = state.wishlist.length;
+}
+
+// ── Lightbox ──
+function lbOpen(i) {
+  if (!_ciPhotos.length) return;
+  _ciCur = i || 0;
+  document.getElementById("lb-img").src = _ciPhotos[_ciCur];
+  updateLbCounter();
+  document.getElementById("lb-overlay").classList.add("show");
+}
+function lbClose(e) {
+  if (e && e.target && e.target.id !== "lb-overlay" && e.target.className !== "lb-close") return;
+  document.getElementById("lb-overlay").classList.remove("show");
+}
+function lbNav(e, dir) {
+  if (e) e.stopPropagation();
+  if (!_ciPhotos.length) return;
+  _ciCur += dir;
+  if (_ciCur < 0) _ciCur = _ciPhotos.length - 1;
+  if (_ciCur >= _ciPhotos.length) _ciCur = 0;
+  document.getElementById("lb-img").src = _ciPhotos[_ciCur];
+  ciSetPhoto(_ciCur);
+  updateLbCounter();
+}
+function updateLbCounter() {
+  document.getElementById("lb-counter").textContent = _ciPhotos.length > 1 ? (_ciCur+1)+" / "+_ciPhotos.length : "";
+}
+document.addEventListener("keydown", function(e){
+  if (!document.getElementById("lb-overlay").classList.contains("show")) return;
+  if (e.key === "Escape") lbClose();
+  else if (e.key === "ArrowLeft") lbNav(null,-1);
+  else if (e.key === "ArrowRight") lbNav(null,1);
+});
 
 function addToWishlist(id, name) {
   if (state.wishlist.find(function(w){ return w.id===id; })) { toast(name+" already in wishlist"); return; }
@@ -1254,6 +1459,8 @@ function removeFromWishlist(id) {
 
 function updateWlCount() {
   document.getElementById("wl-count").textContent = state.wishlist.length;
+  var c2 = document.getElementById("wl-count-2");
+  if (c2) c2.textContent = state.wishlist.length;
   renderWlItems();
 }
 
