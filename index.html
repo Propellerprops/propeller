@@ -235,7 +235,11 @@ input,select,textarea{font-family:inherit}
 .cat-card-img img{width:100%;height:260px;object-fit:cover;display:block;transition:transform .3s}
 .cat-card:hover .cat-card-img img{transform:scale(1.03)}
 .cat-card-no-img{width:100%;height:260px;background:#111;display:flex;align-items:center;justify-content:center;color:#333;font-size:13px;letter-spacing:0.1em;text-transform:uppercase}
-.cat-card-tag-strip{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:8px 10px}
+.cat-card-tag-strip{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:8px 10px;z-index:3}
+.cat-hover-img{position:absolute;inset:0;width:100%;height:260px;object-fit:cover;opacity:0;transition:opacity .3s ease;pointer-events:none;z-index:2;display:block}
+@media (hover:hover){
+  .cat-card:hover .cat-hover-img{opacity:1}
+}
 .cat-card-cat-badge{background:var(--acid);color:var(--black);font-size:9px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;padding:3px 8px}
 .cat-card-body{padding:14px 16px 16px}
 .cat-name{font-size:16px;font-weight:800;color:var(--black);margin-bottom:6px;line-height:1.2;letter-spacing:-0.01em}
@@ -1461,8 +1465,12 @@ function renderCatalogue() {
         + '</div>';
     }
     var inWl = state.wishlist.find(function(w){ return w.id === it.id; });
+    // Desktop hover-swap: show the 2nd photo when hovering the card (slider stays for swiping)
+    var hoverImg = photos.length > 1
+      ? '<img class="cat-hover-img" loading="lazy" src="' + esc(photos[1]) + '" alt="">'
+      : '';
     var card = '<div class="cat-card" onclick="openCatItem(\''+escAttr(it.id)+'\')">';
-    card += '<div class="cat-card-img">' + photoHtml;
+    card += '<div class="cat-card-img">' + photoHtml + hoverImg;
     card += '<div class="cat-card-tag-strip"><span class="cat-card-cat-badge">' + esc(it.category) + '</span></div>';
     card += '</div><div class="cat-card-body">';
     card += '<div class="cat-name">' + esc(it.name) + '</div>';
