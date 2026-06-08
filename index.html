@@ -414,6 +414,19 @@ body.theme-light .ci-notes{color:#666;border-top-color:#E5E5E0}
 <!-- Toast -->
 <div id="toast"></div>
 
+<!-- ══════════ PAGE: STAFF PIN ══════════ -->
+<div class="page" id="page-pin">
+  <div class="name-box">
+    <div class="name-logo">PROP<span>ELLER</span></div>
+    <div class="name-sub">Staff Access</div>
+    <h2>Enter staff PIN</h2>
+    <input id="pin-input" type="password" inputmode="numeric" placeholder="••••••" autocomplete="off"
+           onkeydown="if(event.key==='Enter')checkPin()">
+    <button style="width:100%;padding:14px;background:var(--acid);color:var(--black);border:none;font-size:13px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer" onclick="checkPin()">Unlock →</button>
+    <div class="name-note">Staff only. Clients should use the public catalogue link.<br><span style="cursor:pointer;color:#555;text-decoration:underline" onclick="state.staff='';loadCatalogue(null)">View catalogue instead</span></div>
+  </div>
+</div>
+
 <!-- ══════════ PAGE: NAME ENTRY ══════════ -->
 <div class="page" id="page-name">
   <div class="name-box">
@@ -432,9 +445,10 @@ body.theme-light .ci-notes{color:#666;border-top-color:#E5E5E0}
     <div class="home-hero">
       <div class="home-top">
         <img src="logo.png" class="home-logo-img" alt="Propeller">
-        <div class="user-pill">
+        <div class="user-pill" onclick="confirmLock()" style="cursor:pointer" title="Tap to lock">
           <div class="user-avatar" id="home-avatar">?</div>
           <div class="user-name" id="home-username">...</div>
+          <span style="color:#444;font-size:13px;margin-left:2px">🔒</span>
         </div>
       </div>
       <div class="stats">
@@ -700,27 +714,77 @@ var state = {
 window.onload = function() {
   initTheme();
   var params = new URLSearchParams(window.location.search);
-  if (params.get("catalogue") === "true" || params.get("c") === "1") { state.staff = ""; loadCatalogue(null); return; }
 
-  // Client catalogue direct access — no staff login needed
-  if (params.get("catalogue") === "true" || params.get("c") === "1") {
+  // Deep link to a single item (e.g. QR label ?id=FO-001) → open it in the catalogue
+  var deepId = params.get("id");
+
+  // Does this visitor want the STAFF side?
+  //  - they used a staff link (?staff=...)  OR
+  //  - this device was already unlocked before
+  var wantsStaff = params.has("staff") || isUnlocked();
+
+  if (!wantsStaff) {
+    // Everyone else → public catalogue (the default)
     state.staff = "";
     loadCatalogue(null);
+    if (deepId) setTimeout(function(){ openCatItem(deepId.toUpperCase()); }, 600);
     return;
   }
 
-  // Staff access
-  var urlStaff = params.get("staff");
-  var savedStaff = localStorage.getItem("propeller_staff");
-  state.staff = urlStaff || savedStaff || "";
-
-  if (!state.staff) {
-    showPageEl("page-name");
+  // Staff path — require PIN unlock once per device
+  if (!isUnlocked()) {
+    var sn = params.get("staff");
+    if (sn && sn !== "1" && sn !== "true") { try { localStorage.setItem("propeller_pending_staff", sn); } catch(e){} }
+    showPageEl("page-pin");
+    setTimeout(function(){ var el=document.getElementById("pin-input"); if(el) el.focus(); }, 100);
     return;
   }
-  localStorage.setItem("propeller_staff", state.staff);
-  loadHome();
+
+  proceedToStaff(params);
 };
+
+function isUnlocked() {
+  try { return localStorage.getItem("propeller_unlocked") === "yes"; } catch(e){ return false; }
+}
+
+function proceedToStaff(params) {
+  var savedStaff = "";
+  try { savedStaff = localStorage.getItem("propeller_staff") || ""; } catch(e){}
+  var urlStaff = params ? params.get("staff") : "";
+  if (urlStaff && urlStaff !== "1" && urlStaff !== "true") savedStaff = urlStaff;
+  if (!savedStaff) { try { savedStaff = localStorage.getItem("propeller_pending_staff") || ""; } catch(e){} }
+  state.staff = savedStaff;
+  if (!state.staff) { showPageEl("page-name"); return; }
+  try { localStorage.setItem("propeller_staff", state.staff); } catch(e){}
+  loadHome();
+}
+
+// ── Staff PIN gate ──
+var STAFF_PIN = "223344";
+function checkPin() {
+  var v = document.getElementById("pin-input").value.trim();
+  if (v === STAFF_PIN) {
+    try { localStorage.setItem("propeller_unlocked", "yes"); } catch(e){}
+    proceedToStaff(new URLSearchParams(window.location.search));
+  } else {
+    toast("Incorrect PIN");
+    document.getElementById("pin-input").value = "";
+    document.getElementById("pin-input").focus();
+  }
+}
+function lockStaff() {
+  try {
+    localStorage.removeItem("propeller_unlocked");
+    localStorage.removeItem("propeller_staff");
+  } catch(e){}
+  state.staff = "";
+  loadCatalogue(null);
+}
+function confirmLock() {
+  if (confirm("Lock the warehouse on this device? You'll need the PIN to get back in.")) {
+    lockStaff();
+  }
+}
 
 // ══════════════════════════════════════════════════════════════════════════════
 //  NAVIGATION
