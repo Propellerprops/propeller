@@ -194,6 +194,9 @@ input,select,textarea{font-family:inherit}
 .hero-back{position:absolute;top:18px;left:20px;z-index:5;background:rgba(0,0,0,0.4);border:1px solid #333;color:var(--acid);font-size:22px;cursor:pointer;line-height:1;padding:6px 12px;display:none;font-weight:300}
 .hero-back:hover{border-color:var(--acid)}
 .hero-wl{position:absolute;top:18px;right:20px;z-index:5}
+.hero-top-right{position:absolute;top:18px;right:20px;z-index:5;display:flex;gap:8px;align-items:center}
+.theme-toggle{background:rgba(0,0,0,0.4);border:1px solid #333;color:var(--white);padding:9px 14px;font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;white-space:nowrap}
+.theme-toggle:hover{border-color:var(--acid);color:var(--acid)}
 .hero-center{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px}
 .hero-logo{height:90px;width:auto;cursor:pointer;margin-bottom:16px}
 @media(max-width:760px){.hero-logo{height:64px}}
@@ -285,6 +288,43 @@ input,select,textarea{font-family:inherit}
 .lb-arrow:hover{background:var(--acid);color:#000;border-color:var(--acid)}
 .lb-prev{left:20px}.lb-next{right:20px}
 .lb-counter{position:absolute;bottom:24px;left:0;right:0;text-align:center;color:#888;font-size:12px;letter-spacing:0.1em}
+
+/* ══ LIGHT THEME OVERRIDES (client toggle) ══ */
+body.theme-light #page-catalogue{background:#FAFAF5}
+body.theme-light .cat-hero-banner{background:#FAFAF5}
+body.theme-light .hero-collage img{filter:brightness(0.97) grayscale(0.05)}
+body.theme-light .hero-overlay{background:radial-gradient(ellipse at center, rgba(250,250,245,0.50) 0%, rgba(250,250,245,0.80) 68%, rgba(250,250,245,0.94) 100%)}
+body.theme-light .hero-intro{color:#1A1A1A}
+body.theme-light .hero-tagline{color:#6F9C00}
+body.theme-light .theme-toggle{background:rgba(255,255,255,0.7);border-color:#D5D5CE;color:#1A1A1A}
+body.theme-light .theme-toggle:hover{border-color:#6F9C00;color:#6F9C00}
+body.theme-light .hero-back{background:rgba(255,255,255,0.7);border-color:#D5D5CE;color:#1A1A1A}
+body.theme-light .cat-search-wrap{background:#FAFAF5}
+body.theme-light .cat-search{background:#fff;border-color:#DDD;color:#1A1A1A}
+body.theme-light .cat-search::placeholder{color:#999}
+body.theme-light .cat-result-count{color:#999}
+body.theme-light .filter-bar{background:#FAFAF5}
+body.theme-light .filter-btn{color:#777;border-color:#D5D5CE}
+body.theme-light .filter-btn:hover{border-color:#6F9C00;color:#5A7D00}
+body.theme-light .filter-btn.active{background:#1A1A1A;color:#fff;border-color:#1A1A1A}
+body.theme-light .subfilter-bar{background:#FAFAF5;border-bottom-color:#E5E5E0}
+body.theme-light .subfilter-btn{background:#F0F0EA;color:#777;border-color:#DDD}
+body.theme-light .subfilter-btn.active{background:#1A1A1A;color:var(--acid);border-color:#1A1A1A}
+body.theme-light .cat-grid{background:#E8E8E2}
+/* Detail page light */
+body.theme-light #page-cat-item{background:#FAFAF5}
+body.theme-light #page-cat-item .cat-header{background:#FAFAF5}
+body.theme-light #page-cat-item .cat-tagline{color:#6F9C00}
+body.theme-light .ci-name{color:#1A1A1A}
+body.theme-light .ci-id{color:#999}
+body.theme-light .ci-main-photo{background:#F0F0EA;border-color:#E0E0DA}
+body.theme-light .ci-thumb{background:#F0F0EA;border-color:#DDD}
+body.theme-light .ci-info{color:#1A1A1A}
+body.theme-light .ci-tag{background:#F0F0EA;color:#666;border-color:#E0E0DA}
+body.theme-light .ci-specs{border-top-color:#E5E5E0}
+body.theme-light .ci-spec-row{border-bottom-color:#E5E5E0}
+body.theme-light .ci-spec-val{color:#1A1A1A}
+body.theme-light .ci-notes{color:#666;border-top-color:#E5E5E0}
 
 /* Wishlist drawer */
 .drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:200;display:none}
@@ -555,7 +595,10 @@ input,select,textarea{font-family:inherit}
     <div class="hero-collage" id="hero-collage"></div>
     <div class="hero-overlay"></div>
     <button id="cat-back-btn" onclick="showPage('page-home')" class="hero-back">←</button>
-    <button class="wl-btn hero-wl" onclick="openDrawer()">Wishlist <span class="wl-count" id="wl-count">0</span></button>
+    <div class="hero-top-right">
+      <button class="theme-toggle" onclick="toggleTheme()">☀ Light</button>
+      <button class="wl-btn" onclick="openDrawer()">Wishlist <span class="wl-count" id="wl-count">0</span></button>
+    </div>
     <div class="hero-center">
       <img src="logo.png" class="hero-logo" id="cat-logo" onclick="catLogoClick()" alt="Propeller">
       <div class="hero-tagline">Props &amp; Costumes — Tbilisi</div>
@@ -609,7 +652,8 @@ input,select,textarea{font-family:inherit}
           <div class="cat-tagline">Props & Costumes — Tbilisi</div>
         </div>
       </div>
-      <div class="cat-back-area">
+      <div class="cat-back-area" style="flex-direction:row;gap:8px;align-items:center">
+        <button class="theme-toggle" onclick="toggleTheme()">☀ Light</button>
         <button class="wl-btn" onclick="openDrawer()">Wishlist <span class="wl-count" id="wl-count-2">0</span></button>
       </div>
     </div>
@@ -654,6 +698,7 @@ var state = {
 //  INIT
 // ══════════════════════════════════════════════════════════════════════════════
 window.onload = function() {
+  initTheme();
   var params = new URLSearchParams(window.location.search);
   if (params.get("catalogue") === "true" || params.get("c") === "1") { state.staff = ""; loadCatalogue(null); return; }
 
@@ -1406,6 +1451,25 @@ function scrollToCollection() {
   if (anchor) anchor.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
+// ── Theme toggle (dark default / light option) ──
+function toggleTheme() {
+  var isLight = document.body.classList.toggle("theme-light");
+  try { localStorage.setItem("propeller_theme", isLight ? "light" : "dark"); } catch(e){}
+  updateThemeButtons(isLight);
+}
+function updateThemeButtons(isLight) {
+  var btns = document.querySelectorAll(".theme-toggle");
+  for (var i = 0; i < btns.length; i++) {
+    btns[i].textContent = isLight ? "☾ Dark" : "☀ Light";
+  }
+}
+function initTheme() {
+  var isLight = false;
+  try { isLight = localStorage.getItem("propeller_theme") === "light"; } catch(e){}
+  if (isLight) document.body.classList.add("theme-light");
+  updateThemeButtons(isLight);
+}
+
 // ── Client item detail page ──
 var _ciPhotos = [];   // photos of the currently open item
 var _ciCur = 0;       // current main photo index
@@ -1469,6 +1533,7 @@ function openCatItem(id) {
     + '</div>';
 
   document.getElementById("wl-count-2").textContent = state.wishlist.length;
+  updateThemeButtons(document.body.classList.contains("theme-light"));
   showPageEl("page-cat-item");
 }
 
