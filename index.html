@@ -184,6 +184,24 @@ input,select,textarea{font-family:inherit}
 /* ══ CATALOGUE — Propeller branded ══ */
 :root{--acid:#C8F135;--black:#0A0A0A;--white:#FAFAF5}
 #page-catalogue{background:var(--black)}
+/* ── Hero collage banner ── */
+.cat-hero-banner{position:relative;height:460px;overflow:hidden;background:var(--black);border-bottom:3px solid var(--acid);flex-shrink:0}
+@media(max-width:760px){.cat-hero-banner{height:380px}}
+.hero-collage{position:absolute;inset:0;display:grid;grid-template-columns:repeat(6,1fr);grid-auto-rows:1fr;gap:3px}
+@media(max-width:760px){.hero-collage{grid-template-columns:repeat(3,1fr)}}
+.hero-collage img{width:100%;height:100%;object-fit:cover;display:block;filter:brightness(0.42) grayscale(0.25)}
+.hero-overlay{position:absolute;inset:0;background:radial-gradient(ellipse at center, rgba(10,10,10,0.55) 0%, rgba(10,10,10,0.82) 70%, rgba(10,10,10,0.95) 100%)}
+.hero-back{position:absolute;top:18px;left:20px;z-index:5;background:rgba(0,0,0,0.4);border:1px solid #333;color:var(--acid);font-size:22px;cursor:pointer;line-height:1;padding:6px 12px;display:none;font-weight:300}
+.hero-back:hover{border-color:var(--acid)}
+.hero-wl{position:absolute;top:18px;right:20px;z-index:5}
+.hero-center{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px}
+.hero-logo{height:90px;width:auto;cursor:pointer;margin-bottom:16px}
+@media(max-width:760px){.hero-logo{height:64px}}
+.hero-tagline{font-size:11px;color:var(--acid);letter-spacing:0.28em;text-transform:uppercase;margin-bottom:18px;font-weight:700}
+.hero-intro{font-size:17px;color:var(--white);max-width:480px;line-height:1.5;font-weight:400;margin-bottom:28px;letter-spacing:0.01em}
+@media(max-width:760px){.hero-intro{font-size:14px;max-width:300px}}
+.hero-scroll{background:var(--acid);color:var(--black);border:none;padding:13px 26px;font-size:12px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;transition:opacity .15s}
+.hero-scroll:hover{opacity:0.88}
 .cat-header{background:var(--black);padding:0;flex-shrink:0;border-bottom:3px solid var(--acid)}
 .cat-hero{padding:24px 20px 20px;display:flex;justify-content:space-between;align-items:flex-start}
 .cat-logo-img{height:56px;width:auto;display:block}
@@ -533,21 +551,19 @@ input,select,textarea{font-family:inherit}
 
 <!-- ══════════ PAGE: CATALOGUE ══════════ -->
 <div class="page" id="page-catalogue">
-  <div class="cat-header">
-    <div class="cat-hero">
-      <div style="display:flex;align-items:center;gap:12px">
-        <button id="cat-back-btn" onclick="showPage('page-home')" style="background:none;border:none;color:#C8F135;font-size:24px;cursor:pointer;line-height:1;padding:0;display:none;font-weight:300">←</button>
-        <div>
-          <img src="logo.png" class="cat-logo-img" id="cat-logo" style="cursor:pointer" onclick="catLogoClick()" alt="Propeller">
-          <div class="cat-tagline">Props & Costumes — Tbilisi</div>
-        </div>
-      </div>
-      <div class="cat-back-area">
-        <button class="wl-btn" onclick="openDrawer()">Wishlist <span class="wl-count" id="wl-count">0</span></button>
-      </div>
+  <div class="cat-hero-banner" id="cat-hero-banner">
+    <div class="hero-collage" id="hero-collage"></div>
+    <div class="hero-overlay"></div>
+    <button id="cat-back-btn" onclick="showPage('page-home')" class="hero-back">←</button>
+    <button class="wl-btn hero-wl" onclick="openDrawer()">Wishlist <span class="wl-count" id="wl-count">0</span></button>
+    <div class="hero-center">
+      <img src="logo.png" class="hero-logo" id="cat-logo" onclick="catLogoClick()" alt="Propeller">
+      <div class="hero-tagline">Props &amp; Costumes — Tbilisi</div>
+      <div class="hero-intro">Furniture, props &amp; costume rental for film, television &amp; photography</div>
+      <button class="hero-scroll" onclick="scrollToCollection()">Browse the collection ↓</button>
     </div>
   </div>
-  <div class="cat-search-wrap">
+  <div class="cat-search-wrap" id="cat-search-anchor">
     <input class="cat-search" id="cat-search" type="text" placeholder="Search items — e.g. blue sofa, art deco, mirror..." oninput="onCatSearch(this.value)" autocomplete="off">
     <span class="cat-result-count" id="cat-result-count"></span>
   </div>
@@ -1222,6 +1238,9 @@ function loadCatalogue(fromPage) {
 function renderCatalogue() {
   var items = state.items.filter(function(it){ return it.status === "Available"; });
 
+  // Build the hero collage once (uses all available item photos)
+  if (!_heroBuilt) renderHero();
+
   // ── Build top-level category filters (with item counts) ──
   var cats = ["All"];
   items.forEach(function(it){ if (it.category && cats.indexOf(it.category)===-1) cats.push(it.category); });
@@ -1345,6 +1364,46 @@ function setSubFilter(sub) {
 function onCatSearch(val) {
   state.catSearch = val;
   renderCatalogue();
+}
+
+// ── Hero collage: fill background grid with item photos (built once) ──
+var _heroBuilt = false;
+function renderHero() {
+  var collage = document.getElementById("hero-collage");
+  if (!collage) return;
+
+  // Gather first photo of every item that has one
+  var photos = [];
+  state.items.forEach(function(it){
+    if (it.status !== "Available") return;
+    if (it.photoUrl) {
+      var first = it.photoUrl.split(",")[0].trim();
+      if (first) photos.push(first);
+    }
+  });
+  if (!photos.length) { collage.innerHTML = ""; return; }
+
+  // Shuffle for variety
+  for (var i = photos.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = photos[i]; photos[i] = photos[j]; photos[j] = tmp;
+  }
+
+  // Fill enough tiles to cover the banner (6 cols x ~4 rows = 24; mobile 3x5=15)
+  var tileCount = 24;
+  var tiles = [];
+  for (var k = 0; k < tileCount; k++) {
+    tiles.push(photos[k % photos.length]);
+  }
+  collage.innerHTML = tiles.map(function(u){
+    return '<img loading="eager" src="' + esc(u) + '" alt="">';
+  }).join("");
+  _heroBuilt = true;
+}
+
+function scrollToCollection() {
+  var anchor = document.getElementById("cat-search-anchor");
+  if (anchor) anchor.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 // ── Client item detail page ──
