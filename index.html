@@ -289,6 +289,19 @@ input,select,textarea{font-family:inherit}
 .lb-prev{left:20px}.lb-next{right:20px}
 .lb-counter{position:absolute;bottom:24px;left:0;right:0;text-align:center;color:#888;font-size:12px;letter-spacing:0.1em}
 
+/* ══ CATALOGUE FOOTER ══ */
+.cat-footer-bar{background:var(--black);padding:36px 20px 48px;text-align:center;border-top:1px solid #1A1A1A;margin-top:2px}
+.cat-footer-brand{font-family:"Courier New",monospace;font-weight:900;font-size:18px;letter-spacing:0.04em;color:var(--white);margin-bottom:10px}
+.cat-footer-brand span{color:var(--acid)}
+.cat-footer-contact{font-size:11px;color:#555;letter-spacing:0.06em;margin-bottom:18px;line-height:1.6}
+.cat-footer-staff{background:transparent;border:1px solid #2A2A2A;color:#666;padding:9px 20px;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;transition:all .15s}
+.cat-footer-staff:hover{border-color:var(--acid);color:var(--acid)}
+body.theme-light .cat-footer-bar{background:#FAFAF5;border-top-color:#E5E5E0}
+body.theme-light .cat-footer-brand{color:#1A1A1A}
+body.theme-light .cat-footer-contact{color:#999}
+body.theme-light .cat-footer-staff{border-color:#D5D5CE;color:#888}
+body.theme-light .cat-footer-staff:hover{border-color:#6F9C00;color:#6F9C00}
+
 /* ══ LIGHT THEME OVERRIDES (client toggle) ══ */
 body.theme-light #page-catalogue{background:#FAFAF5}
 body.theme-light .cat-hero-banner{background:#FAFAF5}
@@ -628,6 +641,11 @@ body.theme-light .ci-notes{color:#666;border-top-color:#E5E5E0}
   <div class="subfilter-bar" id="cat-subfilters"></div>
   <div class="page-body">
     <div class="cat-grid" id="cat-grid"></div>
+    <div class="cat-footer-bar">
+      <div class="cat-footer-brand">PROP<span>ELLER</span></div>
+      <div class="cat-footer-contact">Levan Devdariani str., Tbilisi · +995 595 511915 · hey@propeller.ge</div>
+      <button class="cat-footer-staff" onclick="goToStaff()">Staff Login</button>
+    </div>
   </div>
   <!-- Wishlist drawer -->
   <div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
@@ -783,6 +801,15 @@ function lockStaff() {
 function confirmLock() {
   if (confirm("Lock the warehouse on this device? You'll need the PIN to get back in.")) {
     lockStaff();
+  }
+}
+function goToStaff() {
+  // From the catalogue footer: if already unlocked go straight in, else show PIN
+  if (isUnlocked()) {
+    proceedToStaff(new URLSearchParams(window.location.search));
+  } else {
+    showPageEl("page-pin");
+    setTimeout(function(){ var el=document.getElementById("pin-input"); if(el) el.focus(); }, 100);
   }
 }
 
