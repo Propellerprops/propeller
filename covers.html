@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Propeller — Cover Photos</title>
+<style>
+:root{--acid:#C8F135;--black:#0A0A0A;--white:#FAFAF5}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--black);color:var(--white);min-height:100vh}
+.header{background:var(--black);border-bottom:3px solid var(--acid);padding:18px 22px}
+.logo{font-family:"Courier New",monospace;font-size:20px;font-weight:900;letter-spacing:0.04em}
+.logo span{color:var(--acid)}
+.tagline{font-size:10px;color:#555;letter-spacing:0.14em;text-transform:uppercase;margin-top:3px}
+.wrap{max-width:1000px;margin:0 auto;padding:22px}
+.panel{background:#0d0d0d;border:1px solid #1f1f1f;padding:18px;margin-bottom:18px}
+.panel p{font-size:13px;color:#aaa;line-height:1.6;margin-bottom:10px}
+.btn{padding:12px 22px;border:none;font-size:12px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer}
+.btn-acid{background:var(--acid);color:var(--black)}
+.btn-dark{background:#1a1a1a;color:var(--white);border:1px solid #2a2a2a}
+.btn:disabled{opacity:0.4;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.status-msg{font-size:13px}
+.status-msg.err{color:#ff6b6b}
+.status-msg.ok{color:var(--acid)}
+.item{background:#0d0d0d;border:1px solid #1f1f1f;padding:14px 16px;margin-bottom:12px}
+.item-head{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.item-id{font-weight:800;color:var(--acid);font-size:13px}
+.item-name{font-size:14px;color:#ddd}
+.item-changed{font-size:10px;color:var(--black);background:var(--acid);padding:2px 7px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;display:none}
+.item-changed.show{display:inline-block}
+.thumbs{display:flex;gap:8px;flex-wrap:wrap}
+.thumb{position:relative;cursor:pointer;border:2px solid transparent}
+.thumb img{width:120px;height:80px;object-fit:cover;display:block;background:#161616}
+.thumb.cover{border-color:var(--acid)}
+.thumb .badge{position:absolute;top:4px;left:4px;font-size:9px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;padding:2px 6px;background:rgba(0,0,0,0.6);color:#fff}
+.thumb.cover .badge{background:var(--acid);color:var(--black)}
+.empty{text-align:center;padding:34px;color:#444;font-size:13px}
+.muted{font-size:11px;color:#555;line-height:1.6;margin-top:8px}
+.progress-text{font-size:12px;color:#888;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo">PROP<span>ELLER</span></div>
+  <div class="tagline">Cover Photos — choose which photo leads each item</div>
+</div>
+
+<div class="wrap">
+  <div class="panel">
+    <p>Load your items, then click a photo to make it the <strong>cover</strong> (the one shown first on the catalogue card). Only items with 2+ photos appear here. Click <strong>Save changes</strong> when done — it writes the new order straight to your sheet.</p>
+    <div class="row">
+      <button class="btn btn-acid" id="load-btn" onclick="loadInventory()">Load Items</button>
+      <button class="btn btn-acid" id="save-btn" onclick="saveChanges()" style="display:none">Save Changes</button>
+      <span class="status-msg" id="status"></span>
+    </div>
+    <div class="progress-text" id="prog"></div>
+    <div class="muted">Tip: changes show a green “CHANGED” tag. After saving, the catalogue updates within ~10 minutes (cache), or instantly if you hard-refresh.</div>
+  </div>
+
+  <div id="list"><div class="empty">Load your items to begin.</div></div>
+</div>
+
+<script>
+var INV_URL  = "/.netlify/functions/api?action=getItems";
+var SAVE_URL = "/.netlify/functions/api?action=setPhotos";
+
+var items = [];   // {id, name, photos:[...], origFirst}
+
+function loadInventory(){
+  var btn = document.getElementById("load-btn");
+  var st = document.getElementById("status");
+  btn.disabled = true; st.className = "status-msg"; st.textContent = "Loading…";
+  fetch(INV_URL + "&_=" + Date.now())
+    .then(function(r){ return r.json(); })
+    .then(function(res){
+      btn.disabled = false;
+      if (!res || !res.ok || !res.items){ st.className="status-msg err"; st.textContent="Could not load inventory."; return; }
+      items = res.items
+        .filter(function(it){
+          var id = String(it.id||"").trim();
+          if (!id || id === "ITEM ID") return false;
+          var ph = String(it.photoUrl||"").split(",").map(function(u){return u.trim();}).filter(Boolean);
+          return ph.length >= 2;   // only items with a real choice
+        })
+        .map(function(it){
+          var ph = String(it.photoUrl||"").split(",").map(function(u){return u.trim();}).filter(Boolean);
+          return { id: it.id, name: it.name || "", photos: ph, origFirst: ph[0] };
+        });
+      st.className = "status-msg ok";
+      st.textContent = items.length + " items with multiple photos.";
+      document.getElementById("save-btn").style.display = "inline-block";
+      render();
+    })
+    .catch(function(e){ btn.disabled=false; st.className="status-msg err"; st.textContent="Error: "+e.message; });
+}
+
+function render(){
+  var list = document.getElementById("list");
+  if (!items.length){ list.innerHTML = '<div class="empty">No items with 2+ photos.</div>'; return; }
+  list.innerHTML = items.map(function(it, i){
+    var changed = it.photos[0] !== it.origFirst;
+    var thumbs = it.photos.map(function(u, pi){
+      var isCover = pi === 0;
+      return '<div class="thumb' + (isCover?' cover':'') + '" onclick="setCover(' + i + ',' + pi + ')">'
+        + '<img src="' + escAttr(u) + '" loading="lazy" alt="">'
+        + '<span class="badge">' + (isCover ? 'Cover' : (pi+1)) + '</span>'
+        + '</div>';
+    }).join("");
+    return '<div class="item">'
+      + '<div class="item-head"><span class="item-id">' + escHtml(it.id) + '</span>'
+      + '<span class="item-name">' + escHtml(it.name) + '</span>'
+      + '<span class="item-changed' + (changed?' show':'') + '" id="chg-' + i + '">changed</span></div>'
+      + '<div class="thumbs">' + thumbs + '</div>'
+      + '</div>';
+  }).join("");
+}
+
+function setCover(i, pi){
+  if (pi === 0) return;
+  var ph = items[i].photos;
+  var chosen = ph.splice(pi, 1)[0];   // remove chosen
+  ph.unshift(chosen);                  // put it first
+  render();
+}
+
+function saveChanges(){
+  var changed = items.filter(function(it){ return it.photos[0] !== it.origFirst; });
+  if (!changed.length){ var s=document.getElementById("status"); s.className="status-msg"; s.textContent="No changes to save."; return; }
+
+  var btn = document.getElementById("save-btn");
+  btn.disabled = true;
+  var prog = document.getElementById("prog");
+  var done = 0, failed = 0;
+
+  function saveOne(idx){
+    if (idx >= changed.length){
+      btn.disabled = false;
+      prog.textContent = "Saved " + done + " item(s)." + (failed ? " " + failed + " failed." : "");
+      // update origFirst so they no longer show as changed
+      changed.forEach(function(it){ it.origFirst = it.photos[0]; });
+      render();
+      return;
+    }
+    var it = changed[idx];
+    prog.textContent = "Saving " + (idx+1) + " of " + changed.length + "…";
+    var url = SAVE_URL + "&id=" + encodeURIComponent(it.id) + "&photos=" + encodeURIComponent(it.photos.join(", ")) + "&_=" + Date.now();
+    fetch(url)
+      .then(function(r){ return r.json(); })
+      .then(function(res){ if (res && res.ok) done++; else failed++; saveOne(idx+1); })
+      .catch(function(){ failed++; saveOne(idx+1); });
+  }
+  saveOne(0);
+}
+
+function escHtml(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function escAttr(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+</script>
+</body>
+</html>
