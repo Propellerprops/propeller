@@ -1473,16 +1473,8 @@ function renderCatalogue() {
       : '';
     var card = '<div class="cat-card" onclick="openCatItem(\''+escAttr(it.id)+'\')">';
     card += '<div class="cat-card-img">' + photoHtml + hoverImg;
-    card += '<div class="cat-card-tag-strip"><span class="cat-card-cat-badge">' + esc(it.category) + '</span></div>';
     card += '</div><div class="cat-card-body">';
     card += '<div class="cat-name">' + esc(it.name) + '</div>';
-    if (it.era || it.color) {
-      card += '<div class="cat-tags">';
-      if (it.era) card += '<span class="cat-tag">' + esc(it.era) + '</span>';
-      if (it.color) card += '<span class="cat-tag">' + esc(it.color) + '</span>';
-      card += '</div>';
-    }
-    if (it.dims) card += '<div class="cat-dim">' + esc(it.dims) + '</div>';
     card += '<div class="cat-footer">';
     card += '<div class="cat-rate">&#8382;' + (it.dayRate || '—') + '<span> / day</span></div>';
     card += '<button class="add-to-wl' + (inWl ? ' added' : '') + '" data-id="' + esc(it.id) + '" data-name="' + esc(it.name) + '" onclick="event.stopPropagation();wlClick(this)">' + (inWl ? '✓ Added' : '+ Wishlist') + '</button>';
