@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Propeller — AI Rename Tool</title>
+<style>
+:root{--acid:#C8F135;--black:#0A0A0A;--white:#FAFAF5}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--black);color:var(--white);min-height:100vh}
+.header{background:var(--black);border-bottom:3px solid var(--acid);padding:18px 22px}
+.logo{font-family:"Courier New",monospace;font-size:20px;font-weight:900;letter-spacing:0.04em}
+.logo span{color:var(--acid)}
+.tagline{font-size:10px;color:#555;letter-spacing:0.14em;text-transform:uppercase;margin-top:3px}
+.wrap{max-width:1000px;margin:0 auto;padding:22px}
+.panel{background:#0d0d0d;border:1px solid #1f1f1f;padding:18px;margin-bottom:18px}
+.panel h2{font-size:12px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--acid);margin-bottom:10px}
+.panel p{font-size:13px;color:#aaa;line-height:1.6;margin-bottom:10px}
+.btn{padding:12px 22px;border:none;font-size:12px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer}
+.btn-acid{background:var(--acid);color:var(--black)}
+.btn-dark{background:#1a1a1a;color:var(--white);border:1px solid #2a2a2a}
+.btn:disabled{opacity:0.4;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.progress-wrap{margin-top:14px;display:none}
+.progress-wrap.show{display:block}
+.progress-bar{height:8px;background:#1a1a1a;overflow:hidden}
+.progress-fill{height:100%;background:var(--acid);width:0%;transition:width .3s}
+.progress-text{font-size:12px;color:#888;margin-top:8px}
+.status-msg{font-size:13px;margin-top:8px}
+.status-msg.err{color:#ff6b6b}
+.status-msg.ok{color:var(--acid)}
+table{width:100%;border-collapse:collapse;margin-top:6px}
+th{text-align:left;font-size:9px;text-transform:uppercase;letter-spacing:0.1em;color:#555;padding:8px 6px;border-bottom:1px solid #222}
+td{padding:8px 6px;border-bottom:1px solid #161616;vertical-align:middle;font-size:13px}
+td img{width:60px;height:40px;object-fit:cover;background:#1a1a1a;display:block}
+.cell-id{font-weight:800;color:var(--acid);font-size:12px;white-space:nowrap}
+.cell-old{color:#777;font-size:12px}
+.cell-new input{width:100%;background:#0a0a0a;border:1.5px solid #2a2a2a;color:var(--white);padding:7px 9px;font-size:13px;outline:none;font-family:inherit}
+.cell-new input:focus{border-color:var(--acid)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#333}
+.dot.done{background:var(--acid)}
+.dot.busy{background:#EF9F27}
+.dot.err{background:#ff6b6b}
+.dot.skip{background:#444}
+.out-box{background:#0a0a0a;border:1px solid #1f1f1f;padding:14px;font-family:monospace;font-size:12px;color:#aaa;white-space:pre;overflow:auto;max-height:260px;line-height:1.7;margin-top:8px}
+.copied{font-size:12px;color:var(--acid);display:none;margin-left:8px}
+.empty{text-align:center;padding:34px;color:#444;font-size:13px}
+.muted{font-size:11px;color:#555;line-height:1.6;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo">PROP<span>ELLER</span></div>
+  <div class="tagline">AI Rename Tool — name items from their photos</div>
+</div>
+
+<div class="wrap">
+
+  <div class="panel">
+    <h2>Step 1 — Load your inventory</h2>
+    <p>This pulls your live items (ID, current name, photo) straight from your sheet. Dimensions and every other field are left untouched — this tool only proposes new names.</p>
+    <div class="row">
+      <button class="btn btn-acid" id="load-btn" onclick="loadInventory()">Load Inventory</button>
+      <span class="status-msg" id="load-status"></span>
+    </div>
+    <div id="paste-wrap" style="margin-top:14px;display:none">
+      <p style="margin-bottom:6px">Auto-load blocked? Open this link in a normal browser tab, copy everything, and paste it below:</p>
+      <p style="margin-bottom:8px"><a href="https://propeller-app.netlify.app/.netlify/functions/api?action=getItems" target="_blank" style="color:var(--acid)">propeller-app.netlify.app/.netlify/functions/api?action=getItems</a></p>
+      <textarea id="paste-json" placeholder='Paste the {"ok":true,"items":[...]} JSON here' style="width:100%;min-height:90px;background:#0a0a0a;border:1.5px solid #2a2a2a;color:var(--white);padding:10px;font-family:monospace;font-size:12px;outline:none"></textarea>
+      <div style="margin-top:8px"><button class="btn btn-dark" onclick="usePastedJson()">Use Pasted Data</button></div>
+    </div>
+    <div class="muted">If it keeps timing out, just use the paste box — <span style="cursor:pointer;color:var(--acid);text-decoration:underline" onclick="document.getElementById('paste-wrap').style.display='block'">show it now</span>.</div>
+  </div>
+
+  <div class="panel" id="step2" style="display:none">
+    <h2>Step 2 — Generate names from photos</h2>
+    <p>Claude looks at each item's photo and fills in a clear catalogue <strong>name</strong>, a <strong>subcategory</strong> (Sofa, Armchair, Shelving…), and an <strong>era / style</strong> (Mid-Century, Art Deco…). Dimensions are never touched. Only items with a photo are processed; you can edit anything afterwards.</p>
+    <div class="row">
+      <button class="btn btn-acid" id="run-btn" onclick="startRun()">Generate All Names</button>
+      <button class="btn btn-dark" id="retry-btn" onclick="retryUnfinished()">Retry unfinished</button>
+      <button class="btn btn-dark" id="stop-btn" onclick="stopRun()" style="display:none">Stop</button>
+    </div>
+    <div class="progress-wrap" id="prog">
+      <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
+      <div class="progress-text" id="prog-text"></div>
+    </div>
+  </div>
+
+  <div class="panel" id="step3" style="display:none">
+    <h2>Step 3 — Review &amp; export</h2>
+    <p>Check the suggested names, tweak anything, then copy. The rows are in the <strong>same order as your sheet</strong>, so you can paste the new-name column straight into column B (starting at B3).</p>
+    <div class="row">
+      <button class="btn btn-acid" onclick="copyCol('newName')">Copy Names → B</button>
+      <button class="btn btn-acid" onclick="copyCol('newSub')">Copy Subcategories → E</button>
+      <button class="btn btn-acid" onclick="copyCol('newEra')">Copy Eras → I</button>
+      <button class="btn btn-dark" onclick="copyAll()">Copy ID + all (verify)</button>
+      <span class="copied" id="copied">Copied!</span>
+    </div>
+    <div class="muted">Each column pastes into its own column starting at row 3 (Names&nbsp;→&nbsp;B3, Subcategories&nbsp;→&nbsp;E3, Eras&nbsp;→&nbsp;I3). Paste &ldquo;ID + all&rdquo; into scratch columns first to confirm the IDs line up with your sheet before pasting into the live columns.</div>
+    <div class="out-box" id="out-box" style="display:none"></div>
+  </div>
+
+  <div class="panel">
+    <h2>Items</h2>
+    <div id="table-wrap"><div class="empty">Load your inventory to begin.</div></div>
+  </div>
+
+</div>
+
+<script>
+var INV_URL = "/.netlify/functions/api?action=getItems";
+var AI_URL  = "/.netlify/functions/ai";
+var CONCURRENCY = 3;
+
+var items = [];      // {id, name, photoUrl, firstPhoto, newName, state}
+var running = false;
+var stopFlag = false;
+
+// ── Inventory loader (same-origin, no CORS) ──
+function loadItemsData(cb){
+  var settled = false;
+  function finish(res){ if (!settled){ settled = true; cb(res); } }
+  fetch(INV_URL + "&_=" + Date.now(), { method:"GET" })
+    .then(function(r){ return r.json(); })
+    .then(function(data){ finish(data); })
+    .catch(function(e){ finish({ ok:false, error:String(e && e.message ? e.message : e) }); });
+  setTimeout(function(){ finish({ ok:false, error:"Timed out — use the paste option below" }); }, 45000);
+}
+
+function ingestItems(rawItems, st){
+  items = rawItems
+    .filter(function(it){
+      // drop the header/sentinel row and blank rows
+      var id = String(it.id||"").trim();
+      if (!id) return false;
+      if (id === "ITEM ID" || String(it.status||"") === "STATUS") return false;
+      return true;
+    })
+    .map(function(it) {
+      var first = "";
+      if (it.photoUrl) first = String(it.photoUrl).split(",")[0].trim();
+      // ignore placeholder header value
+      if (first === "PHOTO URL") first = "";
+      return {
+        id: it.id, name: it.name || "", category: it.category || "",
+        subcategory: it.subcategory || "", era: it.era || "",
+        photoUrl: it.photoUrl || "", firstPhoto: first,
+        newName: it.name || "", newSub: it.subcategory || "", newEra: it.era || "",
+        state: first ? "pending" : "skip"
+      };
+    });
+  var withPhoto = items.filter(function(x){ return x.firstPhoto; }).length;
+  st.className = "status-msg ok";
+  st.textContent = "Loaded " + items.length + " items (" + withPhoto + " have photos).";
+  document.getElementById("step2").style.display = "block";
+  renderTable();
+}
+
+function loadInventory() {
+  var btn = document.getElementById("load-btn");
+  var st = document.getElementById("load-status");
+  btn.disabled = true;
+  st.className = "status-msg";
+  st.textContent = "Loading…";
+  loadItemsData(function(res) {
+    btn.disabled = false;
+    if (!res || !res.ok || !res.items) {
+      st.className = "status-msg err";
+      st.textContent = "Could not load: " + ((res && res.error) || "unknown error") + ". Try the paste option below.";
+      document.getElementById("paste-wrap").style.display = "block";
+      return;
+    }
+    ingestItems(res.items, st);
+  });
+}
+
+function usePastedJson() {
+  var st = document.getElementById("load-status");
+  var raw = document.getElementById("paste-json").value.trim();
+  if (!raw) { st.className = "status-msg err"; st.textContent = "Paste the JSON first."; return; }
+  try {
+    var t = raw;
+    var m = t.match(/^[^(\[{]*\(([\s\S]*)\)\s*;?\s*$/);
+    if (m) t = m[1];
+    var data = JSON.parse(t);
+    var arr = data.items ? data.items : (Array.isArray(data) ? data : null);
+    if (!arr) throw new Error("no items array found");
+    ingestItems(arr, st);
+  } catch(e) {
+    st.className = "status-msg err";
+    st.textContent = "Could not read that JSON: " + e.message;
+  }
+}
+
+function renderTable() {
+  var w = document.getElementById("table-wrap");
+  if (!items.length) { w.innerHTML = '<div class="empty">No items.</div>'; return; }
+  var rows = items.map(function(it, i) {
+    var thumb = it.firstPhoto
+      ? '<img src="' + escAttr(it.firstPhoto) + '" loading="lazy" alt="">'
+      : '<div style="width:60px;height:40px;background:#161616"></div>';
+    return '<tr>'
+      + '<td><span class="dot ' + it.state + '" id="dot-' + i + '"></span></td>'
+      + '<td>' + thumb + '</td>'
+      + '<td class="cell-id">' + escHtml(it.id) + '</td>'
+      + '<td class="cell-old">' + escHtml(it.name) + '</td>'
+      + '<td class="cell-new"><input id="nm-' + i + '" value="' + escAttr(it.newName) + '" oninput="updField(' + i + ',\'newName\',this.value)"></td>'
+      + '<td class="cell-new"><input id="sb-' + i + '" value="' + escAttr(it.newSub) + '" oninput="updField(' + i + ',\'newSub\',this.value)"></td>'
+      + '<td class="cell-new"><input id="er-' + i + '" value="' + escAttr(it.newEra) + '" oninput="updField(' + i + ',\'newEra\',this.value)"></td>'
+      + '</tr>';
+  }).join("");
+  w.innerHTML = '<table><thead><tr><th></th><th>Photo</th><th>ID</th><th>Current name</th><th>New name (B)</th><th>Subcategory (E)</th><th>Era / Style (I)</th></tr></thead><tbody>' + rows + '</tbody></table>';
+}
+
+function updField(i, field, v){ items[i][field] = v; }
+
+function setDot(i, cls){
+  items[i].state = cls;
+  var d = document.getElementById("dot-" + i);
+  if (d) d.className = "dot " + cls;
+}
+function setResult(i, r){
+  items[i].newName = r.name;
+  if (r.subcategory) items[i].newSub = r.subcategory;
+  if (r.era) items[i].newEra = r.era;
+  var nm = document.getElementById("nm-" + i); if (nm) nm.value = items[i].newName;
+  var sb = document.getElementById("sb-" + i); if (sb) sb.value = items[i].newSub;
+  var er = document.getElementById("er-" + i); if (er) er.value = items[i].newEra;
+}
+
+// ── Vision analysis via server function (key stays on server) ──
+function clean1(s){ return String(s==null?"":s).replace(/[\r\n\t]+/g," ").replace(/\s{2,}/g," ").trim(); }
+
+function renameOne(i){
+  var it = items[i];
+  setDot(i, "busy");
+  return fetch(AI_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ photo: it.firstPhoto, name: it.name, category: it.category })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(res){
+    if (res && res.ok && res.result && res.result.name) {
+      setResult(i, {
+        name: clean1(res.result.name),
+        subcategory: clean1(res.result.subcategory || ""),
+        era: clean1(res.result.era || "")
+      });
+      setDot(i, "done");
+    } else {
+      setDot(i, "err");
+    }
+  })
+  .catch(function(){ setDot(i, "err"); });
+}
+
+// ── Run with limited concurrency ──
+function startRun(){ runQueue(function(it){ return it.firstPhoto; }, false); }
+
+function retryUnfinished(){
+  // Re-process items that errored OR still have no subcategory/era filled
+  runQueue(function(it){
+    if (!it.firstPhoto) return false;
+    if (it.state === "err") return true;
+    if (!String(it.newSub).trim() || !String(it.newEra).trim()) return true;
+    return false;
+  }, true);
+}
+
+function runQueue(filterFn, isRetry){
+  if (running) return;
+  running = true; stopFlag = false;
+  document.getElementById("run-btn").disabled = true;
+  document.getElementById("retry-btn").disabled = true;
+  document.getElementById("stop-btn").style.display = "inline-block";
+  document.getElementById("prog").classList.add("show");
+  document.getElementById("step3").style.display = "block";
+
+  var queue = [];
+  items.forEach(function(it, i){ if (filterFn(it)) queue.push(i); });
+  var total = queue.length, completed = 0;
+
+  function tick(){
+    document.getElementById("prog-fill").style.width = (total ? (completed/total*100) : 100) + "%";
+    document.getElementById("prog-text").textContent = (isRetry ? "Retrying " : "Processed ") + completed + " of " + total + " items…";
+  }
+  tick();
+  if (!total){
+    running = false;
+    document.getElementById("run-btn").disabled = false;
+    document.getElementById("retry-btn").disabled = false;
+    document.getElementById("stop-btn").style.display = "none";
+    document.getElementById("prog-text").textContent = isRetry ? "Nothing left to retry — all items have a subcategory and era." : "No items with photos to process.";
+    return;
+  }
+
+  function next(){
+    if (stopFlag) return Promise.resolve();
+    if (!queue.length) return Promise.resolve();
+    var i = queue.shift();
+    return renameOne(i).then(function(){ completed++; tick(); return next(); });
+  }
+
+  var workers = [];
+  for (var k = 0; k < CONCURRENCY; k++) workers.push(next());
+  Promise.all(workers).then(function(){
+    running = false;
+    document.getElementById("run-btn").disabled = false;
+    document.getElementById("retry-btn").disabled = false;
+    document.getElementById("stop-btn").style.display = "none";
+    var errs = items.filter(function(it){ return it.state === "err"; }).length;
+    var blanks = items.filter(function(it){ return it.firstPhoto && (!String(it.newSub).trim() || !String(it.newEra).trim()); }).length;
+    document.getElementById("prog-text").textContent = stopFlag
+      ? ("Stopped. Processed " + completed + " of " + total + ".")
+      : ("Done — " + completed + " processed." + (errs||blanks ? " " + (errs+blanks) + " still need attention (use Retry unfinished)." : " All good."));
+  });
+}
+
+function stopRun(){ stopFlag = true; }
+
+// ── Export ──
+function cleanName(s){ return String(s==null?"":s).replace(/[\r\n\t]+/g," ").replace(/\s{2,}/g," ").trim(); }
+function withId(){ return items.filter(function(it){ return String(it.id||"").trim() !== ""; }); }
+function oldFor(field){ return field === "newName" ? "name" : field === "newSub" ? "subcategory" : "era"; }
+
+function copyCol(field){
+  var fb = oldFor(field);
+  var text = withId().map(function(it){ return cleanName(it[field] || it[fb] || ""); }).join("\n");
+  copyText(text);
+}
+function copyAll(){
+  var text = withId().map(function(it){
+    return it.id + "\t" + cleanName(it.newName||it.name||"") + "\t" + cleanName(it.newSub||it.subcategory||"") + "\t" + cleanName(it.newEra||it.era||"");
+  }).join("\n");
+  copyText(text);
+  var box = document.getElementById("out-box");
+  box.style.display = "block";
+  box.textContent = "ID\tNAME\tSUBCATEGORY\tERA\n" + text;
+}
+function copyText(text){
+  navigator.clipboard.writeText(text).then(function(){
+    var c = document.getElementById("copied");
+    c.style.display = "inline";
+    setTimeout(function(){ c.style.display = "none"; }, 2200);
+  }, function(){
+    var box = document.getElementById("out-box");
+    box.style.display = "block";
+    box.textContent = text;
+  });
+}
+
+// ── utils ──
+function escHtml(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function escAttr(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+</script>
+</body>
+</html>
