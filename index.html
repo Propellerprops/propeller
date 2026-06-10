@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Propeller — Warehouse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 /* ── Reset & base ── */
 *{box-sizing:border-box;margin:0;padding:0}
@@ -181,169 +184,150 @@ input,select,textarea{font-family:inherit}
 #page-scan input{width:100%;max-width:320px;padding:14px 16px;border:1.5px solid #E8E8E8;border-radius:12px;font-size:18px;text-align:center;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:12px;outline:none}
 #page-scan input:focus{border-color:#1A1A2E}
 
-/* ══ CATALOGUE — Propeller branded ══ */
-:root{--acid:#C8F135;--black:#0A0A0A;--white:#FAFAF5}
-#page-catalogue{background:var(--black)}
-/* ── Hero collage banner ── */
-.cat-hero-banner{position:relative;height:460px;overflow:hidden;background:var(--black);border-bottom:3px solid var(--acid);flex-shrink:0}
-@media(max-width:760px){.cat-hero-banner{height:380px}}
-.hero-collage{position:absolute;inset:0;display:grid;grid-template-columns:repeat(6,1fr);grid-auto-rows:1fr;gap:3px}
-@media(max-width:760px){.hero-collage{grid-template-columns:repeat(3,1fr)}}
-.hero-collage img{width:100%;height:100%;object-fit:cover;display:block;filter:brightness(0.42) grayscale(0.25)}
-.hero-overlay{position:absolute;inset:0;background:radial-gradient(ellipse at center, rgba(10,10,10,0.55) 0%, rgba(10,10,10,0.82) 70%, rgba(10,10,10,0.95) 100%)}
-.hero-back{position:absolute;top:18px;left:20px;z-index:5;background:rgba(0,0,0,0.4);border:1px solid #333;color:var(--acid);font-size:22px;cursor:pointer;line-height:1;padding:6px 12px;display:none;font-weight:300}
-.hero-back:hover{border-color:var(--acid)}
-.hero-wl{position:absolute;top:18px;right:20px;z-index:5}
-.hero-top-right{position:absolute;top:18px;right:20px;z-index:5;display:flex;gap:8px;align-items:center}
-.theme-toggle{background:rgba(0,0,0,0.4);border:1px solid #333;color:var(--white);padding:9px 14px;font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;white-space:nowrap}
-.theme-toggle:hover{border-color:var(--acid);color:var(--acid)}
-.hero-center{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px}
-.hero-logo{height:90px;width:auto;cursor:pointer;margin-bottom:16px}
-@media(max-width:760px){.hero-logo{height:64px}}
-.hero-tagline{font-size:11px;color:var(--acid);letter-spacing:0.28em;text-transform:uppercase;margin-bottom:18px;font-weight:700}
-.hero-intro{font-size:17px;color:var(--white);max-width:480px;line-height:1.5;font-weight:400;margin-bottom:28px;letter-spacing:0.01em}
-@media(max-width:760px){.hero-intro{font-size:14px;max-width:300px}}
-.hero-scroll{background:var(--acid);color:var(--black);border:none;padding:13px 26px;font-size:12px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;transition:opacity .15s}
-.hero-scroll:hover{opacity:0.88}
-.cat-header{background:var(--black);padding:0;flex-shrink:0;border-bottom:3px solid var(--acid)}
-.cat-hero{padding:24px 20px 20px;display:flex;justify-content:space-between;align-items:flex-start}
-.cat-logo-img{height:56px;width:auto;display:block}
-.cat-back-area{display:flex;flex-direction:column;align-items:flex-end;gap:10px}
-.wl-btn{background:var(--acid);color:var(--black);border:none;padding:9px 16px;border-radius:0;font-size:12px;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:6px;letter-spacing:0.06em;text-transform:uppercase}
-.wl-count{background:var(--black);color:var(--acid);border-radius:0;padding:1px 7px;font-size:11px;font-weight:800}
-.cat-tagline{font-size:10px;color:#666;letter-spacing:0.15em;text-transform:uppercase;margin-top:6px}
-.cat-search-wrap{background:var(--black);padding:0 20px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-.cat-search{flex:1;min-width:220px;background:#111;border:1.5px solid #2A2A2A;color:var(--white);font-size:14px;padding:12px 16px;outline:none;letter-spacing:0.02em}
-.cat-search::placeholder{color:#555}
-.cat-search:focus{border-color:var(--acid)}
-.cat-result-count{font-size:11px;color:#555;letter-spacing:0.08em;text-transform:uppercase;white-space:nowrap}
-.filter-bar{background:var(--black);padding:0 20px 16px;display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0}
-.filter-btn{padding:6px 16px;border-radius:0;font-size:11px;font-weight:700;color:#666;background:transparent;border:1.5px solid #333;cursor:pointer;white-space:nowrap;letter-spacing:0.06em;text-transform:uppercase;transition:all .15s}
-.filter-btn.active{background:var(--acid);color:var(--black);border-color:var(--acid)}
-.filter-btn:hover{border-color:var(--acid);color:var(--acid)}
-.filter-count{font-size:9px;opacity:0.6;font-weight:800;margin-left:2px}
-/* Sub-filter bar (second level) */
-.subfilter-bar{background:var(--black);padding:0 20px 14px;display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0;border-bottom:1px solid #1A1A1A}
-.subfilter-bar:empty{display:none;padding:0}
-.subfilter-btn{padding:5px 13px;border-radius:0;font-size:10px;font-weight:700;color:#888;background:#141414;border:1px solid #2A2A2A;cursor:pointer;white-space:nowrap;letter-spacing:0.05em;text-transform:uppercase;transition:all .15s}
-.subfilter-btn.active{background:#2A3A0A;color:var(--acid);border-color:var(--acid)}
-.subfilter-btn:hover{border-color:var(--acid);color:var(--acid)}
-.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:22px;padding:24px 20px 40px;background:transparent}
-.cat-card{background:var(--white);overflow:hidden;position:relative;cursor:pointer;transition:transform .2s, box-shadow .2s;box-shadow:0 2px 10px rgba(0,0,0,0.25)}
-.cat-card:hover{transform:translateY(-4px);box-shadow:0 10px 26px rgba(0,0,0,0.4)}
-.cat-card-img{overflow:hidden;position:relative;aspect-ratio:3/2}
-.cat-card-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}
-.cat-card:hover .cat-card-img img{transform:scale(1.03)}
-.cat-card-no-img{width:100%;height:100%;background:#111;display:flex;align-items:center;justify-content:center;color:#333;font-size:13px;letter-spacing:0.1em;text-transform:uppercase}
-.cat-card-tag-strip{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:8px 10px;z-index:3}
-.cat-hover-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s ease;pointer-events:none;z-index:2;display:block}
-@media (hover:hover){
-  .cat-card:hover .cat-hover-img{opacity:1}
+/* ══ CATALOGUE — Propeller (cream / navy / Matisse) ══ */
+:root{
+  --cream:#F2ECDE;--cream-2:#EBE2CF;--card:#FCFAF4;
+  --navy:#1B2F5E;--ink:#26313B;--muted:#8C8675;
+  --yellow:#F4C20D;--green:#2E7D4F;--blue:#21499C;--rust:#C24A2B;
+  --line:#E4DCC8;
+  --acid:#C8F135;--black:#0A0A0A;--white:#FAFAF5; /* kept for staff app */
 }
-.cat-card-cat-badge{background:var(--acid);color:var(--black);font-size:9px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;padding:3px 8px}
-.cat-card-body{padding:14px 16px 16px}
-.cat-name{font-size:16px;font-weight:800;color:var(--black);margin-bottom:6px;line-height:1.2;letter-spacing:-0.01em}
-.cat-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px}
-.cat-tag{background:#EAEAD5;color:#555;font-size:10px;font-weight:600;padding:2px 8px;letter-spacing:0.04em;text-transform:uppercase}
-.cat-dim{font-size:11px;color:#999;margin-bottom:8px;letter-spacing:0.04em}
-.cat-footer{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:10px;border-top:1.5px solid #EAEAD5}
-.cat-rate{font-size:18px;font-weight:800;color:var(--black);letter-spacing:-0.02em}
-.cat-rate span{font-size:11px;font-weight:500;color:#999;letter-spacing:0.04em}
-.add-to-wl{padding:8px 14px;background:var(--black);color:var(--white);border:none;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:all .15s}
-.add-to-wl:hover{background:var(--acid);color:var(--black)}
-.add-to-wl.added{background:var(--acid);color:var(--black)}
+#page-catalogue,#page-cat-item{background:var(--cream);font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif}
 
-/* ══ CLIENT ITEM DETAIL ══ */
-#page-cat-item{background:var(--black)}
-.ci-wrap{max-width:1000px;margin:0 auto;padding:24px 20px 60px;display:grid;grid-template-columns:1fr 1fr;gap:32px}
-@media(max-width:760px){.ci-wrap{grid-template-columns:1fr;gap:20px}}
+/* Top nav */
+.nav{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:18px;padding:0 26px;background:var(--cream);border-bottom:1px solid var(--line)}
+.nav-back{background:none;border:none;color:var(--navy);font-size:22px;cursor:pointer;line-height:1;display:none;padding:0}
+.nav-logo{cursor:pointer;background:var(--navy);border-radius:0 0 24px 24px;padding:12px 20px 14px;text-align:center;flex-shrink:0}
+.nav-logo-mark{font-family:'Fraunces',serif;font-weight:700;font-size:23px;color:var(--yellow);line-height:0.9}
+.nav-logo-sub{font-size:8px;color:var(--yellow);letter-spacing:0.2em;text-transform:uppercase;margin-top:3px;opacity:0.85}
+.nav-links{display:flex;gap:24px;flex:1;justify-content:center;flex-wrap:wrap;padding:18px 0}
+.nav-link{background:none;border:none;font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--navy);cursor:pointer;padding:4px 0;position:relative;transition:color .15s}
+.nav-link:hover,.nav-link.active{color:var(--rust)}
+.nav-link.active::after{content:"";position:absolute;left:0;right:0;bottom:-3px;height:2px;background:var(--yellow)}
+.nav-right{display:flex;align-items:center;gap:14px;flex-shrink:0;padding:14px 0}
+.nav-icon{background:none;border:none;color:var(--navy);font-size:21px;cursor:pointer;line-height:1}
+.nav-wl{background:none;border:none;color:var(--navy);font-size:12px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;gap:7px;white-space:nowrap}
+.nav-wl-count{background:var(--yellow);color:var(--navy);border-radius:10px;min-width:18px;height:18px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;padding:0 5px}
+@media(max-width:860px){.nav-links{display:none}}
+
+/* Hero */
+.hero{position:relative;background:var(--cream);overflow:hidden;padding:8px 26px 28px}
+.hero-inner{position:relative;z-index:2;max-width:1280px;margin:0 auto;display:grid;grid-template-columns:0.92fr 1.28fr;gap:34px;align-items:center;min-height:360px}
+@media(max-width:860px){.hero-inner{grid-template-columns:1fr;min-height:0;gap:18px}}
+.hero-copy{padding:14px 0}
+.hero-title{font-family:'Fraunces',serif;font-weight:600;font-size:62px;line-height:0.98;color:var(--navy);letter-spacing:-0.01em;margin-bottom:18px}
+.hero-title .dot{color:var(--yellow)}
+@media(max-width:860px){.hero-title{font-size:44px}}
+.hero-sub{font-size:17px;line-height:1.5;color:var(--ink);margin-bottom:26px;max-width:380px}
+.hero-cta{background:var(--yellow);color:var(--navy);border:none;padding:15px 28px;font-size:13px;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;cursor:pointer;border-radius:3px;transition:transform .15s}
+.hero-cta:hover{transform:translateY(-2px)}
+.hero-photo{aspect-ratio:16/10;background:#D8D0BE center/cover no-repeat;border-radius:8px;box-shadow:0 16px 44px rgba(27,47,94,0.20)}
+@media(max-width:860px){.hero-photo{aspect-ratio:16/11}}
+.hero-shape{position:absolute;z-index:1;pointer-events:none}
+.hero-shape-blue{color:var(--blue);width:330px;bottom:-100px;left:44%;opacity:0.85}
+.hero-shape-green{color:var(--green);width:110px;top:6px;left:40%}
+.hero-shape-yellow{color:var(--yellow);width:120px;top:-34px;right:6%}
+@media(max-width:860px){.hero-shape{display:none}}
+
+/* Search */
+.cat-search-wrap{background:var(--cream);padding:22px 26px 6px;display:flex;align-items:center;gap:16px;max-width:1332px;margin:0 auto;width:100%}
+.cat-search-box{flex:1;display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:40px;padding:13px 22px}
+.cat-search-ic{color:var(--muted);font-size:17px}
+.cat-search{flex:1;background:none;border:none;color:var(--ink);font-size:15px;outline:none}
+.cat-search::placeholder{color:var(--muted)}
+.cat-result-count{font-size:11px;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;white-space:nowrap;font-weight:700}
+
+/* Pills */
+.filter-bar{background:var(--cream);padding:18px 26px 8px;display:flex;gap:9px;flex-wrap:wrap;max-width:1332px;margin:0 auto;width:100%}
+.filter-btn{padding:9px 18px;border-radius:30px;font-size:12px;font-weight:700;color:var(--navy);background:var(--card);border:1px solid var(--line);cursor:pointer;white-space:nowrap;letter-spacing:0.03em;text-transform:uppercase;transition:all .15s;display:flex;align-items:center;gap:7px}
+.filter-btn:hover{border-color:var(--navy)}
+.filter-btn.active{background:var(--yellow);color:var(--navy);border-color:var(--yellow)}
+.filter-count{font-size:11px;opacity:0.7;font-weight:800}
+.subfilter-bar{background:var(--cream);padding:4px 26px 8px;display:flex;gap:8px;flex-wrap:wrap;max-width:1332px;margin:0 auto;width:100%}
+.subfilter-bar:empty{display:none;padding:0}
+.subfilter-btn{padding:6px 14px;border-radius:30px;font-size:11px;font-weight:600;color:var(--muted);background:transparent;border:1px solid var(--line);cursor:pointer;white-space:nowrap;letter-spacing:0.03em;text-transform:uppercase;transition:all .15s}
+.subfilter-btn.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.subfilter-btn:hover{border-color:var(--navy);color:var(--navy)}
+.subfilter-btn.active:hover{color:#fff}
+
+/* Grid + cards */
+.page-body{max-width:1332px;margin:0 auto;width:100%}
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:22px;padding:22px 26px 46px}
+.cat-card{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;position:relative;cursor:pointer;transition:transform .2s,box-shadow .2s}
+.cat-card:hover{transform:translateY(-4px);box-shadow:0 14px 30px rgba(27,47,94,0.13)}
+.cat-card-img{overflow:hidden;position:relative;aspect-ratio:1/1;background:var(--card);padding:12px}
+.cat-card-img img{width:100%;height:100%;object-fit:contain;display:block;transition:transform .3s}
+.cat-card:hover .cat-card-img img{transform:scale(1.04)}
+.cat-card-no-img{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#C9BFA7;font-size:12px;letter-spacing:0.1em;text-transform:uppercase}
+.cat-hover-img{position:absolute;inset:0;width:calc(100% - 24px);height:calc(100% - 24px);margin:12px;object-fit:contain;opacity:0;transition:opacity .3s;pointer-events:none;z-index:2}
+@media (hover:hover){.cat-card:hover .cat-hover-img{opacity:1}}
+.cat-heart{position:absolute;top:10px;right:10px;z-index:3;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.92);border:1px solid var(--line);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--navy);transition:all .15s;line-height:1}
+.cat-heart:hover{background:#fff;border-color:var(--rust)}
+.cat-heart.added{background:var(--rust);color:#fff;border-color:var(--rust)}
+.cat-card-body{padding:6px 16px 16px}
+.cat-name{font-family:'Fraunces',serif;font-size:17px;font-weight:600;color:var(--navy);margin-bottom:12px;line-height:1.15}
+.cat-footer{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.cat-rate{font-size:16px;font-weight:800;color:var(--ink);white-space:nowrap}
+.cat-rate span{font-size:11px;font-weight:500;color:var(--muted)}
+.add-to-wl{padding:8px 13px;background:transparent;color:var(--navy);border:1px solid var(--line);border-radius:30px;font-size:10px;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;cursor:pointer;transition:all .15s;white-space:nowrap}
+.add-to-wl:hover{background:var(--navy);color:#fff;border-color:var(--navy)}
+.add-to-wl.added{background:var(--yellow);color:var(--navy);border-color:var(--yellow)}
+
+/* Features */
+.features{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;padding:34px 0;border-top:1px solid var(--line);margin:0 26px}
+@media(max-width:860px){.features{grid-template-columns:1fr 1fr;gap:26px 22px}}
+@media(max-width:480px){.features{grid-template-columns:1fr}}
+.feature{display:flex;gap:14px;align-items:flex-start}
+.feature-ic{width:38px;height:38px;flex-shrink:0}
+.feat-blue{color:var(--blue)}.feat-green{color:var(--green)}.feat-yellow{color:var(--yellow)}.feat-red{color:var(--rust)}
+.feature-title{font-weight:800;font-size:13px;color:var(--navy);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:4px}
+.feature-sub{font-size:13px;color:var(--muted);line-height:1.45}
+
+/* Client item detail (cream) */
+#page-cat-item{background:var(--cream)}
+.ci-wrap{max-width:1000px;margin:0 auto;padding:24px 26px 60px;display:grid;grid-template-columns:1fr 1fr;gap:36px}
+@media(max-width:760px){.ci-wrap{grid-template-columns:1fr;gap:22px}}
 .ci-gallery{display:flex;flex-direction:column;gap:10px}
-.ci-main-photo{width:100%;background:#111;border:1px solid #1A1A1A;aspect-ratio:3/2;overflow:hidden;display:flex;align-items:center;justify-content:center;cursor:zoom-in}
-.ci-main-photo img{width:100%;height:100%;object-fit:cover;display:block}
-.ci-main-noimg{color:#333;font-size:13px;letter-spacing:0.1em;text-transform:uppercase}
+.ci-main-photo{width:100%;background:var(--card);border:1px solid var(--line);border-radius:10px;aspect-ratio:1/1;overflow:hidden;display:flex;align-items:center;justify-content:center;cursor:zoom-in;padding:16px}
+.ci-main-photo img{width:100%;height:100%;object-fit:contain;display:block}
+.ci-main-noimg{color:#C9BFA7;font-size:13px;letter-spacing:0.1em;text-transform:uppercase}
 .ci-thumbs{display:flex;gap:8px;flex-wrap:wrap}
-.ci-thumb{width:72px;height:72px;object-fit:cover;border:2px solid #222;cursor:pointer;background:#111;transition:border-color .15s}
-.ci-thumb.active{border-color:var(--acid)}
-.ci-thumb:hover{border-color:var(--acid)}
-.ci-info{color:var(--white)}
-.ci-cat-badge{display:inline-block;background:var(--acid);color:var(--black);font-size:10px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;padding:4px 10px;margin-bottom:14px}
-.ci-name{font-size:30px;font-weight:800;line-height:1.1;letter-spacing:-0.01em;margin-bottom:8px;color:var(--white)}
-.ci-id{font-size:12px;color:#555;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:24px}
-.ci-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:24px}
-.ci-tag{background:#1A1A1A;color:#999;font-size:11px;font-weight:600;padding:5px 12px;letter-spacing:0.04em;text-transform:uppercase;border:1px solid #2A2A2A}
-.ci-specs{border-top:1px solid #1A1A1A;margin-bottom:24px}
-.ci-spec-row{display:flex;justify-content:space-between;padding:13px 0;border-bottom:1px solid #1A1A1A;font-size:14px}
-.ci-spec-label{color:#666;text-transform:uppercase;letter-spacing:0.06em;font-size:11px;font-weight:700}
-.ci-spec-val{color:var(--white);text-align:right;max-width:60%}
+.ci-thumb{width:72px;height:72px;object-fit:contain;border:2px solid var(--line);border-radius:6px;cursor:pointer;background:var(--card);transition:border-color .15s;padding:5px}
+.ci-thumb.active,.ci-thumb:hover{border-color:var(--navy)}
+.ci-info{color:var(--ink)}
+.ci-cat-badge{display:inline-block;background:var(--navy);color:#fff;font-size:10px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:16px}
+.ci-name{font-family:'Fraunces',serif;font-size:34px;font-weight:600;line-height:1.05;margin-bottom:8px;color:var(--navy)}
+.ci-id{font-size:12px;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:24px}
+.ci-tags{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:24px}
+.ci-tag{background:var(--cream-2);color:var(--ink);font-size:11px;font-weight:600;padding:5px 13px;letter-spacing:0.04em;text-transform:uppercase;border-radius:20px}
+.ci-specs{border-top:1px solid var(--line);margin-bottom:24px}
+.ci-spec-row{display:flex;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--line);font-size:14px}
+.ci-spec-label{color:var(--muted);text-transform:uppercase;letter-spacing:0.06em;font-size:11px;font-weight:700}
+.ci-spec-val{color:var(--ink);text-align:right;max-width:60%;font-weight:500}
 .ci-rate-block{display:flex;align-items:baseline;gap:8px;margin-bottom:24px}
-.ci-rate{font-size:32px;font-weight:800;color:var(--acid);letter-spacing:-0.02em}
-.ci-rate-unit{font-size:13px;color:#666;letter-spacing:0.04em}
-.ci-wl-btn{width:100%;padding:16px;background:var(--acid);color:var(--black);border:none;font-size:13px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;transition:opacity .15s}
-.ci-wl-btn:hover{opacity:0.9}
-.ci-wl-btn.added{background:#1A2A0A;color:var(--acid);border:1px solid var(--acid)}
-.ci-notes{margin-top:20px;font-size:13px;color:#888;line-height:1.7;border-top:1px solid #1A1A1A;padding-top:20px}
+.ci-rate{font-size:32px;font-weight:800;color:var(--navy)}
+.ci-rate-unit{font-size:13px;color:var(--muted)}
+.ci-wl-btn{width:100%;padding:16px;background:var(--yellow);color:var(--navy);border:none;border-radius:4px;font-size:13px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;transition:transform .15s}
+.ci-wl-btn:hover{transform:translateY(-2px)}
+.ci-wl-btn.added{background:var(--navy);color:#fff}
+.ci-notes{margin-top:20px;font-size:13px;color:var(--muted);line-height:1.7;border-top:1px solid var(--line);padding-top:20px}
 
-/* Fullscreen lightbox */
-.lb-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.95);z-index:300;display:none;align-items:center;justify-content:center;flex-direction:column}
+/* Fullscreen lightbox (kept dark for viewing) */
+.lb-overlay{position:fixed;inset:0;background:rgba(20,18,12,0.95);z-index:300;display:none;align-items:center;justify-content:center;flex-direction:column}
 .lb-overlay.show{display:flex}
 .lb-img{max-width:92vw;max-height:82vh;object-fit:contain}
 .lb-close{position:absolute;top:20px;right:24px;background:none;border:none;color:#fff;font-size:34px;cursor:pointer;line-height:1}
-.lb-arrow{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.08);border:1px solid #333;color:#fff;width:52px;height:52px;font-size:26px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.lb-arrow:hover{background:var(--acid);color:#000;border-color:var(--acid)}
+.lb-arrow{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.1);border:1px solid #555;color:#fff;width:52px;height:52px;font-size:26px;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:50%}
+.lb-arrow:hover{background:var(--yellow);color:var(--navy);border-color:var(--yellow)}
 .lb-prev{left:20px}.lb-next{right:20px}
-.lb-counter{position:absolute;bottom:24px;left:0;right:0;text-align:center;color:#888;font-size:12px;letter-spacing:0.1em}
+.lb-counter{position:absolute;bottom:24px;left:0;right:0;text-align:center;color:#aaa;font-size:12px;letter-spacing:0.1em}
 
-/* ══ CATALOGUE FOOTER ══ */
-.cat-footer-bar{background:var(--black);padding:36px 20px 48px;text-align:center;border-top:1px solid #1A1A1A;margin-top:2px}
-.cat-footer-brand{font-family:"Courier New",monospace;font-weight:900;font-size:18px;letter-spacing:0.04em;color:var(--white);margin-bottom:10px}
-.cat-footer-brand span{color:var(--acid)}
-.cat-footer-contact{font-size:11px;color:#555;letter-spacing:0.06em;margin-bottom:18px;line-height:1.6}
-.cat-footer-staff{background:transparent;border:1px solid #2A2A2A;color:#666;padding:9px 20px;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;transition:all .15s}
-.cat-footer-staff:hover{border-color:var(--acid);color:var(--acid)}
-body.theme-light .cat-footer-bar{background:#FAFAF5;border-top-color:#E5E5E0}
-body.theme-light .cat-footer-brand{color:#1A1A1A}
-body.theme-light .cat-footer-contact{color:#999}
-body.theme-light .cat-footer-staff{border-color:#D5D5CE;color:#888}
-body.theme-light .cat-footer-staff:hover{border-color:#6F9C00;color:#6F9C00}
-
-/* ══ LIGHT THEME OVERRIDES (client toggle) ══ */
-body.theme-light #page-catalogue{background:#FAFAF5}
-body.theme-light .cat-hero-banner{background:#FAFAF5}
-body.theme-light .hero-collage img{filter:brightness(0.97) grayscale(0.05)}
-body.theme-light .hero-overlay{background:radial-gradient(ellipse at center, rgba(250,250,245,0.50) 0%, rgba(250,250,245,0.80) 68%, rgba(250,250,245,0.94) 100%)}
-body.theme-light .hero-intro{color:#1A1A1A}
-body.theme-light .hero-tagline{color:#6F9C00}
-body.theme-light .theme-toggle{background:rgba(255,255,255,0.7);border-color:#D5D5CE;color:#1A1A1A}
-body.theme-light .theme-toggle:hover{border-color:#6F9C00;color:#6F9C00}
-body.theme-light .hero-back{background:rgba(255,255,255,0.7);border-color:#D5D5CE;color:#1A1A1A}
-body.theme-light .cat-search-wrap{background:#FAFAF5}
-body.theme-light .cat-search{background:#fff;border-color:#DDD;color:#1A1A1A}
-body.theme-light .cat-search::placeholder{color:#999}
-body.theme-light .cat-result-count{color:#999}
-body.theme-light .filter-bar{background:#FAFAF5}
-body.theme-light .filter-btn{color:#777;border-color:#D5D5CE}
-body.theme-light .filter-btn:hover{border-color:#6F9C00;color:#5A7D00}
-body.theme-light .filter-btn.active{background:#1A1A1A;color:#fff;border-color:#1A1A1A}
-body.theme-light .subfilter-bar{background:#FAFAF5;border-bottom-color:#E5E5E0}
-body.theme-light .subfilter-btn{background:#F0F0EA;color:#777;border-color:#DDD}
-body.theme-light .subfilter-btn.active{background:#1A1A1A;color:var(--acid);border-color:#1A1A1A}
-body.theme-light .cat-grid{background:transparent}
-body.theme-light .cat-card{box-shadow:0 2px 10px rgba(0,0,0,0.08)}
-body.theme-light .cat-card:hover{box-shadow:0 10px 26px rgba(0,0,0,0.14)}
-/* Detail page light */
-body.theme-light #page-cat-item{background:#FAFAF5}
-body.theme-light #page-cat-item .cat-header{background:#FAFAF5}
-body.theme-light #page-cat-item .cat-tagline{color:#6F9C00}
-body.theme-light .ci-name{color:#1A1A1A}
-body.theme-light .ci-id{color:#999}
-body.theme-light .ci-main-photo{background:#F0F0EA;border-color:#E0E0DA}
-body.theme-light .ci-thumb{background:#F0F0EA;border-color:#DDD}
-body.theme-light .ci-info{color:#1A1A1A}
-body.theme-light .ci-tag{background:#F0F0EA;color:#666;border-color:#E0E0DA}
-body.theme-light .ci-specs{border-top-color:#E5E5E0}
-body.theme-light .ci-spec-row{border-bottom-color:#E5E5E0}
-body.theme-light .ci-spec-val{color:#1A1A1A}
-body.theme-light .ci-notes{color:#666;border-top-color:#E5E5E0}
+/* Footer */
+.cat-footer-bar{background:var(--navy);padding:40px 26px 48px;text-align:center;margin-top:10px}
+.cat-footer-brand{font-family:'Fraunces',serif;font-weight:700;font-size:24px;color:var(--yellow);margin-bottom:12px}
+.cat-footer-contact{font-size:12px;color:#B9C2D8;letter-spacing:0.03em;margin-bottom:20px;line-height:1.6}
+.cat-footer-staff{background:transparent;border:1px solid #3A4D77;color:#9FB0D0;padding:9px 22px;border-radius:30px;font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;transition:all .15s}
+.cat-footer-staff:hover{border-color:var(--yellow);color:var(--yellow)}
 
 /* Wishlist drawer */
 .drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:200;display:none}
@@ -624,35 +608,80 @@ body.theme-light .ci-notes{color:#666;border-top-color:#E5E5E0}
 
 <!-- ══════════ PAGE: CATALOGUE ══════════ -->
 <div class="page" id="page-catalogue">
-  <div class="cat-hero-banner" id="cat-hero-banner">
-    <div class="hero-collage" id="hero-collage"></div>
-    <div class="hero-overlay"></div>
-    <button id="cat-back-btn" onclick="showPage('page-home')" class="hero-back">←</button>
-    <div class="hero-top-right">
-      <button class="theme-toggle" onclick="toggleTheme()">☀ Light</button>
-      <button class="wl-btn" onclick="openDrawer()">Wishlist <span class="wl-count" id="wl-count">0</span></button>
+
+  <!-- Top navigation -->
+  <nav class="nav">
+    <button id="cat-back-btn" onclick="showPage('page-home')" class="nav-back">←</button>
+    <div class="nav-logo" onclick="scrollTop()">
+      <div class="nav-logo-mark">Propeller</div>
+      <div class="nav-logo-sub">Props &amp; Costumes</div>
     </div>
-    <div class="hero-center">
-      <img src="logo.png" class="hero-logo" id="cat-logo" onclick="catLogoClick()" alt="Propeller">
-      <div class="hero-tagline">Props &amp; Costumes — Tbilisi</div>
-      <div class="hero-intro">Furniture, props &amp; costume rental for film, television &amp; photography</div>
-      <button class="hero-scroll" onclick="scrollToCollection()">Browse the collection ↓</button>
+    <div class="nav-links" id="nav-links"></div>
+    <div class="nav-right">
+      <button class="nav-icon" onclick="focusSearch()" aria-label="Search">⌕</button>
+      <button class="nav-wl" onclick="openDrawer()">♥ Wishlist <span class="nav-wl-count" id="wl-count">0</span></button>
     </div>
-  </div>
+  </nav>
+
+  <!-- Hero -->
+  <header class="hero">
+    <svg class="hero-shape hero-shape-blue" viewBox="0 0 200 200" aria-hidden="true"><path d="M40,90 C30,40 90,20 130,35 C175,52 185,110 160,145 C135,180 70,180 50,150 C35,128 48,120 40,90 Z" fill="currentColor"/></svg>
+    <svg class="hero-shape hero-shape-green" viewBox="0 0 120 200" aria-hidden="true"><path d="M60,195 C58,150 58,140 55,120 C75,118 92,100 90,72 C108,80 118,60 110,42 C95,48 92,60 88,66 C84,40 64,30 60,8 C56,30 36,40 32,66 C28,60 25,48 10,42 C2,60 12,80 30,72 C28,100 45,118 65,120 C62,140 62,150 60,195 Z" fill="currentColor"/></svg>
+    <svg class="hero-shape hero-shape-yellow" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="50" fill="currentColor"/></svg>
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <h1 class="hero-title">Spaces for<br>Storytelling<span class="dot">.</span></h1>
+        <p class="hero-sub">Furniture, props and costumes<br>for film, photography and events.</p>
+        <button class="hero-cta" onclick="scrollToCollection()">Browse the collection →</button>
+      </div>
+      <div class="hero-photo" id="hero-photo"></div>
+    </div>
+  </header>
+
+  <!-- Search -->
   <div class="cat-search-wrap" id="cat-search-anchor">
-    <input class="cat-search" id="cat-search" type="text" placeholder="Search items — e.g. blue sofa, art deco, mirror..." oninput="onCatSearch(this.value)" autocomplete="off">
+    <div class="cat-search-box">
+      <span class="cat-search-ic">⌕</span>
+      <input class="cat-search" id="cat-search" type="text" placeholder="Search items — e.g. blue sofa, art deco, mirror…" oninput="onCatSearch(this.value)" autocomplete="off">
+    </div>
     <span class="cat-result-count" id="cat-result-count"></span>
   </div>
+
+  <!-- Category pills -->
   <div class="filter-bar" id="cat-filters"></div>
   <div class="subfilter-bar" id="cat-subfilters"></div>
+
   <div class="page-body">
     <div class="cat-grid" id="cat-grid"></div>
+
+    <!-- Feature row -->
+    <div class="features">
+      <div class="feature">
+        <svg class="feature-ic feat-blue" viewBox="0 0 60 60" aria-hidden="true"><path d="M30,56 C28,42 28,40 26,34 C36,33 44,24 43,12 C52,16 57,7 53,-1 C45,2 44,8 42,11 C40,-1 31,-5 30,-15 C29,-5 20,-1 18,11 C16,8 15,2 7,-1 C3,7 8,16 17,12 C16,24 24,33 34,34 C32,40 32,42 30,56 Z" fill="currentColor"/></svg>
+        <div class="feature-txt"><div class="feature-title">Rent, don't buy</div><div class="feature-sub">Premium pieces without commitment.</div></div>
+      </div>
+      <div class="feature">
+        <svg class="feature-ic feat-green" viewBox="0 0 60 60" aria-hidden="true"><path d="M30,58 C29,40 29,34 27,28 C40,27 48,14 46,2 C30,6 26,20 28,30 C24,16 12,10 2,12 C8,30 22,34 28,32 C30,40 30,46 30,58 Z" fill="currentColor"/></svg>
+        <div class="feature-txt"><div class="feature-title">Carefully curated</div><div class="feature-sub">Design-forward pieces for every occasion.</div></div>
+      </div>
+      <div class="feature">
+        <svg class="feature-ic feat-yellow" viewBox="0 0 60 60" aria-hidden="true"><circle cx="30" cy="30" r="26" fill="currentColor"/></svg>
+        <div class="feature-txt"><div class="feature-title">Delivery &amp; pickup</div><div class="feature-sub">Quick and reliable across the city.</div></div>
+      </div>
+      <div class="feature">
+        <svg class="feature-ic feat-red" viewBox="0 0 60 60" aria-hidden="true"><path d="M30,58 C28,42 30,30 38,20 C30,24 26,34 28,30 C26,18 16,12 8,14 C12,30 24,32 28,34 C26,30 30,46 30,58 Z M30,30 C34,22 44,18 52,20 C48,34 36,32 32,30 Z" fill="currentColor"/></svg>
+        <div class="feature-txt"><div class="feature-title">Sustainable choice</div><div class="feature-sub">Better for the planet, smarter for you.</div></div>
+      </div>
+    </div>
+
+    <!-- Footer -->
     <div class="cat-footer-bar">
-      <div class="cat-footer-brand">PROP<span>ELLER</span></div>
+      <div class="cat-footer-brand">Propeller</div>
       <div class="cat-footer-contact">Levan Devdariani str., Tbilisi · +995 595 511915 · hey@propeller.ge</div>
       <button class="cat-footer-staff" onclick="goToStaff()">Staff Login</button>
     </div>
   </div>
+
   <!-- Wishlist drawer -->
   <div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
   <div class="drawer" id="wishlist-drawer">
@@ -681,21 +710,17 @@ body.theme-light .ci-notes{color:#666;border-top-color:#E5E5E0}
 
 <!-- ══════════ PAGE: CLIENT ITEM DETAIL ══════════ -->
 <div class="page" id="page-cat-item">
-  <div class="cat-header">
-    <div class="cat-hero">
-      <div style="display:flex;align-items:center;gap:12px">
-        <button onclick="showPage('page-catalogue')" style="background:none;border:none;color:#C8F135;font-size:24px;cursor:pointer;line-height:1;padding:0;font-weight:300">←</button>
-        <div>
-          <img src="logo.png" class="cat-logo-img" alt="Propeller">
-          <div class="cat-tagline">Props & Costumes — Tbilisi</div>
-        </div>
-      </div>
-      <div class="cat-back-area" style="flex-direction:row;gap:8px;align-items:center">
-        <button class="theme-toggle" onclick="toggleTheme()">☀ Light</button>
-        <button class="wl-btn" onclick="openDrawer()">Wishlist <span class="wl-count" id="wl-count-2">0</span></button>
-      </div>
+  <nav class="nav">
+    <button onclick="showPage('page-catalogue')" class="nav-icon" style="font-size:24px">←</button>
+    <div class="nav-logo" onclick="showPage('page-catalogue')">
+      <div class="nav-logo-mark">Propeller</div>
+      <div class="nav-logo-sub">Props &amp; Costumes</div>
     </div>
-  </div>
+    <div class="nav-links"></div>
+    <div class="nav-right">
+      <button class="nav-wl" onclick="openDrawer()">♥ Wishlist <span class="nav-wl-count" id="wl-count-2">0</span></button>
+    </div>
+  </nav>
   <div class="page-body" id="cat-item-body"></div>
 </div>
 
@@ -1392,6 +1417,14 @@ function renderCatalogue() {
     return '<button class="filter-btn'+(c===state.catFilter?" active":"")+'" onclick="setCatFilter(\''+escAttr(c)+'\')">'+esc(c)+' <span class="filter-count">'+n+'</span></button>';
   }).join("");
 
+  // ── Mirror categories into the top nav links (skip "All") ──
+  var navLinks = document.getElementById("nav-links");
+  if (navLinks) {
+    navLinks.innerHTML = cats.filter(function(c){ return c !== "All"; }).map(function(c) {
+      return '<button class="nav-link'+(c===state.catFilter?" active":"")+'" onclick="navCat(\''+escAttr(c)+'\')">'+esc(c)+'</button>';
+    }).join("");
+  }
+
   // ── Build second-level subcategory filters (only when a category is selected) ──
   // Subcategory cells can hold several comma-separated values, e.g. "Coffee Table, Side Table".
   // Each value becomes its own filter button, and an item shows under every one it lists.
@@ -1454,9 +1487,9 @@ function renderCatalogue() {
     if (!photos.length) {
       photoHtml = '<div class="cat-card-no-img">No photo</div>';
     } else if (photos.length === 1) {
-      photoHtml = '<img loading="lazy" src="' + esc(photos[0]) + '" style="width:100%;height:100%;object-fit:cover;display:block;">';
+      photoHtml = '<img loading="lazy" src="' + esc(photos[0]) + '" style="width:100%;height:100%;object-fit:contain;display:block;">';
     } else {
-      var imgs = photos.map(function(u){ return '<img loading="lazy" src="' + esc(u) + '" style="width:100%;height:100%;object-fit:cover;flex-shrink:0;display:block;">'; }).join("");
+      var imgs = photos.map(function(u){ return '<img loading="lazy" src="' + esc(u) + '" style="width:100%;height:100%;object-fit:contain;flex-shrink:0;display:block;">'; }).join("");
       var dots = photos.map(function(x,di){ return '<div class="slider-dot' + (di===0?' active':'') + '"></div>'; }).join("");
       photoHtml = '<div class="slider" id="sl-' + ci + '"'
         + ' ontouchstart="slS(event,' + ci + ')" ontouchmove="slM(event,' + ci + ')" ontouchend="slE(event,' + ci + ')"'
@@ -1470,8 +1503,9 @@ function renderCatalogue() {
     var hoverImg = photos.length > 1
       ? '<img class="cat-hover-img" loading="lazy" src="' + esc(photos[1]) + '" alt="">'
       : '';
+    var heart = '<button class="cat-heart' + (inWl ? ' added' : '') + '" data-id="' + esc(it.id) + '" data-name="' + esc(it.name) + '" onclick="event.stopPropagation();wlClick(this)" aria-label="Add to wishlist">' + (inWl ? '♥' : '♡') + '</button>';
     var card = '<div class="cat-card" onclick="openCatItem(\''+escAttr(it.id)+'\')">';
-    card += '<div class="cat-card-img">' + photoHtml + hoverImg;
+    card += '<div class="cat-card-img">' + photoHtml + hoverImg + heart;
     card += '</div><div class="cat-card-body">';
     card += '<div class="cat-name">' + esc(it.name) + '</div>';
     card += '<div class="cat-footer">';
@@ -1506,41 +1540,35 @@ function onCatSearch(val) {
 // ── Hero collage: fill background grid with item photos (built once) ──
 var _heroBuilt = false;
 function renderHero() {
-  var collage = document.getElementById("hero-collage");
-  if (!collage) return;
-
-  // Gather first photo of every item that has one
-  var photos = [];
-  state.items.forEach(function(it){
-    if (it.status !== "Available") return;
-    if (it.photoUrl) {
-      var first = it.photoUrl.split(",")[0].trim();
-      if (first) photos.push(first);
-    }
-  });
-  if (!photos.length) { collage.innerHTML = ""; return; }
-
-  // Shuffle for variety
-  for (var i = photos.length - 1; i > 0; i--) {
-    var j = Math.floor(Math.random() * (i + 1));
-    var tmp = photos[i]; photos[i] = photos[j]; photos[j] = tmp;
+  var photoEl = document.getElementById("hero-photo");
+  if (!photoEl) return;
+  // Use the first available item that has a photo as the hero image (placeholder for now)
+  var pick = "";
+  var avail = state.items.filter(function(it){ return it.status === "Available" && it.photoUrl; });
+  // Prefer an item whose first photo looks like a wide/room shot; otherwise just take the first
+  if (avail.length) {
+    pick = avail[0].photoUrl.split(",")[0].trim();
   }
-
-  // Fill enough tiles to cover the banner (6 cols x ~4 rows = 24; mobile 3x5=15)
-  var tileCount = 24;
-  var tiles = [];
-  for (var k = 0; k < tileCount; k++) {
-    tiles.push(photos[k % photos.length]);
+  if (pick) {
+    photoEl.style.backgroundImage = "url('" + pick + "')";
   }
-  collage.innerHTML = tiles.map(function(u){
-    return '<img loading="eager" src="' + esc(u) + '" alt="">';
-  }).join("");
   _heroBuilt = true;
 }
 
 function scrollToCollection() {
   var anchor = document.getElementById("cat-search-anchor");
   if (anchor) anchor.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+function scrollTop() {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+function focusSearch() {
+  var el = document.getElementById("cat-search");
+  if (el) { el.scrollIntoView({ behavior: "smooth", block: "center" }); setTimeout(function(){ el.focus(); }, 300); }
+}
+function navCat(cat) {
+  setCatFilter(cat);
+  scrollToCollection();
 }
 
 // ── Theme toggle (dark default / light option) ──
@@ -1556,10 +1584,8 @@ function updateThemeButtons(isLight) {
   }
 }
 function initTheme() {
-  var isLight = false;
-  try { isLight = localStorage.getItem("propeller_theme") === "light"; } catch(e){}
-  if (isLight) document.body.classList.add("theme-light");
-  updateThemeButtons(isLight);
+  // Single cream theme now — ensure no stale dark/light class remains
+  document.body.classList.remove("theme-light");
 }
 
 // ── Client item detail page ──
