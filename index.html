@@ -268,10 +268,7 @@ input,select,textarea{font-family:inherit}
 .filter-btn:hover{border-color:var(--ink)}
 .filter-btn.active{background:var(--ink);color:#fff;border-color:var(--ink)}
 .filter-count{font-size:10.5px;opacity:0.55;font-weight:700}
-.subfilter-btn{display:flex;align-items:center;justify-content:space-between;width:100%;text-align:left;padding:9px 10px;border-radius:5px;font-size:12.5px;font-weight:500;color:var(--mut);background:transparent;border:none;cursor:pointer;transition:all .12s}
-.subfilter-btn:hover{background:var(--tile);color:var(--ink)}
-.subfilter-btn.active{color:var(--ink);font-weight:700}
-.subfilter-btn.active::after{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--ink)}
+
 @media(max-width:760px){.filter-bar,.subfilter-bar{padding-left:18px;padding-right:18px}}
 
 /* ── Grid + product cards ── */
@@ -800,7 +797,7 @@ var state = {
   isEditJob   : false,
   editJobName : "",
   catFilters  : [],        // multi-select category filters (empty = All)
-  subFilter   : "All",     // second-level subcategory filter
+  subFilters  : [],        // multi-select second-level subcategory filters (empty = All)
   catSearch   : "",        // catalogue search text
   wishlist    : [],
   jobToDelete : "",
@@ -1505,7 +1502,8 @@ function renderCatalogue() {
     // Only show the sub-bar if there's more than just "All" (i.e. real subcategories exist)
     if (subs.length > 1) {
       subBar.innerHTML = subs.map(function(s) {
-        return '<button class="subfilter-btn'+(s===state.subFilter?" active":"")+'" onclick="setSubFilter(\''+escAttr(s)+'\')">'+esc(s)+'</button>';
+        var isActive = s !== "All" && state.subFilters.indexOf(s) > -1;
+        return '<div class="filter-check-row'+(isActive?" active":"")+(s==="All"?" filter-all":"")+'" onclick="event.stopPropagation();toggleSubFilter(\''+escAttr(s)+'\')"><span class="filter-name">'+esc(s)+'</span></div>';
       }).join("");
     } else {
       subBar.innerHTML = "";
@@ -1518,8 +1516,11 @@ function renderCatalogue() {
   var filtered = items;
   if (state.catFilters.length > 0) {
     filtered = filtered.filter(function(it){ return state.catFilters.indexOf(it.category) > -1; });
-    if (state.subFilter !== "All") {
-      filtered = filtered.filter(function(it){ return splitSubcats(it.subcategory).indexOf(state.subFilter) > -1; });
+    if (state.subFilters.length > 0) {
+      filtered = filtered.filter(function(it){
+        var itSubs = splitSubcats(it.subcategory);
+        return state.subFilters.some(function(s){ return itSubs.indexOf(s) > -1; });
+      });
     }
   }
 
@@ -1619,12 +1620,18 @@ function toggleCatFilter(cat) {
     if (idx > -1) { state.catFilters.splice(idx, 1); }
     else { state.catFilters.push(cat); }
   }
-  state.subFilter = "All";   // reset subcategory when category selection changes
+  state.subFilters = [];   // reset subcategory when category selection changes
   renderCatalogue();
 }
 
-function setSubFilter(sub) {
-  state.subFilter = sub;
+function toggleSubFilter(sub) {
+  if (sub === "All") {
+    state.subFilters = [];
+  } else {
+    var idx = state.subFilters.indexOf(sub);
+    if (idx > -1) { state.subFilters.splice(idx, 1); }
+    else { state.subFilters.push(sub); }
+  }
   renderCatalogue();
 }
 
@@ -1654,7 +1661,7 @@ function focusSearch() {
 }
 function navCat(cat) {
   state.catFilters = [cat];
-  state.subFilter = "All";
+  state.subFilters = [];
   renderCatalogue();
   scrollToCollection();
 }
