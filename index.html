@@ -1910,7 +1910,13 @@ function formatDate(d) {
 }
 
 function wlClick(btn) {
-  addToWishlist(btn.getAttribute('data-id'), btn.getAttribute('data-name'));
+  var id = btn.getAttribute('data-id'), name = btn.getAttribute('data-name');
+  if (state.wishlist.find(function(w){ return w.id===id; })) {
+    removeFromWishlist(id);
+    toast(name+" removed from wishlist");
+  } else {
+    addToWishlist(id, name);
+  }
 }
 
 // ── Slider ───────────────────────────────────────────────────────────────────
@@ -2063,3 +2069,4 @@ function sendInvoiceEmail(){
 </div>
 </body>
 </html>
+
