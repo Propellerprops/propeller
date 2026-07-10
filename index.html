@@ -1453,7 +1453,7 @@ function loadCatalogue(fromPage) {
 }
 
 function renderCatalogue() {
-  var items = state.items.filter(function(it){ return it.status === "Available"; });
+  var items = state.items.filter(function(it){ return it.status === "Available" && it.photoUrl && it.photoUrl.trim(); });
 
   // Build the hero collage once (uses all available item photos)
   if (!_heroBuilt) renderHero();
