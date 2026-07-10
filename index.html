@@ -1795,7 +1795,7 @@ function addToWishlist(id, name) {
   state.wishlist.push({ id:id, name:name });
   updateWlCount();
   renderCatalogue();
-  openDrawer();
+  toast(name+" added to wishlist");
 }
 
 function removeFromWishlist(id) {
