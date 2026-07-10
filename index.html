@@ -281,9 +281,9 @@ input,select,textarea{font-family:inherit}
   .cat-card:hover .cat-card-img:has(.cat-hover-img)>img:not(.cat-hover-img){opacity:0}
   .cat-card:hover .cat-hover-img{opacity:1}
 }
-.cat-heart{position:absolute;top:12px;right:12px;z-index:3;width:30px;height:30px;border-radius:50%;background:none;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--ink);transition:transform .15s;line-height:1}
-.cat-heart:hover{transform:scale(1.15)}
-.cat-heart.added{color:#C0392B}
+.cat-heart-btn{padding:6px 10px;background:#fff;color:var(--ink);border:1px solid var(--line);border-radius:4px;font-size:16px;line-height:1;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center}
+.cat-heart-btn:hover{border-color:var(--ink);transform:scale(1.1)}
+.cat-heart-btn.added{color:#C0392B;border-color:#C0392B}
 .cat-card-body{padding:12px 2px 0}
 .cat-name{font-size:13.5px;font-weight:500;color:var(--ink);margin-bottom:10px;line-height:1.3}
 .cat-footer{display:flex;justify-content:space-between;align-items:center;gap:8px}
@@ -1521,13 +1521,13 @@ function renderCatalogue() {
     var hoverImg = photos.length > 1
       ? '<img class="cat-hover-img" loading="lazy" src="' + esc(photos[1]) + '" alt="">'
       : '';
-    var heart = '<button class="cat-heart' + (inWl ? ' added' : '') + '" data-id="' + esc(it.id) + '" data-name="' + esc(it.name) + '" onclick="event.stopPropagation();wlClick(this)" aria-label="Add to wishlist">' + (inWl ? '♥' : '♡') + '</button>';
     var card = '<div class="cat-card" onclick="openCatItem(\''+escAttr(it.id)+'\')">';
-    card += '<div class="cat-card-img">' + photoHtml + hoverImg + heart;
+    card += '<div class="cat-card-img">' + photoHtml + hoverImg;
     card += '</div><div class="cat-card-body">';
     card += '<div class="cat-name">' + esc(it.name) + '</div>';
     card += '<div class="cat-footer">';
     card += '<div class="cat-rate">&#8382;' + (it.dayRate || '—') + '<span> / day</span></div>';
+    card += '<button class="cat-heart-btn' + (inWl ? ' added' : '') + '" data-id="' + esc(it.id) + '" data-name="' + esc(it.name) + '" onclick="event.stopPropagation();wlClick(this)" aria-label="Add to wishlist">' + (inWl ? '♥' : '♡') + '</button>';
     card += '</div></div></div>';
     return card;
   }).join("");
