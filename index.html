@@ -66,7 +66,7 @@ input,select,textarea{font-family:inherit}
 .btn-sm{padding:8px 14px;font-size:13px;border-radius:8px;width:auto;display:inline-block}
 
 /* ── Toast ── */
-#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:none;color:#1B1813;padding:0;border-radius:0;border:none;font-size:14px;font-weight:600;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;max-width:320px;text-align:center}
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#fff;color:#1B1813;padding:12px 20px;border-radius:8px;border:1px solid #D9D9D9;font-size:14px;font-weight:600;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;max-width:320px;text-align:center;box-shadow:0 6px 18px rgba(27,24,19,0.10)}
 #toast.show{opacity:1}
 
 /* ── Loading ── */
@@ -1791,11 +1791,11 @@ document.addEventListener("keydown", function(e){
 });
 
 function addToWishlist(id, name) {
-  if (state.wishlist.find(function(w){ return w.id===id; })) { toast(name+" already in wishlist"); return; }
+  if (state.wishlist.find(function(w){ return w.id===id; })) { toast("Already in wishlist"); return; }
   state.wishlist.push({ id:id, name:name });
   updateWlCount();
   renderCatalogue();
-  toast(name+" added to wishlist");
+  toast("Added to wishlist");
 }
 
 function removeFromWishlist(id) {
@@ -1913,7 +1913,7 @@ function wlClick(btn) {
   var id = btn.getAttribute('data-id'), name = btn.getAttribute('data-name');
   if (state.wishlist.find(function(w){ return w.id===id; })) {
     removeFromWishlist(id);
-    toast(name+" removed from wishlist");
+    toast("Removed from wishlist");
   } else {
     addToWishlist(id, name);
   }
