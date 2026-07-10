@@ -11,7 +11,7 @@
 /* ── Brand tokens ── */
 :root{
   /* Client / Propeller identity (from logo + mockup) */
-  --paper:#F8F3EA;        /* page background */
+  --paper:#FAF9F6;        /* page background */
   --tile:#EFEAE0;         /* product image tiles */
   --ink:#1B1813;          /* near-black text */
   --mut:#8F8779;          /* muted text */
@@ -247,7 +247,13 @@ input,select,textarea{font-family:inherit}
 @media(max-width:760px){.cat-search-wrap{padding:20px 18px 2px}}
 
 /* ── Filter pills ── */
+.filter-toggle-row{padding:16px 34px 0;max-width:1448px;margin:0 auto;width:100%}
+.filter-toggle-btn{padding:10px 18px;border-radius:4px;font-size:11px;font-weight:800;color:var(--ink);background:#fff;border:1px solid var(--line);cursor:pointer;letter-spacing:0.08em;text-transform:uppercase;transition:all .15s;display:inline-flex;align-items:center;gap:8px}
+.filter-toggle-btn:hover{border-color:var(--ink)}
+.filter-toggle-btn.open{background:var(--ink);color:#fff;border-color:var(--ink)}
 .filter-bar{padding:16px 34px 4px;display:flex;gap:9px;flex-wrap:wrap;max-width:1448px;margin:0 auto;width:100%}
+.filter-bar.collapsed{display:none}
+@media(max-width:760px){.filter-toggle-row{padding-left:18px;padding-right:18px}}
 .filter-btn{padding:9px 18px;border-radius:4px;font-size:11px;font-weight:700;color:var(--ink);background:#fff;border:1px solid var(--line);cursor:pointer;white-space:nowrap;letter-spacing:0.08em;text-transform:uppercase;transition:all .15s;display:flex;align-items:center;gap:8px}
 .filter-btn:hover{border-color:var(--ink)}
 .filter-btn.active{background:var(--ink);color:#fff;border-color:var(--ink)}
@@ -283,6 +289,9 @@ input,select,textarea{font-family:inherit}
 .cat-footer{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .cat-rate{font-size:13.5px;font-weight:700;color:var(--ink);white-space:nowrap}
 .cat-rate span{font-size:11px;font-weight:400;color:var(--mut)}
+.cat-heart-btn{padding:6px 10px;background:#fff;color:var(--ink);border:1px solid var(--line);border-radius:4px;font-size:16px;line-height:1;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center}
+.cat-heart-btn:hover{border-color:var(--ink);transform:scale(1.1)}
+.cat-heart-btn.added{color:#C0392B;border-color:#C0392B}
 .add-to-wl{padding:8px 13px;background:#fff;color:var(--ink);border:1px solid var(--line);border-radius:4px;font-size:9.5px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;transition:all .15s;white-space:nowrap}
 .add-to-wl:hover{border-color:var(--ink)}
 .add-to-wl.added{background:var(--yellow);color:var(--ink);border-color:var(--yellow)}
@@ -676,7 +685,10 @@ input,select,textarea{font-family:inherit}
   </div>
 
   <!-- Category pills -->
-  <div class="filter-bar" id="cat-filters"></div>
+  <div class="filter-toggle-row">
+    <button class="filter-toggle-btn" id="filter-toggle-btn" onclick="toggleFilterBar()">Filter by <span id="filter-toggle-arrow">▾</span></button>
+  </div>
+  <div class="filter-bar collapsed" id="cat-filters"></div>
   <div class="subfilter-bar" id="cat-subfilters"></div>
 
   <div class="page-body">
@@ -1531,14 +1543,13 @@ function renderCatalogue() {
     var hoverImg = photos.length > 1
       ? '<img class="cat-hover-img" loading="lazy" src="' + esc(photos[1]) + '" alt="">'
       : '';
-    var heart = '<button class="cat-heart' + (inWl ? ' added' : '') + '" data-id="' + esc(it.id) + '" data-name="' + esc(it.name) + '" onclick="event.stopPropagation();wlClick(this)" aria-label="Add to wishlist">' + (inWl ? '♥' : '♡') + '</button>';
     var card = '<div class="cat-card" onclick="openCatItem(\''+escAttr(it.id)+'\')">';
-    card += '<div class="cat-card-img">' + photoHtml + hoverImg + heart;
+    card += '<div class="cat-card-img">' + photoHtml + hoverImg;
     card += '</div><div class="cat-card-body">';
     card += '<div class="cat-name">' + esc(it.name) + '</div>';
     card += '<div class="cat-footer">';
     card += '<div class="cat-rate">&#8382;' + (it.dayRate || '—') + '<span> / day</span></div>';
-    card += '<button class="add-to-wl' + (inWl ? ' added' : '') + '" data-id="' + esc(it.id) + '" data-name="' + esc(it.name) + '" onclick="event.stopPropagation();wlClick(this)">' + (inWl ? '✓ Added' : '+ Wishlist') + '</button>';
+    card += '<button class="cat-heart-btn' + (inWl ? ' added' : '') + '" data-id="' + esc(it.id) + '" data-name="' + esc(it.name) + '" onclick="event.stopPropagation();wlClick(this)" aria-label="Add to wishlist">' + (inWl ? '♥' : '♡') + '</button>';
     card += '</div></div></div>';
     return card;
   }).join("");
@@ -1547,6 +1558,22 @@ function renderCatalogue() {
 function splitSubcats(raw) {
   // "Coffee Table, Side Table" -> ["Coffee Table","Side Table"]; trims blanks
   return String(raw||"").split(",").map(function(s){ return s.trim(); }).filter(Boolean);
+}
+
+function toggleFilterBar() {
+  var bar = document.getElementById("cat-filters");
+  var btn = document.getElementById("filter-toggle-btn");
+  var arrow = document.getElementById("filter-toggle-arrow");
+  var isOpen = !bar.classList.contains("collapsed");
+  if (isOpen) {
+    bar.classList.add("collapsed");
+    btn.classList.remove("open");
+    arrow.textContent = "▾";
+  } else {
+    bar.classList.remove("collapsed");
+    btn.classList.add("open");
+    arrow.textContent = "▴";
+  }
 }
 
 function setCatFilter(cat) {
