@@ -11,7 +11,7 @@
 /* ── Brand tokens ── */
 :root{
   /* Client / Propeller identity (from logo + mockup) */
-  --paper:#FAF9F6;        /* page background */
+  --paper:#F8F3EA;        /* page background */
   --tile:#EFEAE0;         /* product image tiles */
   --ink:#1B1813;          /* near-black text */
   --mut:#8F8779;          /* muted text */
@@ -247,7 +247,13 @@ input,select,textarea{font-family:inherit}
 @media(max-width:760px){.cat-search-wrap{padding:20px 18px 2px}}
 
 /* ── Filter pills ── */
+.filter-toggle-row{padding:16px 34px 0;max-width:1448px;margin:0 auto;width:100%}
+.filter-toggle-btn{padding:10px 18px;border-radius:4px;font-size:11px;font-weight:800;color:var(--ink);background:#fff;border:1px solid var(--line);cursor:pointer;letter-spacing:0.08em;text-transform:uppercase;transition:all .15s;display:inline-flex;align-items:center;gap:8px}
+.filter-toggle-btn:hover{border-color:var(--ink)}
+.filter-toggle-btn.open{background:var(--ink);color:#fff;border-color:var(--ink)}
 .filter-bar{padding:16px 34px 4px;display:flex;gap:9px;flex-wrap:wrap;max-width:1448px;margin:0 auto;width:100%}
+.filter-bar.collapsed{display:none}
+@media(max-width:760px){.filter-toggle-row{padding-left:18px;padding-right:18px}}
 .filter-btn{padding:9px 18px;border-radius:4px;font-size:11px;font-weight:700;color:var(--ink);background:#fff;border:1px solid var(--line);cursor:pointer;white-space:nowrap;letter-spacing:0.08em;text-transform:uppercase;transition:all .15s;display:flex;align-items:center;gap:8px}
 .filter-btn:hover{border-color:var(--ink)}
 .filter-btn.active{background:var(--ink);color:#fff;border-color:var(--ink)}
@@ -422,25 +428,6 @@ input,select,textarea{font-family:inherit}
 .inv-btn-skip{background:#F0EDE8;color:#1A1A2E;font-size:13px}
 .inv-email-form{background:#fff;border-radius:14px;padding:16px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,0.06);display:none}
 .inv-email-form.show{display:block}
-
-/* ══════════════════════════════════════════════════════════════════════════
-   PATCH — photos sit directly on the page, no card container
-   Container aspect ratio changed 1:1 → 4:3 to match Photoroom exports
-   (1184×864 ≈ 4:3), so the image fills edge-to-edge with no letterbox.
-   ══════════════════════════════════════════════════════════════════════════ */
-.cat-card-img{background:transparent;padding:0;border-radius:10px;aspect-ratio:4/3}
-.cat-card:hover .cat-card-img{box-shadow:none}
-.cat-card:hover .cat-card-img img{transform:scale(1.03)}
-.cat-card-img img{border-radius:10px;padding:0}
-.cat-hover-img{margin:0;width:100%;height:100%;border-radius:10px}
-.cat-heart{top:14px;right:14px;display:none}
-.ci-main-photo{background:transparent;padding:0;border-radius:12px;aspect-ratio:4/3}
-.ci-main-photo img{border-radius:12px}
-.ci-thumb{background:transparent;padding:0}
-
-/* Product names in the grid use Fraunces (matches "Spaces for Storytelling" + detail page title) */
-.cat-name{font-family:'Fraunces',serif;font-weight:500;letter-spacing:-0.005em;color:#665D50}
-.ci-name{color:#665D50}
 </style>
 </head>
 <body>
@@ -676,7 +663,10 @@ input,select,textarea{font-family:inherit}
   </div>
 
   <!-- Category pills -->
-  <div class="filter-bar" id="cat-filters"></div>
+  <div class="filter-toggle-row">
+    <button class="filter-toggle-btn" id="filter-toggle-btn" onclick="toggleFilterBar()">Filter by <span id="filter-toggle-arrow">▾</span></button>
+  </div>
+  <div class="filter-bar collapsed" id="cat-filters"></div>
   <div class="subfilter-bar" id="cat-subfilters"></div>
 
   <div class="page-body">
@@ -1538,7 +1528,6 @@ function renderCatalogue() {
     card += '<div class="cat-name">' + esc(it.name) + '</div>';
     card += '<div class="cat-footer">';
     card += '<div class="cat-rate">&#8382;' + (it.dayRate || '—') + '<span> / day</span></div>';
-    card += '<button class="add-to-wl' + (inWl ? ' added' : '') + '" data-id="' + esc(it.id) + '" data-name="' + esc(it.name) + '" onclick="event.stopPropagation();wlClick(this)">' + (inWl ? '✓ Added' : '+ Wishlist') + '</button>';
     card += '</div></div></div>';
     return card;
   }).join("");
@@ -1547,6 +1536,22 @@ function renderCatalogue() {
 function splitSubcats(raw) {
   // "Coffee Table, Side Table" -> ["Coffee Table","Side Table"]; trims blanks
   return String(raw||"").split(",").map(function(s){ return s.trim(); }).filter(Boolean);
+}
+
+function toggleFilterBar() {
+  var bar = document.getElementById("cat-filters");
+  var btn = document.getElementById("filter-toggle-btn");
+  var arrow = document.getElementById("filter-toggle-arrow");
+  var isOpen = !bar.classList.contains("collapsed");
+  if (isOpen) {
+    bar.classList.add("collapsed");
+    btn.classList.remove("open");
+    arrow.textContent = "▾";
+  } else {
+    bar.classList.remove("collapsed");
+    btn.classList.add("open");
+    arrow.textContent = "▴";
+  }
 }
 
 function setCatFilter(cat) {
@@ -1642,8 +1647,8 @@ function openCatItem(id) {
 
   var rateBlock = '<div class="ci-rate-block"><div class="ci-rate">&#8382;'+(it.dayRate||'—')+'</div><div class="ci-rate-unit">/ day</div></div>';
 
-  var wlBtn = '<button class="ci-wl-btn'+(inWl?' added':'')+'" data-id="'+esc(it.id)+'" data-name="'+esc(it.name)+'" onclick="ciWlClick(this)">'
-    + (inWl ? '✓ Added to wishlist' : '+ Add to wishlist') + '</button>';
+  var wlBtn = '<button class="ci-wl-btn'+(inWl?' added':'')+'" data-id="'+esc(it.id)+'" data-name="'+esc(it.name)+'" onclick="ciWlClick(this)" aria-label="Add to wishlist">'
+    + (inWl ? '♥ Added to wishlist' : '♡ Add to wishlist') + '</button>';
 
   var notes = it.notes ? '<div class="ci-notes">'+esc(it.notes)+'</div>' : '';
 
@@ -1682,12 +1687,12 @@ function ciWlClick(btn) {
     // already added — remove (toggle)
     removeFromWishlist(id);
     btn.classList.remove("added");
-    btn.textContent = "+ Add to wishlist";
+    btn.textContent = "♡ Add to wishlist";
   } else {
     state.wishlist.push({ id:id, name:name });
     updateWlCount();
     btn.classList.add("added");
-    btn.textContent = "✓ Added to wishlist";
+    btn.textContent = "♥ Added to wishlist";
   }
   document.getElementById("wl-count-2").textContent = state.wishlist.length;
 }
