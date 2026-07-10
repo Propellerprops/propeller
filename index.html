@@ -257,7 +257,8 @@ input,select,textarea{font-family:inherit}
 .filter-check-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 10px;border-radius:5px;cursor:pointer;font-size:13px;color:var(--ink);transition:all .12s}
 .filter-check-row:hover{background:var(--tile)}
 .filter-name{display:inline-block;padding:3px 8px;border-radius:4px;border:1px solid transparent;width:fit-content}
-.filter-check-row.active .filter-name{border:1px solid var(--ink);font-weight:700}
+.filter-check-row.active .filter-name{border:1px solid var(--ink)}
+.filter-check-row.filter-all .filter-name{font-weight:700}
 .filter-check-row .filter-count{font-size:11px;opacity:0.55;font-weight:700}
 @media(max-width:760px){.filter-toggle-row{padding-left:18px;padding-right:18px}}
 .filter-btn{padding:9px 18px;border-radius:4px;font-size:11px;font-weight:700;color:var(--ink);background:#fff;border:1px solid var(--line);cursor:pointer;white-space:nowrap;letter-spacing:0.08em;text-transform:uppercase;transition:all .15s;display:flex;align-items:center;gap:8px}
@@ -1464,7 +1465,7 @@ function renderCatalogue() {
     var n = c === "All" ? items.length : items.filter(function(it){ return it.category === c; }).length;
     var checked = c === "All" ? state.catFilters.length === 0 : state.catFilters.indexOf(c) > -1;
     var isActive = c !== "All" && checked;
-    return '<div class="filter-check-row'+(isActive?' active':'')+'" onclick="event.stopPropagation();toggleCatFilter(\''+escAttr(c)+'\')">'
+    return '<div class="filter-check-row'+(isActive?' active':'')+(c==="All"?' filter-all':'')+'" onclick="event.stopPropagation();toggleCatFilter(\''+escAttr(c)+'\')">'
       + '<span class="filter-name">'+esc(c)+'</span><span class="filter-count">'+n+'</span>'
       + '</div>';
   }).join("");
