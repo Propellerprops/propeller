@@ -240,7 +240,7 @@ input,select,textarea{font-family:inherit}
 /* ── Search row ── */
 .cat-search-wrap{padding:26px 34px 4px;display:flex;align-items:center;gap:18px;max-width:1448px;margin:0 auto;width:100%}
 .cat-search-box{flex:1;display:flex;align-items:center;gap:11px;background:#fff;border:1px solid var(--line);border-radius:40px;padding:13px 22px}
-.cat-search-ic{color:var(--mut);font-size:16px}
+.cat-search-ic{color:var(--mut);font-size:22px}
 .cat-search{flex:1;background:none;border:none;color:var(--ink);font-size:14.5px;outline:none}
 .cat-search::placeholder{color:var(--mut)}
 .cat-result-count{font-size:10.5px;color:var(--mut);letter-spacing:0.12em;text-transform:uppercase;white-space:nowrap;font-weight:700}
@@ -685,9 +685,8 @@ input,select,textarea{font-family:inherit}
   <div class="cat-search-wrap" id="cat-search-anchor">
     <div class="cat-search-box">
       <span class="cat-search-ic">⌕</span>
-      <input class="cat-search" id="cat-search" type="text" placeholder="Search items — e.g. blue sofa, art deco, mirror…" oninput="onCatSearch(this.value)" autocomplete="off">
+      <input class="cat-search" id="cat-search" type="text" placeholder="Search" oninput="onCatSearch(this.value)" autocomplete="off">
     </div>
-    <span class="cat-result-count" id="cat-result-count"></span>
   </div>
 
   <!-- Category pills -->
@@ -1680,6 +1679,7 @@ var _ciCur = 0;       // current main photo index
 function openCatItem(id) {
   var it = state.items.find(function(x){ return x.id === id; });
   if (!it) { toast("Item not found"); return; }
+  if (!it.photoUrl || !it.photoUrl.trim()) { toast("Item not found"); return; }
 
   _ciPhotos = it.photoUrl ? it.photoUrl.split(",").map(function(u){ return u.trim(); }).filter(Boolean) : [];
   _ciCur = 0;
