@@ -275,7 +275,7 @@ input,select,textarea{font-family:inherit}
 #page-catalogue .page-body,#page-cat-item .page-body{max-width:1448px;margin:0 auto;width:100%}
 .cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(225px,1fr));gap:26px 22px;padding:24px 34px 50px}
 @media(max-width:760px){.cat-grid{grid-template-columns:repeat(2,1fr);gap:20px 14px;padding:18px 18px 40px}}
-.cat-card{background:transparent;border:none;position:relative;cursor:pointer}
+.cat-card{background:transparent;border:none;position:relative;cursor:pointer;display:block;text-decoration:none;color:inherit}
 .cat-card-img{overflow:hidden;position:relative;aspect-ratio:1/1;background:var(--tile);border-radius:6px;padding:16px;transition:box-shadow .2s}
 .cat-card:hover .cat-card-img{box-shadow:0 10px 26px rgba(27,24,19,0.10)}
 .cat-card-img img{width:100%;height:100%;object-fit:contain;display:block;transition:transform .3s;mix-blend-mode:multiply}
@@ -661,7 +661,7 @@ input,select,textarea{font-family:inherit}
   <!-- Top navigation -->
   <nav class="nav">
     <button id="cat-back-btn" onclick="showPage('page-home')" class="nav-back">←</button>
-    <img src="logo_.svg" class="nav-logo-img" onclick="scrollTop()" alt="Propeller — Props &amp; Costumes">
+    <img src="logo_header.svg" class="nav-logo-img" onclick="scrollTop()" alt="Propeller — Props &amp; Costumes">
     <div class="nav-links" id="nav-links"></div>
     <div class="nav-right">
       <button class="nav-icon" onclick="focusSearch()" aria-label="Search">⌕</button>
@@ -761,7 +761,7 @@ input,select,textarea{font-family:inherit}
 <div class="page" id="page-cat-item">
   <nav class="nav">
     <button onclick="showPage('page-catalogue')" class="nav-icon" style="font-size:24px">←</button>
-    <img src="logo_.svg" class="nav-logo-img" onclick="showPage('page-catalogue')" alt="Propeller — Props &amp; Costumes">
+    <img src="logo_header.svg" class="nav-logo-img" onclick="showPage('page-catalogue')" alt="Propeller — Props &amp; Costumes">
     <div class="nav-links"></div>
     <div class="nav-right">
       <button class="nav-wl" onclick="openDrawer()">♡ Wishlist <span class="nav-wl-count" id="wl-count-2">0</span></button>
@@ -1566,14 +1566,14 @@ function renderCatalogue() {
     var hoverImg = photos.length > 1
       ? '<img class="cat-hover-img" loading="lazy" src="' + esc(photos[1]) + '" alt="">'
       : '';
-    var card = '<div class="cat-card" onclick="openCatItem(\''+escAttr(it.id)+'\')">';
+    var card = '<a href="?id='+encodeURIComponent(it.id)+'" class="cat-card" onclick="event.preventDefault();openCatItem(\''+escAttr(it.id)+'\')">';
     card += '<div class="cat-card-img">' + photoHtml + hoverImg;
     card += '</div><div class="cat-card-body">';
     card += '<div class="cat-name">' + esc(it.name) + '</div>';
     card += '<div class="cat-footer">';
     card += '<div class="cat-rate">&#8382;' + (it.dayRate || '—') + '<span> / day</span></div>';
     card += '<button class="cat-heart-btn' + (inWl ? ' added' : '') + '" data-id="' + esc(it.id) + '" data-name="' + esc(it.name) + '" onclick="event.stopPropagation();wlClick(this)" aria-label="Add to wishlist">' + (inWl ? '♥' : '♡') + '</button>';
-    card += '</div></div></div>';
+    card += '</div></div></a>';
     return card;
   }).join("");
 }
