@@ -692,7 +692,7 @@ input,select,textarea{font-family:inherit}
   <!-- Category pills -->
   <div class="filter-toggle-row">
     <div class="filter-popup-wrap">
-      <button class="filter-toggle-btn" id="filter-toggle-btn" onclick="toggleFilterBar()"><span id="filter-toggle-btn-label">Filter by</span> <span id="filter-toggle-arrow">▾</span></button>
+      <button class="filter-toggle-btn" id="filter-toggle-btn" onclick="toggleFilterBar()"><span id="filter-toggle-btn-label">Categories</span> <span id="filter-toggle-arrow">▾</span></button>
       <div class="filter-popup collapsed" id="filter-popup">
         <div id="cat-filters"></div>
         <div id="cat-subfilters"></div>
@@ -1473,7 +1473,7 @@ function renderCatalogue() {
   // Keep the toggle button label in sync with the current selection
   var toggleBtn = document.getElementById("filter-toggle-btn-label");
   if (toggleBtn) {
-    toggleBtn.textContent = state.catFilters.length === 0 ? "Filter by" : "Filter by (" + state.catFilters.length + ")";
+    toggleBtn.textContent = state.catFilters.length === 0 ? "Categories" : "Categories (" + state.catFilters.length + ")";
   }
 
   // ── Mirror categories into the top nav links (skip "All") ──
