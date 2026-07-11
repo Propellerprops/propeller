@@ -821,8 +821,10 @@ window.onload = function() {
   if (!wantsStaff) {
     // Everyone else → public catalogue (the default)
     state.staff = "";
-    loadCatalogue(null);
-    if (deepId) setTimeout(function(){ openCatItem(deepId.toUpperCase()); }, 600);
+    var loadPromise = loadCatalogue(null);
+    if (deepId) {
+      loadPromise.then(function(){ openCatItem(deepId.toUpperCase()); });
+    }
     return;
   }
 
@@ -1442,12 +1444,13 @@ function loadCatalogue(fromPage) {
   showLoading(false);
   if (!state.items.length) {
     document.getElementById("cat-grid").innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#8F8779;font-size:12px;letter-spacing:0.1em;text-transform:uppercase">Loading...</div>';
-    apiCall("getItems").then(function(res) {
+    return apiCall("getItems").then(function(res) {
       if (res.ok) state.items = res.items;
       renderCatalogue();
     }).catch(function() { renderCatalogue(); });
   } else {
     renderCatalogue();
+    return Promise.resolve();
   }
 }
 
