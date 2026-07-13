@@ -275,21 +275,7 @@ input,select,textarea{font-family:inherit}
 #page-catalogue .page-body,#page-cat-item .page-body{max-width:1448px;margin:0 auto;width:100%}
 #page-wishlist .page-body{max-width:640px;margin:0 auto;width:100%;padding:20px}
 .cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(225px,1fr));gap:26px 22px;padding:24px 34px 50px}
-.cat-teaser{padding:24px 34px 50px;max-width:1448px;margin:0 auto;width:100%}
-.cat-teaser-heading{text-align:center;font-family:'Fraunces',serif;font-size:22px;font-weight:600;color:var(--ink);letter-spacing:0.02em;margin-bottom:22px}
-.cat-teaser-featured{display:block;width:100%;aspect-ratio:16/7;overflow:hidden;border-radius:12px;margin-bottom:26px;cursor:pointer}
-.cat-teaser-featured img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s}
-.cat-teaser-featured:hover img{transform:scale(1.03)}
-.cat-teaser-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:20px}
-.cat-teaser-tile{display:flex;flex-direction:column;align-items:center;gap:10px;text-decoration:none;cursor:pointer}
-.cat-teaser-tile img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:10px;display:block;transition:transform .3s}
-.cat-teaser-tile:hover img{transform:scale(1.04)}
-.cat-teaser-label{font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--ink)}
-.cat-teaser-tile{aspect-ratio:4/3;border-radius:10px;overflow:hidden;background:var(--tile);cursor:pointer}
-.cat-teaser-tile img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}
-.cat-teaser-tile:hover img{transform:scale(1.04)}
-.cat-teaser-hint{grid-column:1/-1;text-align:center;padding:10px 20px 4px;color:var(--mut);font-size:12px;letter-spacing:0.08em;text-transform:uppercase}
-@media(max-width:760px){.cat-grid{grid-template-columns:repeat(2,1fr);gap:20px 14px;padding:18px 18px 40px}.cat-teaser-grid{grid-template-columns:repeat(2,1fr);gap:16px}.cat-teaser{padding:20px 18px 40px}.cat-teaser-featured{aspect-ratio:4/3}}
+@media(max-width:760px){.cat-grid{grid-template-columns:repeat(2,1fr);gap:20px 14px;padding:18px 18px 40px}}
 .cat-card{background:transparent;border:none;position:relative;cursor:pointer;display:block;text-decoration:none;color:inherit}
 .cat-card-img{overflow:hidden;position:relative;aspect-ratio:1/1;background:var(--tile);border-radius:6px;padding:16px;transition:box-shadow .2s}
 .cat-card:hover .cat-card-img{box-shadow:0 10px 26px rgba(27,24,19,0.10)}
@@ -722,7 +708,6 @@ input,select,textarea{font-family:inherit}
   </div>
 
   <div class="page-body">
-    <div class="cat-teaser" id="cat-teaser"></div>
     <div class="cat-grid" id="cat-grid"></div>
 
     <!-- Feature row -->
@@ -824,7 +809,6 @@ var state = {
   isEditJob   : false,
   editJobName : "",
   catFilters  : [],        // multi-select category filters (empty = All)
-  hasBrowsed  : false,     // true once user picks a category (or searches) — reveals the full grid
   subFilters  : [],        // multi-select second-level subcategory filters (empty = All)
   catSearch   : "",        // catalogue search text
   wishlist    : [],
@@ -1577,42 +1561,7 @@ function renderCatalogue() {
   var rc = document.getElementById("cat-result-count");
   if (rc) rc.textContent = filtered.length + (filtered.length === 1 ? " item" : " items");
 
-  var teaserEl = document.getElementById("cat-teaser");
   var grid = document.getElementById("cat-grid");
-
-  var isBrowsing = state.hasBrowsed || state.catSearch.trim() !== "";
-
-  if (!isBrowsing) {
-    // Landing view: 3 hand-picked photos with custom labels, instead of the full item grid.
-    grid.innerHTML = "";
-    grid.style.display = "none";
-    teaserEl.style.display = "block";
-    var picks = [
-      { id: "FO-124", label: "Side Tables" },
-      { id: "FO-161", label: "Coffee Tables" },
-      { id: "FO-054", label: "Chairs" }
-    ];
-    var featuredId = "FO-035";
-    var featured = items.find(function(x){ return x.id === featuredId; }) || state.items.find(function(x){ return x.id === featuredId; });
-    var featuredPhoto = featured && featured.photoUrl ? featured.photoUrl.split(",")[0].trim() : "";
-    var featuredHtml = featuredPhoto
-      ? '<a href="?id='+encodeURIComponent(featuredId)+'" class="cat-teaser-featured" onclick="event.preventDefault();openCatItem(\''+escAttr(featuredId)+'\')"><img loading="lazy" src="'+esc(featuredPhoto)+'" alt=""></a>'
-      : '';
-    var tiles = picks.map(function(p) {
-      var it = items.find(function(x){ return x.id === p.id; }) || state.items.find(function(x){ return x.id === p.id; });
-      var photo = it && it.photoUrl ? it.photoUrl.split(",")[0].trim() : "";
-      return '<a href="?id='+encodeURIComponent(p.id)+'" class="cat-teaser-tile" onclick="event.preventDefault();openCatItem(\''+escAttr(p.id)+'\')">'
-        + (photo ? '<img loading="lazy" src="'+esc(photo)+'" alt="">' : '')
-        + '<span class="cat-teaser-label">'+esc(p.label)+'</span>'
-        + '</a>';
-    }).join("");
-    teaserEl.innerHTML = featuredHtml + '<div class="cat-teaser-grid">' + tiles + '</div>';
-    return;
-  }
-
-  teaserEl.style.display = "none";
-  teaserEl.innerHTML = "";
-  grid.style.display = "grid";
   if (!filtered.length) {
     grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#8F8779;font-size:15px">No items match your search.</div>';
     return;
@@ -1685,7 +1634,6 @@ document.addEventListener("click", function(e) {
 });
 
 function toggleCatFilter(cat) {
-  state.hasBrowsed = true;
   if (cat === "All") {
     state.catFilters = [];
   } else {
@@ -1733,7 +1681,6 @@ function focusSearch() {
   if (el) { el.scrollIntoView({ behavior: "smooth", block: "center" }); setTimeout(function(){ el.focus(); }, 300); }
 }
 function navCat(cat) {
-  state.hasBrowsed = true;
   state.catFilters = [cat];
   state.subFilters = [];
   renderCatalogue();
