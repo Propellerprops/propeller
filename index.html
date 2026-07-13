@@ -382,6 +382,9 @@ input,select,textarea{font-family:inherit}
 .wl-form-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--mut);margin-bottom:6px;display:block;margin-top:14px}
 .wl-form input,.wl-form textarea{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:6px;font-size:15px;background:var(--paper);color:var(--ink);outline:none}
 .wl-form input:focus,.wl-form textarea:focus{border-color:var(--ink);background:#fff}
+.wl-date-range{display:flex;align-items:center;gap:8px}
+.wl-date-range input{width:auto;flex:1}
+.wl-date-sep{font-size:12px;color:var(--mut);flex-shrink:0}
 .wl-submit{width:100%;margin-top:18px;padding:15px;background:var(--yellow);color:var(--ink);border:none;border-radius:4px;font-size:12px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;transition:background .15s}
 .wl-submit:hover{background:var(--yellow-deep)}
 
@@ -760,7 +763,11 @@ input,select,textarea{font-family:inherit}
         <label class="wl-form-label">Phone / WhatsApp *</label>
         <input id="wl-phone" type="text" placeholder="+995 ...">
         <label class="wl-form-label">Shoot dates</label>
-        <input id="wl-dates" type="text" placeholder="e.g. 15 Apr – 20 Apr 2026">
+        <div class="wl-date-range">
+          <input id="wl-date-from" type="date">
+          <span class="wl-date-sep">to</span>
+          <input id="wl-date-to" type="date">
+        </div>
         <label class="wl-form-label">Notes</label>
         <textarea id="wl-notes" rows="2" placeholder="Any special requirements..."></textarea>
         <button class="wl-submit" onclick="submitWishlist()">Send Wishlist Request</button>
@@ -1875,6 +1882,13 @@ function renderWlItems() {
 function openDrawer()  { showPage("page-wishlist"); }
 function closeDrawer() { showPage("page-catalogue"); }
 
+function formatDateNice(isoStr) {
+  if (!isoStr) return "";
+  var d = new Date(isoStr + "T00:00:00");
+  var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  return d.getDate() + " " + months[d.getMonth()] + " " + d.getFullYear();
+}
+
 function submitWishlist() {
   var name    = document.getElementById("wl-name").value.trim();
   var company = document.getElementById("wl-company").value.trim();
@@ -1882,10 +1896,16 @@ function submitWishlist() {
   if (!name||!company||!phone) { toast("Please fill in name, production and phone"); return; }
   if (!state.wishlist.length)  { toast("Wishlist is empty"); return; }
   var items = state.wishlist.map(function(w){ return w.id+" — "+w.name; }).join(", ");
+  var dateFrom = document.getElementById("wl-date-from").value;
+  var dateTo   = document.getElementById("wl-date-to").value;
+  var datesStr = "";
+  if (dateFrom && dateTo) datesStr = formatDateNice(dateFrom) + " – " + formatDateNice(dateTo);
+  else if (dateFrom) datesStr = formatDateNice(dateFrom);
+  else if (dateTo) datesStr = formatDateNice(dateTo);
   showLoading(true);
   apiCall("submitRequest", {
     name:name, company:company, phone:phone,
-    dates: document.getElementById("wl-dates").value,
+    dates: datesStr,
     notes: document.getElementById("wl-notes").value,
     items: items
   }).then(function(res) {
