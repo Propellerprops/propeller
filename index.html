@@ -1580,23 +1580,24 @@ function renderCatalogue() {
   var isBrowsing = state.hasBrowsed || state.catSearch.trim() !== "";
 
   if (!isBrowsing) {
-    // Landing view: "Shop by Category" tiles — one representative photo per
-    // category, labeled, instead of the full item grid.
+    // Landing view: 3 hand-picked photos with custom labels, instead of the full item grid.
     grid.innerHTML = "";
     grid.style.display = "none";
     teaserEl.style.display = "block";
-    var catTiles = cats.filter(function(c){ return c !== "All"; }).map(function(c) {
-      var firstItem = items.find(function(it){
-        return it.category === c && it.photoUrl && it.photoUrl.trim();
-      });
-      var photo = firstItem ? firstItem.photoUrl.split(",")[0].trim() : "";
-      return '<a href="#" class="cat-teaser-tile" onclick="event.preventDefault();navCat(\''+escAttr(c)+'\')">'
+    var picks = [
+      { id: "FO-124", label: "Side Tables" },
+      { id: "FO-161", label: "Coffee Tables" },
+      { id: "FO-054", label: "Chairs" }
+    ];
+    var tiles = picks.map(function(p) {
+      var it = items.find(function(x){ return x.id === p.id; }) || state.items.find(function(x){ return x.id === p.id; });
+      var photo = it && it.photoUrl ? it.photoUrl.split(",")[0].trim() : "";
+      return '<a href="?id='+encodeURIComponent(p.id)+'" class="cat-teaser-tile" onclick="event.preventDefault();openCatItem(\''+escAttr(p.id)+'\')">'
         + (photo ? '<img loading="lazy" src="'+esc(photo)+'" alt="">' : '')
-        + '<span class="cat-teaser-label">'+esc(c)+'</span>'
+        + '<span class="cat-teaser-label">'+esc(p.label)+'</span>'
         + '</a>';
     }).join("");
-    teaserEl.innerHTML = '<div class="cat-teaser-heading">Shop by Category</div>'
-      + '<div class="cat-teaser-grid">' + catTiles + '</div>';
+    teaserEl.innerHTML = '<div class="cat-teaser-grid">' + tiles + '</div>';
     return;
   }
 
