@@ -380,10 +380,11 @@ input,select,textarea{font-family:inherit}
 .empty-wl{text-align:center;padding:30px 20px;color:var(--mut);font-size:12px;letter-spacing:0.08em;text-transform:uppercase}
 .wl-form{margin-top:16px;border-top:1px solid var(--line);padding-top:16px;display:none}
 .wl-form-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--mut);margin-bottom:6px;display:block;margin-top:14px}
-.wl-form input,.wl-form textarea{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:6px;font-size:15px;background:var(--paper);color:var(--ink);outline:none}
+.wl-form input:not([type="date"]),.wl-form textarea{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:6px;font-size:15px;background:var(--paper);color:var(--ink);outline:none}
+.wl-form input[type="date"]{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:6px;font-size:15px;background:var(--paper);outline:none}
 .wl-form input:focus,.wl-form textarea:focus{border-color:var(--ink);background:#fff}
 .wl-date-range{display:flex;align-items:center;gap:8px}
-.wl-date-range input{width:auto;flex:1;color:initial}
+.wl-date-range input{width:auto;flex:1}
 .wl-date-sep{font-size:12px;color:var(--mut);flex-shrink:0}
 .wl-submit{width:100%;margin-top:18px;padding:15px;background:var(--yellow);color:var(--ink);border:none;border-radius:4px;font-size:12px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;transition:background .15s}
 .wl-submit:hover{background:var(--yellow-deep)}
