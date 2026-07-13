@@ -381,7 +381,8 @@ input,select,textarea{font-family:inherit}
 .wl-form{margin-top:16px;border-top:1px solid var(--line);padding-top:16px;display:none}
 .wl-form-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--mut);margin-bottom:6px;display:block;margin-top:14px}
 .wl-form input:not([type="date"]),.wl-form textarea{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:6px;font-size:15px;background:var(--paper);color:var(--ink);outline:none}
-.wl-form input[type="date"]{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:6px;font-size:15px;background:var(--paper);outline:none}
+.wl-form input[type="date"]{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:6px;font-size:15px;background:var(--paper);outline:none;color:#9a958c}
+.wl-form input[type="date"].has-value{color:var(--ink)}
 .wl-form input:focus,.wl-form textarea:focus{border-color:var(--ink);background:#fff}
 .wl-date-range{display:flex;align-items:center;gap:8px}
 .wl-date-range input{width:auto;flex:1}
@@ -765,9 +766,9 @@ input,select,textarea{font-family:inherit}
         <input id="wl-phone" type="text" placeholder="+995 ...">
         <label class="wl-form-label">Shoot dates</label>
         <div class="wl-date-range">
-          <input id="wl-date-from" type="date">
+          <input id="wl-date-from" type="date" oninput="this.classList.toggle('has-value', !!this.value)">
           <span class="wl-date-sep">to</span>
-          <input id="wl-date-to" type="date">
+          <input id="wl-date-to" type="date" oninput="this.classList.toggle('has-value', !!this.value)">
         </div>
         <label class="wl-form-label">Notes</label>
         <textarea id="wl-notes" rows="2" placeholder="Any special requirements..."></textarea>
