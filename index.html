@@ -275,7 +275,12 @@ input,select,textarea{font-family:inherit}
 #page-catalogue .page-body,#page-cat-item .page-body{max-width:1448px;margin:0 auto;width:100%}
 #page-wishlist .page-body{max-width:640px;margin:0 auto;width:100%;padding:20px}
 .cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(225px,1fr));gap:26px 22px;padding:24px 34px 50px}
-@media(max-width:760px){.cat-grid{grid-template-columns:repeat(2,1fr);gap:20px 14px;padding:18px 18px 40px}}
+.cat-teaser{display:grid;grid-template-columns:repeat(auto-fill,minmax(225px,1fr));gap:26px 22px;padding:24px 34px 50px}
+.cat-teaser-tile{aspect-ratio:4/3;border-radius:10px;overflow:hidden;background:var(--tile);cursor:pointer}
+.cat-teaser-tile img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}
+.cat-teaser-tile:hover img{transform:scale(1.04)}
+.cat-teaser-hint{grid-column:1/-1;text-align:center;padding:10px 20px 4px;color:var(--mut);font-size:12px;letter-spacing:0.08em;text-transform:uppercase}
+@media(max-width:760px){.cat-grid,.cat-teaser{grid-template-columns:repeat(2,1fr);gap:20px 14px;padding:18px 18px 40px}}
 .cat-card{background:transparent;border:none;position:relative;cursor:pointer;display:block;text-decoration:none;color:inherit}
 .cat-card-img{overflow:hidden;position:relative;aspect-ratio:1/1;background:var(--tile);border-radius:6px;padding:16px;transition:box-shadow .2s}
 .cat-card:hover .cat-card-img{box-shadow:0 10px 26px rgba(27,24,19,0.10)}
@@ -708,6 +713,7 @@ input,select,textarea{font-family:inherit}
   </div>
 
   <div class="page-body">
+    <div class="cat-teaser" id="cat-teaser"></div>
     <div class="cat-grid" id="cat-grid"></div>
 
     <!-- Feature row -->
@@ -809,6 +815,7 @@ var state = {
   isEditJob   : false,
   editJobName : "",
   catFilters  : [],        // multi-select category filters (empty = All)
+  hasBrowsed  : false,     // true once user picks a category (or searches) — reveals the full grid
   subFilters  : [],        // multi-select second-level subcategory filters (empty = All)
   catSearch   : "",        // catalogue search text
   wishlist    : [],
@@ -1561,7 +1568,31 @@ function renderCatalogue() {
   var rc = document.getElementById("cat-result-count");
   if (rc) rc.textContent = filtered.length + (filtered.length === 1 ? " item" : " items");
 
+  var teaserEl = document.getElementById("cat-teaser");
   var grid = document.getElementById("cat-grid");
+
+  var isBrowsing = state.hasBrowsed || state.catSearch.trim() !== "";
+
+  if (!isBrowsing) {
+    // Landing view: show a handful of photos only, full grid stays hidden
+    // until the person picks a category (or searches).
+    grid.innerHTML = "";
+    grid.style.display = "none";
+    var teaserItems = items.slice(0, 8);
+    teaserEl.style.display = "grid";
+    teaserEl.innerHTML = teaserItems.map(function(it) {
+      var photos = it.photoUrl ? it.photoUrl.split(",").map(function(u){ return u.trim(); }).filter(Boolean) : [];
+      var photo = photos[0] || "";
+      return '<a href="?id='+encodeURIComponent(it.id)+'" class="cat-teaser-tile" onclick="event.preventDefault();openCatItem(\''+escAttr(it.id)+'\')">'
+        + (photo ? '<img loading="lazy" src="'+esc(photo)+'" alt="">' : '')
+        + '</a>';
+    }).join("") + '<div class="cat-teaser-hint">Choose a category above to browse the full collection</div>';
+    return;
+  }
+
+  teaserEl.style.display = "none";
+  teaserEl.innerHTML = "";
+  grid.style.display = "grid";
   if (!filtered.length) {
     grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#8F8779;font-size:15px">No items match your search.</div>';
     return;
@@ -1634,6 +1665,7 @@ document.addEventListener("click", function(e) {
 });
 
 function toggleCatFilter(cat) {
+  state.hasBrowsed = true;
   if (cat === "All") {
     state.catFilters = [];
   } else {
@@ -1681,6 +1713,7 @@ function focusSearch() {
   if (el) { el.scrollIntoView({ behavior: "smooth", block: "center" }); setTimeout(function(){ el.focus(); }, 300); }
 }
 function navCat(cat) {
+  state.hasBrowsed = true;
   state.catFilters = [cat];
   state.subFilters = [];
   renderCatalogue();
