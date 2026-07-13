@@ -318,8 +318,7 @@ input,select,textarea{font-family:inherit}
 @media(max-width:760px){.ci-wrap{grid-template-columns:1fr;gap:22px;padding:20px 18px 48px}}
 .ci-gallery{display:flex;flex-direction:column;gap:10px}
 .ci-main-photo{width:100%;background:var(--tile);border:none;border-radius:8px;aspect-ratio:1/1;overflow:hidden;display:flex;align-items:center;justify-content:center;cursor:zoom-in;padding:20px}
-.ci-main-photo img{width:100%;height:100%;object-fit:contain;display:block;mix-blend-mode:multiply;transition:transform .1s ease-out;transform-origin:center center}
-.ci-main-photo:hover img{transform:scale(3)}
+.ci-main-photo img{width:100%;height:100%;object-fit:contain;display:block;mix-blend-mode:multiply}
 .ci-main-noimg{color:#C6BDA8;font-size:12px;letter-spacing:0.12em;text-transform:uppercase}
 .ci-thumbs{display:flex;gap:8px;flex-wrap:wrap}
 .ci-thumb{width:70px;height:70px;object-fit:contain;border:2px solid var(--line);border-radius:6px;cursor:pointer;background:var(--tile);transition:border-color .15s;padding:5px;mix-blend-mode:multiply}
@@ -1710,7 +1709,7 @@ function openCatItem(id) {
 
   // Gallery
   var mainPhoto = _ciPhotos.length
-    ? '<div class="ci-main-photo" onclick="lbOpen(_ciCur)" onmousemove="ciZoomMove(event)"><img id="ci-main-img" src="'+esc(_ciPhotos[0])+'"></div>'
+    ? '<div class="ci-main-photo" onclick="lbOpen(_ciCur)"><img id="ci-main-img" src="'+esc(_ciPhotos[0])+'"></div>'
     : '<div class="ci-main-photo"><div class="ci-main-noimg">No photo</div></div>';
   var thumbs = "";
   if (_ciPhotos.length > 1) {
@@ -1763,16 +1762,6 @@ function openCatItem(id) {
 
 function ciSpec(label, val) {
   return '<div class="ci-spec-row"><span class="ci-spec-label">'+esc(label)+'</span><span class="ci-spec-val">'+esc(val)+'</span></div>';
-}
-
-function ciZoomMove(e) {
-  var container = e.currentTarget;
-  var img = document.getElementById("ci-main-img");
-  if (!img) return;
-  var rect = container.getBoundingClientRect();
-  var x = ((e.clientX - rect.left) / rect.width) * 100;
-  var y = ((e.clientY - rect.top) / rect.height) * 100;
-  img.style.transformOrigin = x + "% " + y + "%";
 }
 
 function ciSetPhoto(i) {
