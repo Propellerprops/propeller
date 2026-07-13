@@ -826,6 +826,14 @@ window.onload = function() {
   // Deep link to a single item (e.g. QR label ?id=FO-001) → open it in the catalogue
   var deepId = params.get("id");
 
+  // A specific item link always wins, regardless of staff status — if someone
+  // opens an item's direct URL, they should see that item, not the staff dashboard.
+  if (deepId) {
+    state.staff = "";
+    loadCatalogue(null).then(function(){ openCatItem(deepId.toUpperCase()); });
+    return;
+  }
+
   // Does this visitor want the STAFF side?
   //  - they used a staff link (?staff=...)  OR
   //  - this device was already unlocked before
@@ -834,10 +842,7 @@ window.onload = function() {
   if (!wantsStaff) {
     // Everyone else → public catalogue (the default)
     state.staff = "";
-    var loadPromise = loadCatalogue(null);
-    if (deepId) {
-      loadPromise.then(function(){ openCatItem(deepId.toUpperCase()); });
-    }
+    loadCatalogue(null);
     return;
   }
 
