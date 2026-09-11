@@ -203,7 +203,7 @@ input,select,textarea{font-family:inherit}
 /* ═══════════════════════════════════════════════════════════════════════════
    CLIENT SIDE — Propeller cream / yellow / ink  (new design)
    ═══════════════════════════════════════════════════════════════════════════ */
-#page-catalogue,#page-cat-item,#page-wishlist{background:var(--paper)}
+#page-catalogue,#page-cat-item,#page-wishlist,#page-about{background:var(--paper)}
 
 /* ── Top nav ── */
 .nav{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:22px;padding:14px 34px;background:var(--paper);border-bottom:1px solid var(--line)}
@@ -275,6 +275,9 @@ input,select,textarea{font-family:inherit}
 /* ── Grid + product cards ── */
 #page-catalogue .page-body,#page-cat-item .page-body{max-width:1448px;margin:0 auto;width:100%}
 #page-wishlist .page-body{max-width:640px;margin:0 auto;width:100%;padding:20px}
+.about-body{max-width:640px;margin:0 auto;width:100%;padding:40px 20px 80px}
+.about-title{font-family:'Fraunces',serif;font-size:30px;font-weight:600;color:var(--ink);margin-bottom:24px}
+.about-text{font-family:'General Sans',sans-serif;font-weight:400;font-size:15px;line-height:1.7;color:var(--ink);opacity:0.85;margin-bottom:18px;max-width:520px}
 .cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(225px,1fr));gap:26px 22px;padding:24px 34px 50px}
 @media(max-width:760px){.cat-grid{grid-template-columns:repeat(2,1fr);gap:20px 14px;padding:18px 18px 40px}}
 .cat-card{background:transparent;border:none;position:relative;cursor:pointer;display:block;text-decoration:none;color:inherit}
@@ -674,6 +677,7 @@ input,select,textarea{font-family:inherit}
   <nav class="nav">
     <button id="cat-back-btn" onclick="showPage('page-home')" class="nav-back">←</button>
     <img src="logo_header.svg" class="nav-logo-img" onclick="scrollTop()" alt="Propeller — Props &amp; Costumes">
+    <button class="nav-link" onclick="showPage('page-about')">About Us</button>
     <div class="nav-links" id="nav-links"></div>
     <div class="nav-right">
       <button class="nav-icon" onclick="focusSearch()" aria-label="Search">⌕</button>
@@ -741,6 +745,32 @@ input,select,textarea{font-family:inherit}
       <div class="cat-footer-contact">Levan Devdariani str., Tbilisi · +995 595 511915 · hey@propeller.ge</div>
       <button class="cat-footer-staff" onclick="goToStaff()">Staff Login</button>
     </div>
+  </div>
+</div>
+
+<!-- ══════════ PAGE: ABOUT US ══════════ -->
+<div class="page" id="page-about">
+  <nav class="nav">
+    <button onclick="showPage('page-catalogue')" class="nav-icon" style="font-size:24px">←</button>
+    <img src="logo_header.svg" class="nav-logo-img" onclick="showPage('page-catalogue')" alt="Propeller — Props &amp; Costumes">
+    <div class="nav-links"></div>
+    <div class="nav-right"></div>
+  </nav>
+  <div class="page-body about-body">
+    <h1 class="about-title">About Us</h1>
+    <p class="about-text">
+      Propeller supplies furniture, props and costumes for film, photography and events.
+      We built our collection piece by piece for productions that need pieces with real character —
+      not just filler for the background.
+    </p>
+    <p class="about-text">
+      Whether you're dressing a set, styling a shoot, or furnishing an event, we help you find
+      the right pieces quickly, with straightforward day and week rates.
+    </p>
+    <p class="about-text">
+      Have a project coming up? Browse the collection or get in touch — we're happy to help you
+      pull together exactly what you need.
+    </p>
   </div>
 </div>
 
