@@ -242,7 +242,7 @@ input,select,textarea{font-family:inherit}
 .cat-search-wrap{padding:26px 34px 4px;display:flex;align-items:center;gap:18px;max-width:1448px;margin:0 auto;width:100%}
 .cat-search-box{flex:1;display:flex;align-items:center;gap:11px;background:#fff;border:1px solid var(--line);border-radius:4px;padding:13px 22px}
 .cat-search-ic{color:var(--mut);font-size:22px}
-.cat-search{flex:1;background:none;border:none;color:var(--ink);font-size:14.5px;outline:none}
+.cat-search{flex:1;background:none;border:none;color:var(--ink);font-family:'General Sans',sans-serif;font-weight:400;font-size:14.5px;outline:none}
 .cat-search::placeholder{color:var(--mut)}
 .cat-result-count{font-size:10.5px;color:var(--mut);letter-spacing:0.12em;text-transform:uppercase;white-space:nowrap;font-weight:700}
 @media(max-width:760px){.cat-search-wrap{padding:20px 18px 2px}}
@@ -680,7 +680,6 @@ input,select,textarea{font-family:inherit}
     <button class="nav-link" style="margin-left:20px" onclick="showPage('page-about')">About Us</button>
     <div class="nav-links" id="nav-links"></div>
     <div class="nav-right">
-      <button class="nav-icon" style="font-weight:300;opacity:0.7" onclick="focusSearch()" aria-label="Search">⌕</button>
       <span class="nav-div"></span>
       <button class="nav-wl" onclick="showPage('page-wishlist')">♡ Wishlist <span class="nav-wl-count" id="wl-count">0</span></button>
     </div>
