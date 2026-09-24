@@ -288,15 +288,15 @@ input,select,textarea{font-family:inherit}
 .about-body{max-width:640px;margin:0 auto;width:100%;padding:40px 20px 80px}
 .about-title{font-family:'Fraunces',serif;font-size:30px;font-weight:600;color:var(--ink);margin-bottom:24px}
 .about-text{font-family:'General Sans',sans-serif;font-weight:400;font-size:15px;line-height:1.7;color:var(--ink);opacity:0.85;margin-bottom:18px;max-width:520px}
-.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(225px,1fr));gap:26px 22px;padding:24px 34px 50px}
-@media(max-width:760px){.cat-grid{grid-template-columns:repeat(2,1fr);gap:20px 14px;padding:18px 18px 40px}}
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,224px);gap:8px;padding:24px 34px 50px}
+@media(max-width:760px){.cat-grid{grid-template-columns:repeat(2,1fr);gap:8px;padding:18px 18px 40px}.cat-card-img{width:100%;height:auto;aspect-ratio:224/350}}
 .cat-card{background:transparent;border:none;position:relative;cursor:pointer;display:block;text-decoration:none;color:inherit}
-.cat-card-img{overflow:hidden;position:relative;aspect-ratio:1/1;background:var(--tile);border-radius:0;padding:16px;transition:box-shadow .2s}
+.cat-card-img{overflow:hidden;position:relative;width:224px;height:350px;background:transparent;border-radius:0;padding:0;transition:box-shadow .2s}
 .cat-card:hover .cat-card-img{box-shadow:0 10px 26px rgba(27,24,19,0.10)}
-.cat-card-img img{width:100%;height:100%;object-fit:contain;display:block;transition:transform .3s;mix-blend-mode:multiply}
+.cat-card-img img{width:100%;height:100%;object-fit:contain;object-position:top;display:block;transition:transform .3s;mix-blend-mode:multiply}
 .cat-card:hover .cat-card-img img{transform:scale(1.035)}
 .cat-card-no-img{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#C6BDA8;font-size:11px;letter-spacing:0.12em;text-transform:uppercase}
-.cat-hover-img{position:absolute;inset:0;width:calc(100% - 32px);height:calc(100% - 32px);margin:16px;object-fit:contain;opacity:0;transition:opacity .3s;pointer-events:none;z-index:2;mix-blend-mode:multiply}
+.cat-hover-img{position:absolute;inset:0;width:calc(100% - 32px);height:calc(100% - 32px);margin:16px;object-fit:contain;object-position:top;opacity:0;transition:opacity .3s;pointer-events:none;z-index:2;mix-blend-mode:multiply}
 @media (hover:hover){
   .cat-card:hover .cat-card-img:has(.cat-hover-img) .slider,
   .cat-card:hover .cat-card-img:has(.cat-hover-img)>img:not(.cat-hover-img){opacity:0}
@@ -310,9 +310,10 @@ input,select,textarea{font-family:inherit}
 .cat-footer{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .cat-rate{font-family:'General Sans',sans-serif;font-size:13.5px;font-weight:400;color:var(--ink);white-space:nowrap}
 .cat-rate span{font-size:11px;font-weight:400;color:var(--mut)}
-.cat-heart-btn{padding:6px 10px;background:#fff;color:var(--ink);border:1px solid var(--line);border-radius:4px;font-size:16px;line-height:1;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center}
+.cat-heart-btn{position:absolute;top:10px;right:10px;z-index:3;padding:6px 10px;background:#fff;color:var(--ink);border:1px solid var(--line);border-radius:4px;font-size:16px;line-height:1;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;opacity:0}
+.cat-card:hover .cat-heart-btn{opacity:1}
 .cat-heart-btn:hover{border-color:var(--ink);transform:scale(1.1)}
-.cat-heart-btn.added{color:#C0392B;border-color:#C0392B}
+.cat-heart-btn.added{color:#C0392B;border-color:#C0392B;opacity:1}
 .add-to-wl{padding:8px 13px;background:#fff;color:var(--ink);border:1px solid var(--line);border-radius:4px;font-size:9.5px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;transition:all .15s;white-space:nowrap}
 .add-to-wl:hover{border-color:var(--ink)}
 .add-to-wl.added{background:var(--yellow);color:var(--ink);border-color:var(--yellow)}
@@ -468,7 +469,7 @@ input,select,textarea{font-family:inherit}
    Container aspect ratio changed 1:1 → 4:3 to match Photoroom exports
    (1184×864 ≈ 4:3), so the image fills edge-to-edge with no letterbox.
    ══════════════════════════════════════════════════════════════════════════ */
-.cat-card-img{background:transparent;padding:0;border-radius:0;aspect-ratio:4/3}
+.cat-card-img{background:transparent;padding:0;border-radius:0;width:224px;height:350px}
 .cat-card:hover .cat-card-img{box-shadow:none}
 .cat-card:hover .cat-card-img img{transform:scale(1.03)}
 .cat-card-img img{border-radius:0;padding:0}
@@ -1657,11 +1658,11 @@ function renderCatalogue() {
       : '';
     var card = '<a href="?id='+encodeURIComponent(it.id)+'" class="cat-card" onclick="event.preventDefault();openCatItem(\''+escAttr(it.id)+'\')">';
     card += '<div class="cat-card-img">' + photoHtml + hoverImg;
+    card += '<button class="cat-heart-btn' + (inWl ? ' added' : '') + '" data-id="' + esc(it.id) + '" data-name="' + esc(it.name) + '" onclick="event.preventDefault();event.stopPropagation();wlClick(this)" aria-label="Add to wishlist">' + (inWl ? '♥' : '♡') + '</button>';
     card += '</div><div class="cat-card-body">';
     card += '<div class="cat-name">' + esc(it.name) + '</div>';
     card += '<div class="cat-footer">';
     card += '<div class="cat-rate">&#8382;' + (it.dayRate || '—') + '<span> / day</span></div>';
-    card += '<button class="cat-heart-btn' + (inWl ? ' added' : '') + '" data-id="' + esc(it.id) + '" data-name="' + esc(it.name) + '" onclick="event.preventDefault();event.stopPropagation();wlClick(this)" aria-label="Add to wishlist">' + (inWl ? '♥' : '♡') + '</button>';
     card += '</div></div></a>';
     return card;
   }).join("");
