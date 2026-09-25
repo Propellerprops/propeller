@@ -221,7 +221,7 @@ input,select,textarea{font-family:inherit}
 @media(max-width:900px){.nav-links{display:none}.nav{padding:12px 18px;gap:14px}.nav-logo-img{height:44px}}
 
 /* ── Hero ── */
-.hero{position:relative;min-height:100dvh;display:flex;align-items:center;background:#D9D9D9;overflow:hidden}
+.hero{position:relative;min-height:100dvh;display:flex;align-items:center;background:linear-gradient(90deg,#F6F3ED 0%,#D9D9D9 50%,#F6F3ED 100%);overflow:hidden}
 .furniture-showcase{background:#fff;padding:60px 44px 80px;max-width:1380px;margin:0 auto}
 .showcase-label{font-family:'General Sans',sans-serif;font-weight:400;font-size:32px;color:#5A5A5A;letter-spacing:0.03em;text-transform:uppercase;margin-bottom:50px}
 .showcase-row{display:flex;gap:32px;flex-wrap:nowrap}
@@ -232,7 +232,6 @@ input,select,textarea{font-family:inherit}
 .showcase-caption .big{font-size:22px;font-weight:500}
 .showcase-caption .and{font-size:12px;font-weight:400;margin:0 3px}
 @media(max-width:760px){.showcase-label{font-size:26px}.furniture-showcase{padding:40px 18px 50px}.showcase-caption .big{font-size:26px}}
-.hero::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--paper) 0%,rgba(248,243,234,0.88) 22%,rgba(248,243,234,0) 52%);pointer-events:none}
 .hero-inner{position:relative;z-index:2;max-width:1380px;margin:0 auto;width:100%;padding:48px 44px}
 .hero-copy{max-width:750px}
 .hero-title{font-family:'Inter',sans-serif;font-weight:800;font-size:90px;line-height:1.0;color:var(--ink);letter-spacing:-0.015em;margin-bottom:24px;margin-top:-200px}
@@ -242,7 +241,6 @@ input,select,textarea{font-family:inherit}
 .hero-cta:hover{transform:translateY(-2px);background:var(--ink);color:#fff}
 @media(max-width:760px){
   .hero{min-height:430px;align-items:flex-end;background-position:74% center}
-  .hero::before{background:linear-gradient(180deg,rgba(248,243,234,0.30) 0%,rgba(248,243,234,0.78) 52%,rgba(248,243,234,0.95) 100%)}
   .hero-inner{padding:30px 22px 34px}
   .hero-title{font-size:63px}
   .hero-sub{font-size:14px;margin-bottom:20px}
