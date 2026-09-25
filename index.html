@@ -224,8 +224,12 @@ input,select,textarea{font-family:inherit}
 .hero{position:relative;min-height:100dvh;display:flex;align-items:center;background:linear-gradient(90deg,#F6F3ED 0%,#D9D9D9 50%,#F6F3ED 100%);overflow:hidden}
 .furniture-showcase{background:#fff;padding:60px 44px 80px;max-width:1380px;margin:0 auto}
 .showcase-label{font-family:'General Sans',sans-serif;font-weight:400;font-size:32px;color:#5A5A5A;letter-spacing:0.03em;text-transform:uppercase;margin-bottom:50px}
-.showcase-row{display:flex;gap:32px;flex-wrap:nowrap}
-.showcase-tile{display:block;width:100%;max-width:340px;flex-shrink:1;min-width:0;cursor:pointer;text-decoration:none}
+.showcase-slider{position:relative;display:flex;align-items:center;gap:12px}
+.showcase-row{display:flex;gap:32px;overflow-x:auto;scroll-behavior:smooth;scrollbar-width:none;-ms-overflow-style:none;flex:1}
+.showcase-row::-webkit-scrollbar{display:none}
+.showcase-tile{display:block;width:340px;flex-shrink:0;cursor:pointer;text-decoration:none}
+.showcase-arrow{flex-shrink:0;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:#fff;color:var(--ink);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.showcase-arrow:hover{border-color:var(--ink)}
 .showcase-img{background:#E4E4E2;aspect-ratio:4/3;overflow:hidden;display:flex;align-items:center;justify-content:center}
 .showcase-img img{width:100%;height:100%;object-fit:cover}
 .showcase-caption{margin-top:18px;font-family:'General Sans',sans-serif;color:#5A5A5A}
@@ -708,19 +712,27 @@ input,select,textarea{font-family:inherit}
   <!-- Furniture showcase -->
   <section class="furniture-showcase">
     <h2 class="showcase-label">Furniture</h2>
-    <div class="showcase-row">
-      <a href="#" class="showcase-tile" onclick="event.preventDefault();showChairsAndSofas()">
-        <div class="showcase-img"><img src="https://drive.google.com/thumbnail?id=1d4Jn0yFMoBvYwBz5JddOOR4ofctYxnJn&sz=w800" alt="Chairs and Sofas"></div>
-        <div class="showcase-caption"><span class="big">Chairs</span><span class="and">And</span><span class="big">Sofas</span></div>
-      </a>
-      <a href="#" class="showcase-tile" onclick="event.preventDefault();showSideTables()">
-        <div class="showcase-img"><img src="https://drive.google.com/thumbnail?id=1vXz5ihkICLG6L75uoi5HkafP37gTksH0&sz=w800" alt="Side Table"></div>
-        <div class="showcase-caption"><span class="big">Side Table</span></div>
-      </a>
-      <a href="#" class="showcase-tile" onclick="event.preventDefault();showConsoleAndShelving()">
-        <div class="showcase-img"><img src="https://drive.google.com/thumbnail?id=1zDSkCWJXflvxQ4nC2zh7lwL7ecVmY3AO&sz=w800" alt="Console and Shelving"></div>
-        <div class="showcase-caption"><span class="big">Console</span><span class="and">And</span><span class="big">Shelving</span></div>
-      </a>
+    <div class="showcase-slider">
+      <button class="showcase-arrow prev" onclick="scrollShowcase(-1)" aria-label="Previous">←</button>
+      <div class="showcase-row" id="showcase-row">
+        <a href="#" class="showcase-tile" onclick="event.preventDefault();showChairsAndSofas()">
+          <div class="showcase-img"><img src="https://drive.google.com/thumbnail?id=1d4Jn0yFMoBvYwBz5JddOOR4ofctYxnJn&sz=w800" alt="Chairs and Sofas"></div>
+          <div class="showcase-caption"><span class="big">Chairs</span><span class="and">And</span><span class="big">Sofas</span></div>
+        </a>
+        <a href="#" class="showcase-tile" onclick="event.preventDefault();showSideTables()">
+          <div class="showcase-img"><img src="https://drive.google.com/thumbnail?id=1vXz5ihkICLG6L75uoi5HkafP37gTksH0&sz=w800" alt="Side Table"></div>
+          <div class="showcase-caption"><span class="big">Side Table</span></div>
+        </a>
+        <a href="#" class="showcase-tile" onclick="event.preventDefault();showConsoleAndShelving()">
+          <div class="showcase-img"><img src="https://drive.google.com/thumbnail?id=1zDSkCWJXflvxQ4nC2zh7lwL7ecVmY3AO&sz=w800" alt="Console and Shelving"></div>
+          <div class="showcase-caption"><span class="big">Console</span><span class="and">And</span><span class="big">Shelving</span></div>
+        </a>
+        <a href="#" class="showcase-tile" onclick="event.preventDefault();navCat('Props')">
+          <div class="showcase-img"><img src="https://drive.google.com/thumbnail?id=1V3iAylPci_slAK7FcZkCaLpTWR6sD4zr&sz=w800" alt="Props"></div>
+          <div class="showcase-caption"><span class="big">Props</span></div>
+        </a>
+      </div>
+      <button class="showcase-arrow next" onclick="scrollShowcase(1)" aria-label="Next">→</button>
     </div>
   </section>
 
@@ -1768,6 +1780,12 @@ function showChairsAndSofas() {
   state.subFilters = ["Armchair", "Sofa", "Sofa Set", "Sectional Sofa"];
   renderCatalogue();
   scrollToCollection();
+}
+
+function scrollShowcase(direction) {
+  var row = document.getElementById("showcase-row");
+  if (!row) return;
+  row.scrollBy({ left: direction * 372, behavior: "smooth" });
 }
 
 function navCat(cat) {
