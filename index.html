@@ -226,7 +226,15 @@ input,select,textarea{font-family:inherit}
 .hero-bg-img{display:block;width:100%;height:auto;transform:scale(1.03);transform-origin:top center}
 .hero-links{position:absolute;top:34px;left:44px;z-index:3;display:flex;gap:22px;flex-wrap:wrap}
 .hero-links .nav-link{color:#fff;text-shadow:0 1px 4px rgba(0,0,0,0.35)}
-.furniture-showcase{background:#fff;padding:0 44px 80px;max-width:1380px;margin:0 auto}
+.site-footer{background:var(--ink);color:#fff;padding:60px 44px 0}
+.footer-inner{max-width:1380px;margin:0 auto;display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:40px;padding-bottom:50px}
+.footer-logo{height:38px;width:auto;filter:brightness(0) invert(1);margin-bottom:16px}
+.footer-tagline{font-family:'General Sans',sans-serif;font-size:14px;line-height:1.6;color:#B8B4AC;max-width:280px}
+.footer-heading{font-family:'General Sans',sans-serif;font-size:12px;font-weight:400;letter-spacing:0.1em;text-transform:uppercase;color:#8F8779;margin-bottom:18px}
+.footer-link{display:block;background:none;border:none;font-family:'General Sans',sans-serif;font-size:14px;color:#fff;opacity:0.85;text-align:left;padding:0 0 12px;cursor:pointer;text-decoration:none;transition:opacity .15s}
+.footer-link:hover{opacity:1}
+.footer-bottom{max-width:1380px;margin:0 auto;padding:20px 0;border-top:1px solid rgba(255,255,255,0.12);font-family:'General Sans',sans-serif;font-size:12px;color:#8F8779}
+@media(max-width:760px){.footer-inner{grid-template-columns:1fr 1fr;padding:0 18px 40px}.site-footer{padding:40px 0 0}.footer-bottom{padding:20px 18px}}
 .showcase-label{font-family:'General Sans',sans-serif;font-weight:400;font-size:32px;color:#8F8779;letter-spacing:0.03em;text-transform:uppercase;margin-bottom:50px;margin-left:52px}
 .showcase-slider{position:relative;display:flex;align-items:center;gap:12px}
 .showcase-row{display:flex;gap:32px;overflow-x:auto;scroll-behavior:smooth;scrollbar-width:none;-ms-overflow-style:none;flex:1}
@@ -719,32 +727,33 @@ input,select,textarea{font-family:inherit}
     </div>
   </header>
 
-  <!-- Furniture showcase -->
-  <section class="furniture-showcase">
-    <h2 class="showcase-label">Catalog</h2>
-    <div class="showcase-slider">
-      <button class="showcase-arrow prev" onclick="scrollShowcase(-1)" aria-label="Previous">←</button>
-      <div class="showcase-row" id="showcase-row">
-        <a href="#" class="showcase-tile" onclick="event.preventDefault();showChairsAndSofas()">
-          <div class="showcase-img"><img src="https://drive.google.com/thumbnail?id=1d4Jn0yFMoBvYwBz5JddOOR4ofctYxnJn&sz=w800" alt="Chairs and Sofas"></div>
-          <div class="showcase-caption"><span class="big">Chairs</span><span class="and">And</span><span class="big">Sofas</span></div>
-        </a>
-        <a href="#" class="showcase-tile" onclick="event.preventDefault();showSideTables()">
-          <div class="showcase-img"><img src="https://drive.google.com/thumbnail?id=1vXz5ihkICLG6L75uoi5HkafP37gTksH0&sz=w800" alt="Side Table"></div>
-          <div class="showcase-caption"><span class="big">Side Table</span></div>
-        </a>
-        <a href="#" class="showcase-tile" onclick="event.preventDefault();showConsoleAndShelving()">
-          <div class="showcase-img"><img src="https://drive.google.com/thumbnail?id=1zDSkCWJXflvxQ4nC2zh7lwL7ecVmY3AO&sz=w800" alt="Console and Shelving"></div>
-          <div class="showcase-caption"><span class="big">Console</span><span class="and">And</span><span class="big">Shelving</span></div>
-        </a>
-        <a href="#" class="showcase-tile" onclick="event.preventDefault();navCat('Props')">
-          <div class="showcase-img"><img src="https://drive.google.com/thumbnail?id=1V3iAylPci_slAK7FcZkCaLpTWR6sD4zr&sz=w800" alt="Props"></div>
-          <div class="showcase-caption"><span class="big">Props</span></div>
-        </a>
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-col footer-brand">
+        <img src="logo_.svg" class="footer-logo" alt="Propeller — Props &amp; Costumes">
+        <p class="footer-tagline">Furniture, props and costumes for film, photography and events.</p>
       </div>
-      <button class="showcase-arrow next" onclick="scrollShowcase(1)" aria-label="Next">→</button>
+      <div class="footer-col">
+        <h3 class="footer-heading">Shop</h3>
+        <button class="footer-link" onclick="navCat('Furniture')">Furniture</button>
+        <button class="footer-link" onclick="navCat('Costume')">Costume</button>
+        <button class="footer-link" onclick="navCat('Props')">Props</button>
+      </div>
+      <div class="footer-col">
+        <h3 class="footer-heading">Site</h3>
+        <button class="footer-link" onclick="showPage('page-about')">About Us</button>
+        <button class="footer-link" onclick="showPage('page-wishlist')">Wishlist</button>
+      </div>
+      <div class="footer-col">
+        <h3 class="footer-heading">Contact</h3>
+        <a href="mailto:hey@propeller.ge" class="footer-link">hey@propeller.ge</a>
+      </div>
     </div>
-  </section>
+    <div class="footer-bottom">
+      <span>© 2026 Propeller. All rights reserved.</span>
+    </div>
+  </footer>
 
   <!-- Search -->
   <div class="cat-search-wrap" id="cat-search-anchor">
