@@ -943,9 +943,14 @@ window.onload = function() {
   var wantsStaff = params.has("staff") || isUnlocked();
 
   if (!wantsStaff) {
-    // Everyone else → public landing page (the default); catalogue loads only once they click Products
+    // Everyone else → public landing page (the default)
     state.staff = "";
     showPageEl("page-landing");
+    // Quietly fetch inventory in the background now, so by the time they click
+    // Products/a category, the data is likely already loaded and feels instant.
+    apiCall("getItems").then(function(res) {
+      if (res.ok) state.items = res.items;
+    });
     return;
   }
 
@@ -1563,14 +1568,16 @@ function loadCatalogue(fromPage) {
     backBtn.onclick = function(){ showPage("page-landing"); };
   }
   showPageEl("page-catalogue");
-  showLoading(false);
   if (!state.items.length) {
-    document.getElementById("cat-grid").innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#8F8779;font-size:12px;letter-spacing:0.1em;text-transform:uppercase">Loading...</div>';
+    showLoading(true);
+    document.getElementById("cat-grid").innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#8F8779;font-size:12px;letter-spacing:0.1em;text-transform:uppercase">Loading items…</div>';
     return apiCall("getItems").then(function(res) {
       if (res.ok) state.items = res.items;
       renderCatalogue();
-    }).catch(function() { renderCatalogue(); });
+      showLoading(false);
+    }).catch(function() { renderCatalogue(); showLoading(false); });
   } else {
+    showLoading(false);
     renderCatalogue();
     return Promise.resolve();
   }
