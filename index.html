@@ -1026,6 +1026,14 @@ function showPage(id, skipLoad, noHistory) {
   document.getElementById(id).classList.add("active");
   window.scrollTo(0, 0);
 
+  if (!noHistory) {
+    if (history.state && history.state.page === id) {
+      history.replaceState({page:id}, "", "#"+id);
+    } else {
+      history.pushState({page:id}, "", "#"+id);
+    }
+  }
+
   if (id === "page-home")      loadHome();
   if (id === "page-jobs")      loadJobs();
   if (id === "page-catalogue") loadCatalogue();
@@ -1033,6 +1041,13 @@ function showPage(id, skipLoad, noHistory) {
   if (id === "page-scan")      { setTimeout(function(){ document.getElementById("scan-input").focus(); }, 100); }
   if (id === "page-scan-job")  { setTimeout(function(){ document.getElementById("scan-job-input").focus(); }, 100); }
 }
+
+// Let the browser's own back/forward buttons work between our in-app "pages"
+window.addEventListener("popstate", function(e){
+  if (e.state && e.state.page && document.getElementById(e.state.page)) {
+    showPage(e.state.page, false, true);
+  }
+});
 
 // ══════════════════════════════════════════════════════════════════════════════
 //  NAME ENTRY
@@ -2079,10 +2094,18 @@ function apiCall(action, params) {
 // ══════════════════════════════════════════════════════════════════════════════
 //  UTILS
 // ══════════════════════════════════════════════════════════════════════════════
-function showPageEl(id) {
+function showPageEl(id, noHistory) {
   document.querySelectorAll(".page").forEach(function(p){ p.classList.remove("active"); });
   document.getElementById(id).classList.add("active");
   window.scrollTo(0,0);
+
+  if (!noHistory) {
+    if (history.state && history.state.page === id) {
+      history.replaceState({page:id}, "", "#"+id);
+    } else {
+      history.pushState({page:id}, "", "#"+id);
+    }
+  }
 }
 
 function showLoading(show) {
