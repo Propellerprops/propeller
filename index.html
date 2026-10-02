@@ -696,33 +696,23 @@ input,select,textarea{font-family:inherit}
   </div>
 </div>
 
-<!-- ══════════ PAGE: CATALOGUE (client) ══════════ -->
-<div class="page" id="page-catalogue">
-
-  <!-- Top navigation -->
-  <nav class="nav" id="main-catalogue-nav">
-    <button id="cat-back-btn" onclick="showPage('page-home')" class="nav-back">←</button>
-    <img src="logo_header.svg" class="nav-logo-img" onclick="scrollTop()" alt="Propeller — Props &amp; Costumes">
-    <button class="nav-link" style="margin-left:20px" onclick="showPage('page-about')">About Us</button>
-    <div class="nav-right">
-      <span class="nav-div"></span>
-      <button class="nav-wl" onclick="showPage('page-wishlist')">♡ Wishlist <span class="nav-wl-count" id="wl-count">0</span></button>
-    </div>
-  </nav>
+<!-- ══════════ PAGE: LANDING (client entry point) ══════════ -->
+<div class="page" id="page-landing">
 
   <!-- Hero -->
   <header class="hero">
     <img src="getty-images-nd2TUoBEMZY-unsplash.jpg" class="hero-bg-img" alt="">
-    <div class="hero-links" id="nav-links">
-      <button class="nav-link" onclick="navCat('Costume')">Costume</button>
-      <button class="nav-link" onclick="navCat('Furniture')">Furniture</button>
-      <button class="nav-link" onclick="navCat('Props')">Props</button>
+    <div class="hero-links">
+      <button class="nav-link" onclick="loadCatalogue(null).then(function(){navCat('Costume')})">Costume</button>
+      <button class="nav-link" onclick="loadCatalogue(null).then(function(){navCat('Furniture')})">Furniture</button>
+      <button class="nav-link" onclick="loadCatalogue(null).then(function(){navCat('Props')})">Props</button>
+      <button class="nav-link" onclick="state.catFilters=[];state.subFilters=[];loadCatalogue(null)">All Products</button>
     </div>
     <div class="hero-inner">
       <div class="hero-copy">
         <h1 class="hero-title">Spaces For<br>Storytelling<span class="dot">.</span></h1>
         <p class="hero-sub">Furniture, props and costumes for film, photography and events.</p>
-        <button class="hero-cta" onclick="scrollToCollection()">Browse the collection →</button>
+        <button class="hero-cta" onclick="loadCatalogue(null)">Products →</button>
       </div>
     </div>
   </header>
@@ -736,9 +726,10 @@ input,select,textarea{font-family:inherit}
       </div>
       <div class="footer-col">
         <h3 class="footer-heading">Shop</h3>
-        <button class="footer-link" onclick="navCat('Furniture')">Furniture</button>
-        <button class="footer-link" onclick="navCat('Costume')">Costume</button>
-        <button class="footer-link" onclick="navCat('Props')">Props</button>
+        <button class="footer-link" onclick="loadCatalogue(null).then(function(){navCat('Furniture')})">Furniture</button>
+        <button class="footer-link" onclick="loadCatalogue(null).then(function(){navCat('Costume')})">Costume</button>
+        <button class="footer-link" onclick="loadCatalogue(null).then(function(){navCat('Props')})">Props</button>
+        <button class="footer-link" onclick="state.catFilters=[];state.subFilters=[];loadCatalogue(null)">All Products</button>
       </div>
       <div class="footer-col">
         <h3 class="footer-heading">Site</h3>
@@ -754,6 +745,21 @@ input,select,textarea{font-family:inherit}
       <span>© 2026 Propeller. All rights reserved.</span>
     </div>
   </footer>
+</div>
+
+<!-- ══════════ PAGE: CATALOGUE (client) ══════════ -->
+<div class="page" id="page-catalogue">
+
+  <!-- Top navigation -->
+  <nav class="nav" id="main-catalogue-nav">
+    <button id="cat-back-btn" onclick="showPage('page-landing')" class="nav-back" style="display:block">←</button>
+    <img src="logo_header.svg" class="nav-logo-img" onclick="showPage('page-landing')" alt="Propeller — Props &amp; Costumes">
+    <button class="nav-link" style="margin-left:20px" onclick="showPage('page-about')">About Us</button>
+    <div class="nav-right">
+      <span class="nav-div"></span>
+      <button class="nav-wl" onclick="showPage('page-wishlist')">♡ Wishlist <span class="nav-wl-count" id="wl-count">0</span></button>
+    </div>
+  </nav>
 
   <!-- Search -->
   <div class="cat-search-wrap" id="cat-search-anchor">
@@ -937,9 +943,9 @@ window.onload = function() {
   var wantsStaff = params.has("staff") || isUnlocked();
 
   if (!wantsStaff) {
-    // Everyone else → public catalogue (the default)
+    // Everyone else → public landing page (the default); catalogue loads only once they click Products
     state.staff = "";
-    loadCatalogue(null);
+    showPageEl("page-landing");
     return;
   }
 
@@ -1548,13 +1554,13 @@ function catLogoClick() {
 }
 
 function loadCatalogue(fromPage) {
-  // Show back button only if coming from inside the app (staff)
+  // Back button: staff return to wherever they came from; clients return to the landing page
   var backBtn = document.getElementById("cat-back-btn");
+  backBtn.style.display = "block";
   if (state.staff && fromPage) {
-    backBtn.style.display = "block";
     backBtn.onclick = function(){ showPage(fromPage); };
   } else {
-    backBtn.style.display = "none";
+    backBtn.onclick = function(){ showPage("page-landing"); };
   }
   showPageEl("page-catalogue");
   showLoading(false);
