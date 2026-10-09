@@ -208,7 +208,28 @@ input,select,textarea{font-family:inherit}
 
 /* ── Top nav ── */
 .nav{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:22px;padding:14px 34px;background:var(--paper);border-bottom:1px solid var(--line)}
-#main-catalogue-nav{display:none}
+/* ── Catalogue header (white bar + gray social strip + slide-in menu) ── */
+.cat-header{position:sticky;top:0;z-index:30;background:#fff;border-bottom:1px solid #E6E6E6;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 24px;height:68px}
+.cat-menu-btn{justify-self:start;display:flex;align-items:center;gap:10px;background:none;border:none;cursor:pointer;color:#4a4a4a;font-family:'General Sans',sans-serif;font-size:13px;letter-spacing:0.12em;text-transform:uppercase;padding:6px 0}
+.cat-menu-btn:hover{color:var(--ink)}
+.cat-wordmark{background:none;border:none;cursor:pointer;color:var(--ink);font-family:'Clash Display','General Sans',sans-serif;font-weight:700;font-size:34px;letter-spacing:-0.02em;line-height:1;padding:0}
+.cat-header-right{justify-self:end;display:flex;align-items:center;gap:16px}
+.cat-icon-btn{background:none;border:none;cursor:pointer;color:#4a4a4a;display:flex;align-items:center;gap:6px;padding:4px}
+.cat-icon-btn:hover{color:var(--ink)}
+.cat-header-div{width:1px;height:28px;background:#E0E0E0}
+.cat-social-strip{background:#F0F0F0;display:flex;justify-content:center;align-items:center;gap:22px;height:38px}
+.cat-social-strip a{color:#6b6b6b;display:flex;align-items:center;transition:color .15s}
+.cat-social-strip a:hover{color:var(--ink)}
+.cat-menu-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.35);opacity:0;pointer-events:none;transition:opacity .25s;z-index:90}
+.cat-menu-overlay.show{opacity:1;pointer-events:auto}
+.cat-menu-panel{position:fixed;top:0;left:0;bottom:0;width:min(320px,85vw);background:var(--paper);z-index:100;transform:translateX(-100%);transition:transform .28s ease;padding:70px 34px 34px;display:flex;flex-direction:column;gap:4px;overflow-y:auto}
+.cat-menu-panel.show{transform:translateX(0)}
+.cat-menu-close{position:absolute;top:20px;right:22px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--ink)}
+.cat-menu-link{background:none;border:none;text-align:left;cursor:pointer;color:var(--ink);font-family:'General Sans',sans-serif;font-size:15px;letter-spacing:0.14em;text-transform:uppercase;padding:14px 0;position:relative;align-self:flex-start}
+.cat-menu-link:hover::after{content:"";position:absolute;left:0;right:0;bottom:8px;height:2px;background:var(--yellow)}
+.cat-menu-sep{display:block;height:1px;background:var(--line);margin:12px 0}
+.cat-search-wrap{scroll-margin-top:90px}
+@media(max-width:600px){.cat-header{padding:0 14px;height:58px}.cat-menu-btn span{display:none}.cat-wordmark{font-size:27px}.cat-header-right{gap:10px}}
 .nav-back{background:none;border:none;color:var(--ink);font-size:22px;cursor:pointer;line-height:1;display:none;padding:0}
 .nav-logo-img{height:54px;width:auto;display:block;cursor:pointer;flex-shrink:0}
 .nav-link{background:none;border:none;font-family:'General Sans',sans-serif;font-weight:400;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink);cursor:pointer;padding:6px 0;position:relative;transition:opacity .15s}
@@ -750,16 +771,49 @@ input,select,textarea{font-family:inherit}
 <!-- ══════════ PAGE: CATALOGUE (client) ══════════ -->
 <div class="page" id="page-catalogue">
 
-  <!-- Top navigation -->
-  <nav class="nav" id="main-catalogue-nav">
-    <button id="cat-back-btn" onclick="showPage('page-landing')" class="nav-back" style="display:block">←</button>
-    <img src="logo_header.svg" class="nav-logo-img" onclick="showPage('page-landing')" alt="Propeller — Props &amp; Costumes">
-    <button class="nav-link" style="margin-left:20px" onclick="showPage('page-about')">About Us</button>
-    <div class="nav-right">
-      <span class="nav-div"></span>
-      <button class="nav-wl" onclick="showPage('page-wishlist')">♡ Wishlist <span class="nav-wl-count" id="wl-count">0</span></button>
+  <!-- Header (catalogue) -->
+  <header class="cat-header">
+    <button class="cat-menu-btn" onclick="openCatMenu()" aria-label="Open menu">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      <span>Menu</span>
+    </button>
+    <button class="cat-wordmark" onclick="showPage('page-landing')" aria-label="Propeller — home">Propeller</button>
+    <div class="cat-header-right">
+      <button class="cat-icon-btn" onclick="focusSearch()" aria-label="Search">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21"/></svg>
+      </button>
+      <span class="cat-header-div"></span>
+      <button class="cat-icon-btn cat-wl-btn" onclick="showPage('page-wishlist')" aria-label="Wishlist">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 20.5s-7.5-4.6-9.2-9.3C1.6 7.9 3.5 4.5 6.9 4.5c2 0 3.5 1.1 5.1 3 1.6-1.9 3.1-3 5.1-3 3.4 0 5.3 3.4 4.1 6.7-1.7 4.7-9.2 9.3-9.2 9.3z"/></svg>
+        <span class="nav-wl-count" id="wl-count">0</span>
+      </button>
     </div>
-  </nav>
+  </header>
+  <div class="cat-social-strip">
+    <a href="https://www.instagram.com/fourk_group/" target="_blank" rel="noopener" aria-label="Instagram">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+    </a>
+    <a href="https://www.facebook.com/Fourkgroup" target="_blank" rel="noopener" aria-label="Facebook">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M14 8.5V7c0-.8.2-1.2 1.4-1.2H17V3h-2.4C11.7 3 10.5 4.6 10.5 6.9v1.6H8v3h2.5V21H14v-9.5h2.6l.4-3H14z"/></svg>
+    </a>
+    <a href="mailto:hey@propeller.ge" aria-label="Email">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 7l8.5 6 8.5-6"/></svg>
+    </a>
+  </div>
+
+  <!-- Slide-in menu -->
+  <div class="cat-menu-overlay" id="cat-menu-overlay" onclick="closeCatMenu()"></div>
+  <aside class="cat-menu-panel" id="cat-menu-panel" aria-hidden="true" onclick="if(event.target.closest('button'))closeCatMenu()">
+    <button class="cat-menu-close" aria-label="Close menu">✕</button>
+    <button class="cat-menu-link" id="cat-back-btn" style="display:none">← Staff home</button>
+    <button class="cat-menu-link" onclick="navCat('Costume')">Costume</button>
+    <button class="cat-menu-link" onclick="navCat('Furniture')">Furniture</button>
+    <button class="cat-menu-link" onclick="navCat('Props')">Props</button>
+    <button class="cat-menu-link" onclick="showAllProducts()">All Products</button>
+    <span class="cat-menu-sep"></span>
+    <button class="cat-menu-link" onclick="showPage('page-about')">About Us</button>
+    <button class="cat-menu-link" onclick="showPage('page-wishlist')">Wishlist</button>
+  </aside>
 
   <!-- Search -->
   <div class="cat-search-wrap" id="cat-search-anchor">
@@ -1022,6 +1076,7 @@ function goToStaff() {
 //  NAVIGATION
 // ══════════════════════════════════════════════════════════════════════════════
 function showPage(id, skipLoad, noHistory) {
+  closeCatMenu();
   document.querySelectorAll(".page").forEach(function(p){ p.classList.remove("active"); });
   document.getElementById(id).classList.add("active");
   window.scrollTo(0, 0);
@@ -1574,13 +1629,16 @@ function catLogoClick() {
 }
 
 function loadCatalogue(fromPage) {
-  // Back button: staff return to wherever they came from; clients return to the landing page
+  // "Staff home" link in the menu: only shown to staff who arrived from inside the app.
+  // Clients get back via the Propeller wordmark / browser back.
   var backBtn = document.getElementById("cat-back-btn");
-  backBtn.style.display = "block";
-  if (state.staff && fromPage) {
-    backBtn.onclick = function(){ showPage(fromPage); };
-  } else {
-    backBtn.onclick = function(){ showPage("page-landing"); };
+  if (backBtn) {
+    if (state.staff && fromPage) {
+      backBtn.style.display = "block";
+      backBtn.onclick = function(){ showPage(fromPage); };
+    } else {
+      backBtn.style.display = "none";
+    }
   }
   showPageEl("page-catalogue");
   if (!state.items.length) {
@@ -1801,6 +1859,27 @@ function scrollToCollection() {
 function scrollTop() {
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
+
+// ── Catalogue header menu ──
+function openCatMenu() {
+  document.getElementById("cat-menu-overlay").classList.add("show");
+  var p = document.getElementById("cat-menu-panel");
+  p.classList.add("show");
+  p.setAttribute("aria-hidden", "false");
+}
+function closeCatMenu() {
+  document.getElementById("cat-menu-overlay").classList.remove("show");
+  var p = document.getElementById("cat-menu-panel");
+  p.classList.remove("show");
+  p.setAttribute("aria-hidden", "true");
+}
+function showAllProducts() {
+  state.catFilters = [];
+  state.subFilters = [];
+  renderCatalogue();
+  scrollToCollection();
+}
+document.addEventListener("keydown", function(e){ if (e.key === "Escape") closeCatMenu(); });
 function focusSearch() {
   var el = document.getElementById("cat-search");
   if (el) { el.scrollIntoView({ behavior: "smooth", block: "center" }); setTimeout(function(){ el.focus(); }, 300); }
@@ -2095,6 +2174,7 @@ function apiCall(action, params) {
 //  UTILS
 // ══════════════════════════════════════════════════════════════════════════════
 function showPageEl(id, noHistory) {
+  closeCatMenu();
   document.querySelectorAll(".page").forEach(function(p){ p.classList.remove("active"); });
   document.getElementById(id).classList.add("active");
   window.scrollTo(0,0);
