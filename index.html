@@ -205,6 +205,14 @@ input,select,textarea{font-family:inherit}
    CLIENT SIDE — Propeller cream / yellow / ink  (new design)
    ═══════════════════════════════════════════════════════════════════════════ */
 #page-catalogue,#page-cat-item,#page-wishlist,#page-about{background:var(--paper)}
+#page-about{background:#fff}
+.fk-header{position:sticky;top:0;z-index:30;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 28px;height:96px}
+.fk-wordmark{background:none;border:none;cursor:pointer;color:var(--ink);font-family:'Clash Display','General Sans',sans-serif;font-weight:700;font-size:34px;letter-spacing:-0.02em;line-height:1;padding:0}
+.fk-nav{display:flex;align-items:center;gap:34px}
+.fk-link{background:none;border:none;cursor:pointer;color:var(--ink);font-family:'General Sans',sans-serif;font-weight:400;font-size:18px;padding:4px 0;border-bottom:1px solid transparent;transition:border-color .15s}
+.fk-link:hover{border-bottom-color:var(--ink)}
+@media(max-width:600px){.fk-header{height:64px;padding:0 16px}.fk-wordmark{font-size:24px}.fk-nav{gap:16px}.fk-link{font-size:14px}}
+
 #page-catalogue{background:#fff}
 
 /* ── Top nav ── */
@@ -884,12 +892,13 @@ input,select,textarea{font-family:inherit}
 
 <!-- ══════════ PAGE: ABOUT US ══════════ -->
 <div class="page" id="page-about">
-  <nav class="nav">
-    <button onclick="showPage('page-catalogue')" class="nav-icon" style="font-size:24px">←</button>
-    <img src="logo_header.svg" class="nav-logo-img" onclick="showPage('page-catalogue')" alt="Propeller — Props &amp; Costumes">
-    <div class="nav-links"></div>
-    <div class="nav-right"></div>
-  </nav>
+  <header class="fk-header">
+    <button class="fk-wordmark" onclick="showPage('page-landing')" aria-label="FourK Group — home">FourK Group</button>
+    <nav class="fk-nav" aria-label="Sections">
+      <button class="fk-link">Art Direction</button>
+      <button class="fk-link">Costume Design</button>
+    </nav>
+  </header>
   <div class="page-body about-body">
     <h1 class="about-title">About Us</h1>
     <p class="about-text">
