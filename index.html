@@ -206,7 +206,7 @@ input,select,textarea{font-family:inherit}
    ═══════════════════════════════════════════════════════════════════════════ */
 #page-catalogue,#page-cat-item,#page-wishlist,#page-about{background:var(--paper)}
 #page-about{background:#fff}
-.fk-header{position:sticky;top:0;z-index:30;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 28px;height:96px}
+.fk-header{position:sticky;top:0;z-index:30;background:#fff;display:flex;align-items:center;justify-content:flex-end;padding:0 28px;height:96px}
 .fk-wordmark{background:none;border:none;cursor:pointer;color:var(--ink);font-family:'Clash Display','General Sans',sans-serif;font-weight:700;font-size:34px;letter-spacing:-0.02em;line-height:1;padding:0}
 .fk-nav{display:flex;align-items:center;gap:34px;position:relative;z-index:1;height:32px;color:#000;font-family:'General Sans',sans-serif;font-size:16px;font-style:normal;font-weight:300;line-height:16px;letter-spacing:normal;text-transform:none;-webkit-font-smoothing:antialiased}
 .fk-link{background:none;border:none;cursor:pointer;color:#000;font-family:'General Sans',sans-serif;font-weight:300;font-size:16px;line-height:16px;letter-spacing:normal;padding:4px 0;border-bottom:1px solid transparent;transition:border-color .15s}
@@ -343,8 +343,8 @@ input,select,textarea{font-family:inherit}
 #page-catalogue .page-body,#page-cat-item .page-body{max-width:1448px;margin:0 auto;width:100%}
 #page-wishlist .page-body{max-width:640px;margin:0 auto;width:100%;padding:20px}
 .about-body{max-width:640px;margin:0 auto;width:100%;padding:40px 20px 80px}
-.about-title{font-family:'Fraunces',serif;font-size:30px;font-weight:600;color:var(--ink);margin-bottom:24px}
-.about-text{font-family:'General Sans',sans-serif;font-weight:400;font-size:15px;line-height:1.7;color:var(--ink);opacity:0.85;margin-bottom:18px;max-width:520px}
+.about-title{font-family:'General Sans',sans-serif;font-size:16px;font-weight:300;font-style:normal;line-height:16px;letter-spacing:normal;text-transform:none;-webkit-font-smoothing:antialiased;color:#000;margin-bottom:24px}
+.about-text{font-family:'General Sans',sans-serif;font-weight:300;font-size:16px;font-style:normal;line-height:24px;letter-spacing:normal;text-transform:none;-webkit-font-smoothing:antialiased;color:#000;opacity:1;margin-bottom:18px;max-width:520px}
 .cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:26px 22px;padding:24px 120px 50px}
 @media(max-width:1000px){.cat-grid{grid-template-columns:repeat(3,1fr);padding-left:60px;padding-right:60px}.cat-crumbs{padding-left:60px;padding-right:60px}.filter-toggle-row{padding-left:60px;padding-right:60px}}
 @media(max-width:760px){.cat-grid{grid-template-columns:repeat(2,1fr);gap:20px 14px;padding:18px 24px 40px}.cat-crumbs{padding-left:24px;padding-right:24px}.filter-toggle-row{padding-left:24px;padding-right:24px}}
@@ -754,7 +754,7 @@ input,select,textarea{font-family:inherit}
     </div>
     <div class="hero-inner">
       <div class="hero-copy">
-        <h1 class="hero-title">Spaces For<br>Storytelling<span class="dot">.</span></h1>
+        <h1 class="hero-title">Props For<br>Storytelling<span class="dot">.</span></h1>
         <p class="hero-sub">Furniture, props and costumes for film, photography and events.</p>
         <button class="hero-cta" onclick="loadCatalogue(null)">Browse the collection →</button>
       </div>
@@ -893,10 +893,8 @@ input,select,textarea{font-family:inherit}
 <!-- ══════════ PAGE: ABOUT US ══════════ -->
 <div class="page" id="page-about">
   <header class="fk-header">
-    <button class="fk-wordmark" onclick="showPage('page-landing')" aria-label="FourK Group — home">FourK Group</button>
     <nav class="fk-nav" aria-label="Sections">
       <button class="fk-link">Art Direction</button>
-      <button class="fk-link">Costume Design</button>
     </nav>
   </header>
   <div class="page-body about-body">
