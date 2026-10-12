@@ -206,6 +206,18 @@ input,select,textarea{font-family:inherit}
    ═══════════════════════════════════════════════════════════════════════════ */
 #page-catalogue,#page-cat-item,#page-wishlist,#page-about{background:var(--paper)}
 #page-about{background:#fff}
+#page-terms{background:#fff}
+.terms-body{max-width:760px;margin:0 auto;width:100%;padding:36px 24px 90px}
+.terms-back{background:none;border:none;cursor:pointer;color:#000;font-family:'General Sans',sans-serif;font-weight:300;font-size:16px;padding:4px 0;margin-bottom:28px;border-bottom:1px solid transparent}
+.terms-back:hover{border-bottom-color:#000}
+.terms-title{font-family:'General Sans',sans-serif;font-size:26px;font-weight:600;color:#000;margin-bottom:6px}
+.terms-updated{font-family:'General Sans',sans-serif;font-weight:300;font-size:14px;color:#6b6b6b;margin-bottom:32px}
+.terms-body h2{font-family:'General Sans',sans-serif;font-size:17px;font-weight:600;color:#000;margin:30px 0 10px}
+.terms-body p{font-family:'General Sans',sans-serif;font-weight:300;font-size:16px;line-height:26px;color:#000;margin-bottom:12px}
+.terms-body a{color:#000}
+.wl-terms-note{font-size:12px;color:var(--mut);text-align:center;margin-top:12px;line-height:1.5}
+.wl-terms-note a{color:var(--ink)}
+@media(max-width:600px){.terms-body{padding:24px 18px 70px}.terms-title{font-size:22px}}
 .fk-header{position:sticky;top:0;z-index:30;background:#fff;display:flex;align-items:center;justify-content:flex-end;padding:0 28px;height:96px}
 .fk-wordmark{background:none;border:none;cursor:pointer;color:var(--ink);font-family:'Clash Display','General Sans',sans-serif;font-weight:700;font-size:34px;letter-spacing:-0.02em;line-height:1;padding:0}
 .fk-nav{display:flex;align-items:center;gap:34px;position:relative;z-index:1;height:32px;color:#000;font-family:'General Sans',sans-serif;font-size:16px;font-style:normal;font-weight:300;line-height:16px;letter-spacing:normal;text-transform:none;-webkit-font-smoothing:antialiased}
@@ -779,6 +791,7 @@ input,select,textarea{font-family:inherit}
         <h3 class="footer-heading">Site</h3>
         <button class="footer-link" onclick="showPage('page-about')">About Us</button>
         <button class="footer-link" onclick="showPage('page-wishlist')">Wishlist</button>
+        <button class="footer-link" onclick="showPage('page-terms')">Terms &amp; Conditions</button>
       </div>
       <div class="footer-col">
         <h3 class="footer-heading">Contact</h3>
@@ -910,6 +923,56 @@ input,select,textarea{font-family:inherit}
   </div>
 </div>
 
+<!-- ══════════ PAGE: TERMS & CONDITIONS ══════════ -->
+<div class="page" id="page-terms">
+  <div class="page-body terms-body">
+    <button class="terms-back" onclick="history.back()">← Back</button>
+    <h1 class="terms-title">Terms &amp; Conditions</h1>
+    <p class="terms-updated">Rental of furniture, props and costumes · Last updated October 2026</p>
+
+    <h2>1. About these terms</h2>
+    <p>These terms apply to every rental of furniture, props and costumes from Propeller, operated by Boomerang Films LLC (the "Lessor"), to a client (the "Lessee"). Sending a wishlist request through this website is a request only. A rental is agreed when the Lessor confirms the items, the dates and the price in writing.</p>
+
+    <h2>2. Ownership of the items</h2>
+    <p>All items remain the property of the Lessor. The Lessor confirms that it owns the items and has not sold, transferred or encumbered them in favour of anyone else, so that no third party can bring a claim against the Lessee in respect of them. The Lessee receives the items for temporary use only, for the project agreed with the Lessor.</p>
+
+    <h2>3. Rent and payment</h2>
+    <p>The Lessee pays the rent confirmed in writing by the Lessor, value added tax (VAT) included. The rent may be paid in one payment, in cash or by bank transfer. The Lessor and the Lessee each deal independently with the State and with third parties.</p>
+
+    <h2>4. Rental period</h2>
+    <p>The rental begins when the agreement is signed or confirmed and lasts until the end of the project. The rental period can be changed only by written agreement of both sides. The Lessor may not increase the rent during the rental period.</p>
+
+    <h2>5. Care and use of the items</h2>
+    <p>The Lessee must take care of the items, follow the rules for their use, and protect them from physical damage. The Lessee may not sublease, lend or otherwise pass the items, or any part of them, to anyone else without the written consent of the Lessor.</p>
+    <p>The Lessor may not interfere with the Lessee's work during the rental period, unless the Lessor finds that the items, or part of them, have been or are being seriously damaged.</p>
+
+    <h2>6. Damage and loss</h2>
+    <p>If an item is damaged, lost or destroyed, the Lessee must, at its own expense, restore it to its original condition, or obtain an item of the same quality, or pay the Lessor its value, so that the Lessor can buy an equivalent item. If the two sides do not agree on this, the Lessee must pay the Lessor, within 10 calendar days after the rental period ends, the value of the lost, damaged or destroyed item plus 100%.</p>
+
+    <h2>7. Return of the items</h2>
+    <p>When the rental period ends, unless it has been extended by agreement, the Lessee must return the items to the Lessor within 3 days, in the condition in which they were received. The costs of storing, transporting and returning the items are paid by the Lessee.</p>
+
+    <h2>8. Ending the rental early</h2>
+    <p>Each side must tell the other without delay if it wants to end the rental early. A side may end the rental early only in the cases provided by law or by the agreement, or if the other side seriously breaks its terms. If the Lessee ends the rental early, it still pays the full rent, unless the two sides agree otherwise.</p>
+    <p>The Lessor may end the rental early and ask for the items back if they are damaged or lost, or if anything else puts them or their value at risk. In that case the items must be returned on the same day that the Lessee is told about the termination.</p>
+
+    <h2>9. Liability</h2>
+    <p>A side that breaks these terms must compensate the other side for the resulting damage. The Lessee is responsible for any damage to the items and must pay to repair or remedy it. Any other liability is decided under the applicable law of Georgia.</p>
+
+    <h2>10. Force majeure</h2>
+    <p>Neither side is liable for failing to meet its obligations if this is caused by circumstances beyond its control (force majeure). The side affected must notify the other in writing within 5 days of the event, or it is not released from liability. Obligations are suspended until the circumstances end. If they last more than 45 days, the Lessor may end the rental and take the items back.</p>
+
+    <h2>11. Changes and notices</h2>
+    <p>Any change to the agreement must be made in writing and signed by authorized persons. Changes made by one side alone are not valid. Written notices are considered delivered if sent by courier with confirmation of receipt, or by registered mail, to the address known to the other side. If part of these terms is found invalid, the rest remains in force.</p>
+
+    <h2>12. Disputes</h2>
+    <p>The sides will try to settle any dispute by agreement. If they cannot, it will be resolved under the applicable law of Georgia.</p>
+
+    <h2>13. Contact</h2>
+    <p>Questions about these terms: <a href="mailto:hey@propeller.ge">hey@propeller.ge</a></p>
+  </div>
+</div>
+
 <!-- ══════════ PAGE: WISHLIST ══════════ -->
 <div class="page" id="page-wishlist">
   <nav class="nav">
@@ -940,6 +1003,7 @@ input,select,textarea{font-family:inherit}
         <label class="wl-form-label">Notes</label>
         <textarea id="wl-notes" rows="2" placeholder="Any special requirements..."></textarea>
         <button class="wl-submit" onclick="submitWishlist()">Send Wishlist Request</button>
+        <p class="wl-terms-note">By sending this request you agree to our <a href="#" onclick="showPage('page-terms');return false">Terms &amp; Conditions</a>.</p>
       </div>
     </div>
   </div>
