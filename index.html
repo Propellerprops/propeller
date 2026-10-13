@@ -763,9 +763,7 @@ input,select,textarea{font-family:inherit}
   <header class="hero">
     <img src="getty-images-nd2TUoBEMZY-unsplash.jpg" class="hero-bg-img" alt="">
     <div class="hero-links">
-      <button class="nav-link" onclick="loadCatalogue(null).then(function(){navCat('Costume')})">Costume</button>
-      <button class="nav-link" onclick="loadCatalogue(null).then(function(){navCat('Furniture')})">Furniture</button>
-      <button class="nav-link" onclick="loadCatalogue(null).then(function(){navCat('Props')})">Props</button>
+      <span id="hero-cat-links" style="display:contents"></span>
       <button class="nav-link" onclick="state.catFilters=[];state.subFilters=[];loadCatalogue(null)">All Products</button>
       <button class="nav-link" onclick="showPage('page-about')">About Us</button>
     </div>
@@ -787,9 +785,7 @@ input,select,textarea{font-family:inherit}
       </div>
       <div class="footer-col">
         <h3 class="footer-heading">Shop</h3>
-        <button class="footer-link" onclick="loadCatalogue(null).then(function(){navCat('Furniture')})">Furniture</button>
-        <button class="footer-link" onclick="loadCatalogue(null).then(function(){navCat('Costume')})">Costume</button>
-        <button class="footer-link" onclick="loadCatalogue(null).then(function(){navCat('Props')})">Props</button>
+        <span id="footer-cat-links" style="display:contents"></span>
         <button class="footer-link" onclick="state.catFilters=[];state.subFilters=[];loadCatalogue(null)">All Products</button>
       </div>
       <div class="footer-col">
@@ -849,9 +845,7 @@ input,select,textarea{font-family:inherit}
   <aside class="cat-menu-panel" id="cat-menu-panel" aria-hidden="true" onclick="if(event.target.closest('button'))closeCatMenu()">
     <button class="cat-menu-close" aria-label="Close menu">✕</button>
     <button class="cat-menu-link" id="cat-back-btn" style="display:none">← Staff home</button>
-    <button class="cat-menu-link" onclick="navCat('Costume')">Costume</button>
-    <button class="cat-menu-link" onclick="navCat('Furniture')">Furniture</button>
-    <button class="cat-menu-link" onclick="navCat('Props')">Props</button>
+    <span id="menu-cat-links" style="display:contents"></span>
     <button class="cat-menu-link" onclick="showAllProducts()">All Products</button>
     <span class="cat-menu-sep"></span>
     <button class="cat-menu-link" onclick="showPage('page-about')">About Us</button>
@@ -1115,6 +1109,7 @@ var state = {
 //  INIT
 // ══════════════════════════════════════════════════════════════════════════════
 window.onload = function() {
+  updateCatLinks();
   initTheme();
   var params = new URLSearchParams(window.location.search);
 
@@ -1141,7 +1136,7 @@ window.onload = function() {
     // Quietly fetch inventory in the background now, so by the time they click
     // Products/a category, the data is likely already loaded and feels instant.
     apiCall("getItems").then(function(res) {
-      if (res.ok) state.items = res.items;
+      if (res.ok) { state.items = res.items; updateCatLinks(); }
     });
     return;
   }
@@ -1783,7 +1778,7 @@ function loadCatalogue(fromPage) {
     showLoading(true);
     document.getElementById("cat-grid").innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#8F8779;font-size:12px;letter-spacing:0.1em;text-transform:uppercase">Loading items…</div>';
     return apiCall("getItems").then(function(res) {
-      if (res.ok) state.items = res.items;
+      if (res.ok) { state.items = res.items; updateCatLinks(); }
       renderCatalogue();
       showLoading(false);
     }).catch(function() { renderCatalogue(); showLoading(false); });
@@ -2064,6 +2059,32 @@ function scrollShowcase(direction) {
   var row = document.getElementById("showcase-row");
   if (!row) return;
   row.scrollBy({ left: direction * 372, behavior: "smooth" });
+}
+
+// ── Category links (hero, footer, menu) are built from the items in the sheet ──
+function updateCatLinks() {
+  var cats = [];
+  if (state.items && state.items.length) {
+    state.items.forEach(function(it){ var c = (it.category || "").trim(); if (c && cats.indexOf(c) === -1) cats.push(c); });
+    var pref = ["Furniture", "Costume", "Props"];
+    cats.sort(function(a, b){
+      var ia = pref.indexOf(a), ib = pref.indexOf(b);
+      if (ia === -1) ia = 99; if (ib === -1) ib = 99;
+      return ia !== ib ? ia - ib : a.localeCompare(b);
+    });
+    try { localStorage.setItem("propeller_cats", JSON.stringify(cats)); } catch(e){}
+  } else {
+    try { cats = JSON.parse(localStorage.getItem("propeller_cats") || "[]") || []; } catch(e){ cats = []; }
+  }
+  function build(cls, viaCatalogue) {
+    return cats.map(function(c){
+      var act = viaCatalogue ? "loadCatalogue(null).then(function(){navCat('"+escAttr(c)+"')})" : "navCat('"+escAttr(c)+"')";
+      return '<button class="'+cls+'" onclick="'+act+'">'+esc(c)+'</button>';
+    }).join("");
+  }
+  var h = document.getElementById("hero-cat-links"); if (h) h.innerHTML = build("nav-link", true);
+  var f = document.getElementById("footer-cat-links"); if (f) f.innerHTML = build("footer-link", true);
+  var m = document.getElementById("menu-cat-links"); if (m) m.innerHTML = build("cat-menu-link", false);
 }
 
 function navCat(cat) {
