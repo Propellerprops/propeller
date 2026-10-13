@@ -2075,6 +2075,8 @@ function updateCatLinks() {
   var cats = [];
   if (state.items && state.items.length) {
     cleanItems(state.items).forEach(function(it){
+      // same rule as the listing: only Available items that have a photo count
+      if (it.status !== "Available" || !it.photoUrl || !it.photoUrl.trim()) return;
       var c = (it.category || "").trim(); if (c && cats.indexOf(c) === -1) cats.push(c);
     });
     var pref = ["Furniture", "Costume", "Props"];
