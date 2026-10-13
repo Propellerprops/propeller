@@ -2061,11 +2061,22 @@ function scrollShowcase(direction) {
   row.scrollBy({ left: direction * 372, behavior: "smooth" });
 }
 
+// Used only for the category links: the sheet's header row ("ITEM ID", "CATEGORY"…) can be read as an item — ignore it.
+function cleanItems(arr) {
+  return (arr || []).filter(function(it){
+    var id = String(it.id || "").trim().toLowerCase();
+    var cat = String(it.category || "").trim().toLowerCase();
+    return id !== "item id" && cat !== "category";
+  });
+}
+
 // ── Category links (hero, footer, menu) are built from the items in the sheet ──
 function updateCatLinks() {
   var cats = [];
   if (state.items && state.items.length) {
-    state.items.forEach(function(it){ var c = (it.category || "").trim(); if (c && cats.indexOf(c) === -1) cats.push(c); });
+    cleanItems(state.items).forEach(function(it){
+      var c = (it.category || "").trim(); if (c && cats.indexOf(c) === -1) cats.push(c);
+    });
     var pref = ["Furniture", "Costume", "Props"];
     cats.sort(function(a, b){
       var ia = pref.indexOf(a), ib = pref.indexOf(b);
