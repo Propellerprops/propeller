@@ -387,6 +387,11 @@ input,select,textarea{font-family:inherit}
 .cat-footer{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .cat-rate{font-family:'General Sans',sans-serif;font-size:13.5px;font-weight:400;color:var(--ink);white-space:nowrap}
 .cat-rate span{font-size:11px;font-weight:400;color:var(--mut)}
+.cat-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.cat-chip{border:1px solid #ccc;font-family:'General Sans',sans-serif;font-size:11px;font-weight:400;padding:3px 8px;border-radius:2px;color:#444;white-space:nowrap}
+.ci-pieces{margin:-8px 0 24px;max-width:420px}
+.ci-pieces-title{font-size:12px;color:var(--mut);margin-bottom:6px}
+.ci-piece-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #e5e5e5;font-size:14px}
 .cat-heart-btn{position:absolute;top:10px;right:10px;z-index:3;padding:6px 10px;background:transparent;color:var(--ink);border:1px solid var(--ink);border-radius:4px;font-size:16px;line-height:1;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;opacity:0}
 .cat-card:hover .cat-heart-btn{opacity:1}
 .cat-heart-btn:hover{border-color:var(--ink);transform:scale(1.1)}
@@ -1913,10 +1918,22 @@ function renderCatalogue() {
     card += '</div><div class="cat-card-body">';
     card += '<div class="cat-name">' + esc(it.name) + '</div>';
     card += '<div class="cat-footer">';
-    card += '<div class="cat-rate">&#8382;' + (it.dayRate || '—') + '<span> / day</span></div>';
-    card += '</div></div></a>';
+    if (it.setPrice > 0) {
+      card += '<div class="cat-rate">&#8382;' + it.setPrice + '<span> / day, set</span></div>';
+    } else if (it.dayRate > 0 || !(it.pieces && it.pieces.length)) {
+      card += '<div class="cat-rate">&#8382;' + (it.dayRate || '—') + '<span> / day</span></div>';
+    }
+    card += '</div>' + priceChips(it) + '</div></a>';
     return card;
   }).join("");
+}
+
+function priceChips(it) {
+  var pcs = (it && it.pieces) || [];
+  if (!pcs.length) return '';
+  return '<div class="cat-chips">' + pcs.map(function(pc){
+    return '<span class="cat-chip">' + esc(pc.name) + ' &#8382;' + esc(pc.price) + '</span>';
+  }).join('') + '</div>';
 }
 
 function splitSubcats(raw) {
@@ -2190,7 +2207,20 @@ function openCatItem(id) {
   if (it.details)     specs += ciSpec("Details", it.details);
   specs += '</div>';
 
-  var rateBlock = '<div class="ci-rate-block"><div class="ci-rate">&#8382;'+(it.dayRate||'—')+'</div><div class="ci-rate-unit">/ day</div></div>';
+  var pcs = it.pieces || [];
+  var rateBlock;
+  if (it.setPrice > 0) {
+    rateBlock = '<div class="ci-rate-block"><div class="ci-rate">&#8382;'+it.setPrice+'</div><div class="ci-rate-unit">/ day, set</div></div>';
+  } else if (it.dayRate > 0 || !pcs.length) {
+    rateBlock = '<div class="ci-rate-block"><div class="ci-rate">&#8382;'+(it.dayRate||'—')+'</div><div class="ci-rate-unit">/ day</div></div>';
+  } else {
+    rateBlock = '';
+  }
+  if (pcs.length) {
+    rateBlock += '<div class="ci-pieces"><div class="ci-pieces-title">' + (it.setPrice > 0 ? 'Pieces can also be rented separately' : 'Prices per piece') + '</div>'
+      + pcs.map(function(pc){ return '<div class="ci-piece-row"><span>'+esc(pc.name)+'</span><span>&#8382;'+esc(pc.price)+' / day</span></div>'; }).join('')
+      + '</div>';
+  }
 
   var wlBtn = '<button class="ci-wl-btn'+(inWl?' added':'')+'" data-id="'+esc(it.id)+'" data-name="'+esc(it.name)+'" onclick="ciWlClick(this)">'
     + (inWl ? '✓ Added to wishlist' : '+ Add to wishlist') + '</button>';
