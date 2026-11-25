@@ -4,6 +4,32 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="format-detection" content="telephone=no">
+<link rel="icon" id="fav-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%231B1813'/%3E%3Ctext x='32' y='47' font-family='Arial Black,Arial,sans-serif' font-weight='900' font-size='44' text-anchor='middle' fill='white'%3EP%3C/text%3E%3C/svg%3E">
+<link rel="apple-touch-icon" id="fav-apple" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%231B1813'/%3E%3Ctext x='32' y='47' font-family='Arial Black,Arial,sans-serif' font-weight='900' font-size='44' text-anchor='middle' fill='white'%3EP%3C/text%3E%3C/svg%3E">
+<script>
+// Tab icon: a "P" drawn in the same Clash Display font as the Propeller wordmark
+(function(){
+  function apply(u){ var a=document.getElementById("fav-icon"), b=document.getElementById("fav-apple"); if(a){a.type="image/png";a.href=u;} if(b)b.href=u; }
+  try { var c=localStorage.getItem("propeller_fav_v1"); if(c) apply(c); } catch(e){}
+  function draw(){
+    try {
+      var S=256, cv=document.createElement("canvas"); cv.width=cv.height=S;
+      var x=cv.getContext("2d");
+      x.fillStyle="#1B1813"; x.beginPath();
+      if (x.roundRect) x.roundRect(0,0,S,S,48); else x.rect(0,0,S,S);
+      x.fill();
+      x.fillStyle="#fff"; x.font='700 200px "Clash Display"'; x.textAlign="center"; x.textBaseline="alphabetic";
+      var m=x.measureText("P"), h=m.actualBoundingBoxAscent+m.actualBoundingBoxDescent;
+      x.fillText("P", S/2+(m.actualBoundingBoxLeft-m.actualBoundingBoxRight)/2, (S+h)/2-m.actualBoundingBoxDescent);
+      var u=cv.toDataURL("image/png"); apply(u);
+      try { localStorage.setItem("propeller_fav_v1", u); } catch(e){}
+    } catch(e){}
+  }
+  if (document.fonts && document.fonts.load) {
+    document.fonts.load('700 200px "Clash Display"','P').then(draw, function(){});
+  }
+})();
+</script>
 <title>Propeller — Props &amp; Costumes</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
