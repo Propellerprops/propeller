@@ -1168,6 +1168,20 @@ window.onload = function() {
     return;
   }
 
+  // Refresh keeps you where you were: #item=FO-001 or a public page hash
+  var hash = decodeURIComponent((window.location.hash || "").replace(/^#/, ""));
+  var hItem = /^item=(.+)$/.exec(hash);
+  if (hItem && !params.has("staff")) {
+    state.staff = "";
+    loadCatalogue(null).then(function(){ openCatItem(hItem[1].toUpperCase()); });
+    return;
+  }
+  if (!params.has("staff") && ["page-catalogue","page-wishlist","page-about","page-terms"].indexOf(hash) !== -1 && document.getElementById(hash)) {
+    state.staff = "";
+    showPage(hash, false, true);
+    return;
+  }
+
   // Does this visitor want the STAFF side?
   //  - they used a staff link (?staff=...)  OR
   //  - this device was already unlocked before
@@ -2300,6 +2314,7 @@ function openCatItem(id) {
 
   document.getElementById("wl-count-2").textContent = state.wishlist.length;
   showPageEl("page-cat-item");
+  try { history.replaceState({page:"page-cat-item", item:it.id}, "", "#item="+encodeURIComponent(it.id)); } catch(e){}
 }
 
 function ciSpec(label, val) {
