@@ -312,12 +312,13 @@ input,select,textarea{font-family:inherit}
 .hero-cta{background:transparent;color:var(--ink);border:1px solid var(--ink);padding:16px 30px;font-size:12px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;border-radius:3px;transition:transform .15s,background .15s;display:block;margin-left:auto;margin-right:0}
 .hero-cta:hover{transform:translateY(-2px);background:var(--ink);color:#fff}
 @media(max-width:760px){
-  .hero{align-items:flex-end}
-  .hero-inner{padding:30px 22px 34px}
-  .hero-links{right:16px;max-width:calc(100% - 32px)}
-  .hero-title{font-size:63px;margin-top:-200px}
-  .hero-copy{position:relative;top:-40px}
-  .hero-sub{font-size:14px;line-height:1.4;margin-bottom:20px}
+  .hero{min-height:0;background:#F6F3ED}
+  .hero-links{top:14px;right:12px;left:12px;max-width:none;gap:12px 16px}
+  .hero-inner{position:static;display:block;max-width:none;padding:26px 22px 40px}
+  .hero-copy{position:static;max-width:none;margin:0}
+  .hero-title{font-size:50px;margin-top:0;margin-bottom:16px}
+  .hero-sub{font-size:14px;line-height:1.45;margin-bottom:22px}
+  .hero-cta{line-height:1.2}
 }
 
 /* ── Search row ── */
