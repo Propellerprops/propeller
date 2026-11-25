@@ -289,7 +289,7 @@ input,select,textarea{font-family:inherit}
 .footer-heading{font-family:'General Sans',sans-serif;font-size:16px;font-weight:300;font-style:normal;line-height:16px;letter-spacing:normal;text-transform:none;-webkit-font-smoothing:antialiased;color:#8F8779;margin-bottom:20px}
 .footer-link{display:block;background:none;border:none;font-family:'General Sans',sans-serif;font-size:16px;font-weight:300;font-style:normal;line-height:16px;letter-spacing:normal;text-transform:none;-webkit-font-smoothing:antialiased;color:#fff;opacity:1;text-align:left;padding:0 0 14px;cursor:pointer;text-decoration:none;transition:opacity .15s}
 .footer-link:hover{opacity:.7}
-.footer-bottom{max-width:1380px;margin:0 auto;padding:20px 0;border-top:1px solid rgba(255,255,255,0.12);font-family:'General Sans',sans-serif;font-size:16px;font-weight:300;line-height:16px;letter-spacing:normal;text-transform:none;color:#8F8779}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;max-width:1380px;margin:0 auto;padding:20px 0;border-top:1px solid rgba(255,255,255,0.12);font-family:'General Sans',sans-serif;font-size:16px;font-weight:300;line-height:16px;letter-spacing:normal;text-transform:none;color:#8F8779}
 @media(max-width:760px){.footer-inner{grid-template-columns:1fr 1fr;padding:0 18px 40px}.site-footer{padding:40px 0 0}.footer-bottom{padding:20px 18px}}
 .showcase-label{font-family:'General Sans',sans-serif;font-weight:400;font-size:32px;color:#8F8779;letter-spacing:0.03em;text-transform:uppercase;margin-bottom:50px;margin-left:52px}
 .showcase-slider{position:relative;display:flex;align-items:center;gap:12px}
@@ -810,6 +810,8 @@ input,select,textarea{font-family:inherit}
       <div class="footer-col">
         <h3 class="footer-heading" data-i18n="contact">Contact</h3>
         <a href="mailto:hey@propeller.ge" class="footer-link">hey@propeller.ge</a>
+        <a href="tel:+995555952994" class="footer-link">+995 555 952 994</a>
+        <a href="tel:+995591019174" class="footer-link">+995 591 019 174</a>
       </div>
     </div>
     <div class="footer-bottom">
@@ -849,7 +851,7 @@ input,select,textarea{font-family:inherit}
     <a href="https://www.facebook.com/Fourkgroup" target="_blank" rel="noopener" aria-label="Facebook">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M14 8.5V7c0-.8.2-1.2 1.4-1.2H17V3h-2.4C11.7 3 10.5 4.6 10.5 6.9v1.6H8v3h2.5V21H14v-9.5h2.6l.4-3H14z"/></svg>
     </a>
-    <a href="https://wa.me/995595511915" target="_blank" rel="noopener" aria-label="WhatsApp">
+    <a href="https://wa.me/995555952994" target="_blank" rel="noopener" aria-label="WhatsApp">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2zm0 18.15h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24 2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.83c0 4.54-3.7 8.23-8.23 8.23zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.12-.17.25-.64.81-.78.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-2-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.5.11-.11.25-.29.37-.43.12-.14.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.43.06-.66.31-.23.25-.87.85-.87 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.14-1.18-.06-.1-.23-.16-.48-.29z"/></svg>
     </a>
   </div>
@@ -908,11 +910,35 @@ input,select,textarea{font-family:inherit}
     </div>
 
     <!-- Footer -->
-    <div class="cat-footer-bar">
-      <img src="logo_.svg" class="cat-footer-logo" alt="Propeller">
-      <div class="cat-footer-contact">Levan Devdariani str., Tbilisi · +995 595 511915 · hey@propeller.ge</div>
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-col footer-brand">
+        <img src="logo_.svg" class="footer-logo" alt="Propeller — Props &amp; Costumes">
+        <p class="footer-tagline" data-i18n="sub">Furniture, props and costumes for film, photography and events.</p>
+      </div>
+      <div class="footer-col">
+        <h3 class="footer-heading" data-i18n="shop">Shop</h3>
+        <span id="footer-cat-links-2" style="display:contents"></span>
+        <button class="footer-link" onclick="state.catFilters=[];state.subFilters=[];loadCatalogue(null)" data-i18n="all">All Products</button>
+      </div>
+      <div class="footer-col">
+        <h3 class="footer-heading" data-i18n="site">Site</h3>
+        <button class="footer-link" onclick="showPage('page-about')" data-i18n="about">About Us</button>
+        <button class="footer-link" onclick="showPage('page-wishlist')" data-i18n="wish">Wishlist</button>
+        <button class="footer-link" onclick="showPage('page-terms')" data-i18n="terms">Terms &amp; Conditions</button>
+      </div>
+      <div class="footer-col">
+        <h3 class="footer-heading" data-i18n="contact">Contact</h3>
+        <a href="mailto:hey@propeller.ge" class="footer-link">hey@propeller.ge</a>
+        <a href="tel:+995555952994" class="footer-link">+995 555 952 994</a>
+        <a href="tel:+995591019174" class="footer-link">+995 591 019 174</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span data-i18n="rights">© 2026 Propeller. All rights reserved.</span>
       <button class="cat-footer-staff" onclick="goToStaff()">Staff Login</button>
     </div>
+  </footer>
   </div>
 </div>
 
@@ -2174,6 +2200,7 @@ function updateCatLinks() {
   }
   var h = document.getElementById("hero-cat-links"); if (h) h.innerHTML = build("nav-link", true);
   var f = document.getElementById("footer-cat-links"); if (f) f.innerHTML = build("footer-link", true);
+  var f2 = document.getElementById("footer-cat-links-2"); if (f2) f2.innerHTML = build("footer-link", true);
   var m = document.getElementById("menu-cat-links"); if (m) m.innerHTML = build("cat-menu-link", false);
 }
 
@@ -2563,7 +2590,7 @@ function sendInvoiceEmail(){
   var msg=document.getElementById("inv-email-msg").value.trim()||"Please find below the invoice for your upcoming shoot.";
   var body="Dear "+(_inv.client||"")+",\n\n"+msg+"\n\nINVOICE "+(_inv.number||"")+"\nJob: "+(_inv.job||"")+"\nPeriod: "+fmtInvDate(_inv.outDate)+" → "+fmtInvDate(_inv.retDate)+" ("+(_inv.days||0)+" days)\n\nITEMS:\n";
   (_inv.items||[]).forEach(function(it){var lt=Math.round((it.customRate||it.dayRate||0)*(_inv.days||0));body+="• "+it.name+" ("+it.id+") — ₾"+(it.customRate||it.dayRate||0)+"/day x"+(_inv.days||0)+" = ₾"+lt+"\n";});
-  body+="\nTOTAL: ₾"+(_inv.total||0).toLocaleString()+"\n\nPropeller\nLevan Devdariani str., Tbilisi\n+995 595 511915 | hey@propeller.ge";
+  body+="\nTOTAL: ₾"+(_inv.total||0).toLocaleString()+"\n\nPropeller\nLevan Devdariani str., Tbilisi\n+995 555 952 994 · +995 591 019 174 | hey@propeller.ge";
   window.location.href="mailto:"+to+"?subject="+subj+"&body="+encodeURIComponent(body);
   toast("Opening email client...");
 }
@@ -2686,7 +2713,7 @@ new MutationObserver(function(){
           <div class="inv-party">
             <div class="inv-party-label">From</div>
             <div class="inv-party-name">Propeller</div>
-            <div class="inv-party-detail">Levan Devdariani str.<br>Tbilisi, Georgia<br>+995 595 511915<br>hey@propeller.ge</div>
+            <div class="inv-party-detail">Levan Devdariani str.<br>Tbilisi, Georgia<br>+995 555 952 994 · +995 591 019 174<br>hey@propeller.ge</div>
           </div>
           <div class="inv-party">
             <div class="inv-party-label">Bill to</div>
